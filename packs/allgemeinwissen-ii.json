@@ -53,7 +53,8 @@
       "q": "Nenne die Hauptstadt von Australien.",
       "cat": "Geographie",
       "type": "open",
-      "fact": "Viele denken Sydney – die Antwort ist Canberra. Die Stadt wurde 1908 als Kompromiss zwischen den rivalisierenden Städten Sydney und Melbourne gegründet und liegt geografisch ungefähr zwischen beiden."
+      "fact": "Viele denken Sydney – die Antwort ist Canberra. Die Stadt wurde 1908 als Kompromiss zwischen den rivalisierenden Städten Sydney und Melbourne gegründet und liegt geografisch ungefähr zwischen beiden.",
+      "answer": "Canberra"
     },
     {
       "q": "Wie viele Mal schlägt das menschliche Herz durchschnittlich pro Minute (Ruhepuls Erwachsener)?",
@@ -86,7 +87,8 @@
       "q": "Wie nennt man den leuchtenden Streifen, den ein Gesteinsbrocken beim Eintritt in die Erdatmosphäre hinterlässt? (ein Wort)",
       "cat": "Astronomie",
       "type": "open",
-      "fact": "Meteoroid = Gesteinsbrocken im Weltall. Meteor = das Aufleuchten beim Eintritt (umgangssprachlich: Sternschnuppe). Meteorit = was auf der Erde aufschlägt. Der leuchtende Streifen ist also ein Meteor."
+      "fact": "Meteoroid = Gesteinsbrocken im Weltall. Meteor = das Aufleuchten beim Eintritt (umgangssprachlich: Sternschnuppe). Meteorit = was auf der Erde aufschlägt. Der leuchtende Streifen ist also ein Meteor.",
+      "answer": "Meteor"
     },
     {
       "q": "Wie lange dauert ein Lichtstrahl von der Sonne bis zur Erde (in Minuten)?",
@@ -119,7 +121,8 @@
       "q": "Wie nennt man die systematischen Denkfehler, die unser Urteil unbewusst beeinflussen? (englischer Fachbegriff, zwei Worte)",
       "cat": "Psychologie",
       "type": "open",
-      "fact": "Cognitive Bias (kognitive Verzerrung) – bekannte Beispiele: Confirmation Bias (nur bestätigende Infos suchen), Dunning-Kruger-Effekt (Inkompetente überschätzen sich), Survivorship Bias (nur Überlebende sehen)."
+      "fact": "Cognitive Bias (kognitive Verzerrung) – bekannte Beispiele: Confirmation Bias (nur bestätigende Infos suchen), Dunning-Kruger-Effekt (Inkompetente überschätzen sich), Survivorship Bias (nur Überlebende sehen).",
+      "answer": "Cognitive Bias"
     },
     {
       "q": "Wie viele Planeten hat unser Sonnensystem (nach der IAU-Definition von 2006)?",
