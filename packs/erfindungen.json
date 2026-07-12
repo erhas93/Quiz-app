@@ -3,7 +3,7 @@
   "emoji": "💡",
   "questions": [
     {
-      "q": "Wer gilt als Erfinder des Telefons und meldete es 1876 zum Patent an?",
+      "q": "Wer meldete 1876 das Telefon (Telephone) zum Patent an?",
       "a": [
         "Thomas Edison",
         "Alexander Graham Bell",
@@ -11,21 +11,23 @@
         "Guglielmo Marconi"
       ],
       "r": 1,
-      "cat": "Kommunikation"
+      "cat": "Kommunikation",
+      "fact": "Bell reichte sein Patent nur Stunden vor einem anderen Erfinder ein – Elisha Gray beanspruchte dieselbe Erfindung am selben Tag. Der Rechtsstreit dauerte Jahre. Ironischerweise nutzte Bell selbst das Telefon kaum privat, weil er den Lärm störend fand. Er telefonierte selten in seinem eigenen Haus."
     },
     {
-      "q": "In welchem Jahr wurde das World Wide Web von Tim Berners-Lee erfunden?",
+      "q": "In welchem Jahr stellte Tim Berners-Lee das World Wide Web (WWW) der Öffentlichkeit vor?",
       "a": [
         "1983",
         "1989",
-        "1994",
-        "1999"
+        "1991",
+        "1994"
       ],
-      "r": 1,
-      "cat": "Technologie"
+      "r": 2,
+      "cat": "Technologie",
+      "fact": "Berners-Lee arbeitete am CERN in Genf und wollte ursprünglich nur den Informationsaustausch unter Physikern vereinfachen. Er lehnte es ab, das WWW zu patentieren – ein Entscheid, der es kostenlos für alle machte. Sein ursprünglicher Vorschlag wurde von seinem Chef mit 'Vage, aber interessant' kommentiert."
     },
     {
-      "q": "Wer erfand die Glühbirne und ließ sie 1879 patentieren?",
+      "q": "Wer ließ 1879 die Glühbirne (Incandescent Light Bulb) patentieren?",
       "a": [
         "Nikola Tesla",
         "Benjamin Franklin",
@@ -33,54 +35,59 @@
         "James Watt"
       ],
       "r": 2,
-      "cat": "Energie & Licht"
+      "cat": "Energie & Licht",
+      "fact": "Edison testete über 6.000 Materialien für den Glühfaden, bevor er beim verkohlten Bambus erfolgreich war. Er war jedoch nicht der einzige Erfinder: Der Brite Joseph Swan hatte fast zeitgleich eine funktionierende Glühbirne. Beide gründeten schließlich gemeinsam eine Firma."
     },
     {
-      "q": "Welches Land erfand den Buchdruck mit beweglichen Lettern im 15. Jahrhundert?",
+      "q": "Wer erfand den Buchdruck mit beweglichen Metalllettern (Gutenberg-Presse) in Europa um 1450?",
       "a": [
-        "England",
-        "Frankreich",
-        "Italien",
-        "Deutschland"
-      ],
-      "r": 3,
-      "cat": "Druck & Medien"
-    },
-    {
-      "q": "Wer gilt als Erfinder des Automobils mit Verbrennungsmotor (Patent 1886)?",
-      "a": [
-        "Henry Ford",
-        "Gottlieb Daimler",
-        "Karl Benz",
-        "Rudolf Diesel"
+        "William Caxton (England)",
+        "Aldus Manutius (Italien)",
+        "Johannes Gutenberg (Deutschland/Mainz)",
+        "Christophe Plantin (Frankreich/Belgien)"
       ],
       "r": 2,
-      "cat": "Mobilität"
+      "cat": "Druck & Medien",
+      "fact": "Gutenbergs erster großer Druck war die Bibel (Gutenberg-Bibel, ca. 1455). In China gab es bewegliche Lettern bereits 400 Jahre früher (Bi Sheng, 1040 n. Chr.) – aber Gutenbergs Metalllegierung und Presse machten Massenproduktion erst wirtschaftlich möglich. Innerhalb von 50 Jahren gab es 15 Millionen gedruckte Bücher in Europa."
     },
     {
-      "q": "Was erfand Percy Spencer 1945 zufällig, als er mit Radargeräten arbeitete?",
+      "q": "Wer meldete 1886 das Patent für das erste Automobil mit Verbrennungsmotor (Benz Patent-Motorwagen) an?",
       "a": [
-        "Den Kühlschrank",
-        "Die Mikrowelle",
-        "Den Toaster",
-        "Die Gefriertruhe"
+        "Henry Ford (Model T, 1908)",
+        "Gottlieb Daimler (Daimler-Motorkutsche)",
+        "Carl Benz (Benz Patent-Motorwagen Nr. 1)",
+        "Rudolf Diesel (Dieselmotor, 1897)"
+      ],
+      "r": 2,
+      "cat": "Mobilität",
+      "fact": "Bertha Benz, Carls Frau, unternahm 1888 heimlich die erste Fernfahrt der Geschichte – 104 km von Mannheim nach Pforzheim. Sie schmierte die Kette mit Strumpfband, reinigte die verstopfte Brennstoffleitung mit einer Haarnadel und kaufte Ligroin (Kraftstoff) in einer Apotheke. Ohne ihre Fahrt wäre das Auto vielleicht nie bekannt geworden."
+    },
+    {
+      "q": "Was erfand Percy Spencer 1945 zufällig, während er mit Hochfrequenzstrahlung (Mikrowellenstrahlung) für Radargeräte arbeitete?",
+      "a": [
+        "Den Kühlschrank (Refrigerator)",
+        "Die Mikrowelle (Microwave Oven)",
+        "Den Toaster (Toaster)",
+        "Die Gefriertruhe (Freezer)"
       ],
       "r": 1,
-      "cat": "Haushalt"
+      "cat": "Haushalt",
+      "fact": "Spencer bemerkte, dass der Schokoriegel in seiner Tasche geschmolzen war, als er vor dem Magnetron stand. Er testete dann absichtlich Popcorn-Mais und ein Ei (das explodierte). Das erste kommerzielle Mikrowellengerät 'Radarange' (1947) war 1,80 m hoch, wog 340 kg und kostete 5.000 Dollar."
     },
     {
-      "q": "Wer erfand das Penicillin im Jahr 1928?",
+      "q": "Wer entdeckte das Penicillin (Penicillium notatum) im Jahr 1928?",
       "a": [
-        "Louis Pasteur",
-        "Robert Koch",
-        "Alexander Fleming",
-        "Joseph Lister"
+        "Louis Pasteur (Pasteurisierung, Impfstoffe)",
+        "Robert Koch (Tuberkulosebazillus)",
+        "Alexander Fleming (Penicillin)",
+        "Joseph Lister (Antiseptik)"
       ],
       "r": 2,
-      "cat": "Medizin"
+      "cat": "Medizin",
+      "fact": "Flemings Entdeckung war ein Zufallsfund: Er ging in den Urlaub und ließ eine Bakterienkultur offen. Beim Rückkommen hatte Schimmel die Bakterien abgetötet. Doch Fleming konnte das Penicillin nicht isolieren – das gelang erst Howard Florey und Ernst Boris Chain 1940. Alle drei teilten 1945 den Nobelpreis."
     },
     {
-      "q": "In welchem Jahr wurde das erste iPhone von Apple vorgestellt?",
+      "q": "In welchem Jahr stellte Apple das erste iPhone (1st Generation iPhone) vor?",
       "a": [
         "2005",
         "2006",
@@ -88,84 +95,92 @@
         "2008"
       ],
       "r": 2,
-      "cat": "Technologie"
+      "cat": "Technologie",
+      "fact": "Steve Jobs kündigte das iPhone am 9. Januar 2007 auf der MacWorld an und bezeichnete es als 'ein iPod, ein Telefon und ein Internet-Gerät' – das Publikum verstand zunächst nicht, dass es ein einziges Gerät war. Das ursprüngliche iPhone hatte keine App-Store, kein Copy-Paste und kein 3G. Der Start-Preis: 499 Dollar."
     },
     {
-      "q": "Welche Erfindung von Levi Strauss und Jacob Davis aus dem Jahr 1873 wird bis heute weltweit getragen?",
+      "q": "Was erfanden Levi Strauss und Jacob Davis, als sie 1873 ein gemeinsames Patent anmeldeten?",
       "a": [
-        "Der Reißverschluss",
-        "Das Jeans-Hosenbein aus Denim",
-        "Der Hosenträger",
-        "Die Jeansjacke"
+        "Den Reißverschluss (Zipper, erst 1913 von Whitcomb Judson)",
+        "Die Jeans (Blue Jeans) mit Metallnieten an den Belastungspunkten",
+        "Den Hosenträger (Suspenders / Braces)",
+        "Die Jeansjacke (Denim Jacket, erst 1880er)"
       ],
       "r": 1,
-      "cat": "Alltagsgegenstände"
+      "cat": "Alltagsgegenstände",
+      "fact": "Die Nieten waren Davis' Idee – ein Schneider aus Nevada, der Arbeiterhosen für Goldgräber nähte. Er konnte das Patent nicht selbst finanzieren und wandte sich an seinen Stofflieferanten Levi Strauss. Die 501 wurde erst 1890 mit Nummer eingeführt. Levi's verkauft heute noch denselben Schnitt."
     },
     {
-      "q": "Wer erfand das Dynamit und stiftete später den nach ihm benannten Preis?",
+      "q": "Wer erfand das Dynamit (Dynamite) und stiftete später den nach ihm benannten Wissenschaftspreis?",
       "a": [
-        "Alfred Nobel",
-        "Robert Oppenheimer",
-        "Fritz Haber",
-        "Carl Bosch"
+        "Alfred Nobel (Dynamit, 1867)",
+        "Robert Oppenheimer (Atombombe, 1945)",
+        "Fritz Haber (Ammoniaksynthese, Giftgas)",
+        "Carl Bosch (Haber-Bosch-Verfahren)"
       ],
       "r": 0,
-      "cat": "Chemie & Physik"
+      "cat": "Chemie & Physik",
+      "fact": "Nobel erfand Dynamit, weil sein Bruder Emil bei einer Nitroglycerin-Explosion starb. Er wollte einen sichereren Sprengstoff. Eine französische Zeitung druckte irrtümlich seinen Nachruf ('Der Händler des Todes ist tot') als er noch lebte – das soll ihn bewogen haben, den Preis zu stiften, um in besserem Licht erinnert zu werden."
     },
     {
-      "q": "Was erfand King Camp Gillette im Jahr 1901?",
+      "q": "Was erfand King Camp Gillette im Jahr 1901 und ließ es patentieren?",
       "a": [
-        "Den elektrischen Rasierapparat",
-        "Den Einweg-Rasierer mit Wechselklinge",
-        "Die Zahnbürste",
-        "Den Haartrockner"
+        "Den elektrischen Rasierapparat (Electric Shaver, erst 1928 von Jacob Schick)",
+        "Den Sicherheitsrasierer (Safety Razor) mit austauschbarer Wegwerf-Klinge",
+        "Die Zahnbürste (Toothbrush) mit Nylonborsten",
+        "Den Haartrockner (Hair Dryer, erst 1920)"
       ],
       "r": 1,
-      "cat": "Alltagsgegenstände"
+      "cat": "Alltagsgegenstände",
+      "fact": "Gillettes Geschäftsmodell war revolutionär: den Rasierer billig verkaufen, an den Klingen verdienen – heute als 'Razors-and-blades model' bekannt. Dieses Prinzip nutzten später Drucker (Tinte), Spielekonsolen (Spiele) und Kaffeekapseln. Gillette war eigentlich Korkenhersteller, bevor er auf die Rasier-Idee kam."
     },
     {
-      "q": "Wer meldete 1903 den ersten erfolgreichen Motorflug der Geschichte?",
+      "q": "Wer unternahm am 17. Dezember 1903 in Kitty Hawk (North Carolina) den ersten erfolgreichen Motorflug der Geschichte?",
       "a": [
-        "Louis Blériot",
-        "Charles Lindbergh",
-        "Die Gebrüder Wright",
-        "Otto Lilienthal"
+        "Louis Blériot (überquerte 1909 den Ärmelkanal)",
+        "Charles Lindbergh (1. Atlantiküberquerung 1927)",
+        "Orville und Wilbur Wright (Gebrüder Wright)",
+        "Otto Lilienthal (Gleitflieger, starb 1896)"
       ],
       "r": 2,
-      "cat": "Mobilität"
+      "cat": "Mobilität",
+      "fact": "Der erste Flug dauerte 12 Sekunden und überwand 36 Meter – kürzer als die Spannweite eines modernen Airbus A380. Am selben Tag flogen sie viermal, der längste Flug dauerte 59 Sekunden. Die Brüder waren Fahrradhändler ohne College-Abschluss, die Wissenschaftler mit Universitätsabschlüssen überholten."
     },
     {
-      "q": "Welche Erfindung aus dem Jahr 1938 revolutionierte das Schreiben im Alltag?",
+      "q": "Welche Erfindung aus dem Jahr 1938 stammt von László Bíró (Ladislao Biro) und revolutionierte das allgegliche Schreiben?",
       "a": [
-        "Der Tintenfüller",
-        "Der Kugelschreiber",
-        "Der Filzstift",
-        "Die Schreibmaschine"
+        "Der Tintenfüller (Fountain Pen, 1827 von Petrache Poenaru)",
+        "Der Kugelschreiber (Ballpoint Pen / Biro)",
+        "Der Filzstift (Felt-tip Pen, erst 1962)",
+        "Die Schreibmaschine (Typewriter, 1867)"
       ],
       "r": 1,
-      "cat": "Alltagsgegenstände"
+      "cat": "Alltagsgegenstände",
+      "fact": "Bíró, ein ungarischer Journalist, war genervt davon, dass Füllfederhalter auf Zeitungspapier verschmierten. Er nutzte dickere Druckertinte und eine kleine Kugel als Schreibspitze. In Argentinien heißt der Kugelschreiber bis heute 'Birome' nach ihm. Die britische Royal Air Force kaufte früh große Mengen, weil er in großer Höhe funktionierte."
     },
     {
-      "q": "Was erfand Karl von Drais 1817, das als Vorläufer des Fahrrads gilt?",
+      "q": "Was erfand Karl Freiherr von Drais 1817, das als direkter Vorläufer des Fahrrads gilt?",
       "a": [
-        "Die Dampflokomotive",
-        "Die Laufmaschine (Draisine)",
-        "Den Rollstuhl",
-        "Den Einspänner"
+        "Die Dampflokomotive (Steam Locomotive, Stephenson 1814)",
+        "Die Laufmaschine / Draisine (Velocipede / Dandy Horse)",
+        "Den Rollstuhl (Wheelchair, 18. Jh.)",
+        "Den Einspänner (Gig, Pferdekutsche)"
       ],
       "r": 1,
-      "cat": "Mobilität"
+      "cat": "Mobilität",
+      "fact": "Drais erfand die Laufmaschine 1817 – ein Jahr nach dem Ausbruch des Vulkans Tambora (1815), der eine 'Jahr ohne Sommer' auslöste, Ernten vernichtete und Pferde verhungern ließ. Ohne Pferde brauchten Menschen Alternativen. Pedale gab es noch nicht – man stakste mit den Füßen ab."
     },
     {
-      "q": "Wer entwickelte die erste funktionsfähige Dampfmaschine, die die Industrielle Revolution einläutete?",
+      "q": "Wessen verbesserte Dampfmaschine (Steam Engine) von 1769 gilt als Schlüsselerfindung der Industriellen Revolution?",
       "a": [
-        "Thomas Newcomen",
-        "James Watt",
-        "George Stephenson",
-        "Richard Arkwright"
+        "Thomas Newcomen (erste Dampfmaschine 1712, nur für Pumpen)",
+        "James Watt (effiziente Universaldampfmaschine 1769)",
+        "George Stephenson (Dampflokomotive 'Rocket' 1829)",
+        "Richard Arkwright (Spinnmaschine Water Frame 1769)"
       ],
       "r": 1,
-      "cat": "Industrie"
+      "cat": "Industrie",
+      "fact": "Watts entscheidende Innovation war der separate Kondensator – dadurch musste der Zylinder nicht mehr abwechselnd erhitzt und abgekühlt werden, was den Energieverbrauch um 75% senkte. Er arbeitete 12 Jahre daran. Die Einheit 'Watt' für elektrische Leistung wurde 1882 zu seinen Ehren benannt."
     }
   ]
 }
