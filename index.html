@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz App</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0d0d1a;
+    color: #e0e0f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  /* ── ROLE PICKER ── */
+  #role-screen { text-align: center; max-width: 420px; width: 100%; }
+  #role-screen h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.03em; }
+  #role-screen p { color: #556; margin-bottom: 36px; font-size: 0.95rem; }
+  .role-btn {
+    display: block; width: 100%; padding: 18px 24px;
+    margin-bottom: 14px; border: none; border-radius: 14px;
+    font-size: 1.05rem; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; letter-spacing: -0.01em;
+  }
+  .role-btn:hover { opacity: 0.85; }
+  .role-mod  { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #1a1000; }
+  .role-s1   { background: linear-gradient(135deg, #e94560, #c0392b); color: white; }
+  .role-s2   { background: linear-gradient(135deg, #a855f7, #6c3483); color: white; }
+
+  /* ── SHARED CARD ── */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* ── MODERATOR ── */
+  #mod-screen { width: 100%; max-width: 700px; }
+  .mod-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+  }
+  .mod-title { font-size: 1.1rem; font-weight: 700; color: #f1c40f; }
+  .score-bar { display: flex; gap: 12px; }
+  .score-pill {
+    padding: 6px 16px; border-radius: 99px; font-weight: 700; font-size: 0.88rem;
+  }
+  .s1-pill { background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.4); color: #e94560; }
+  .s2-pill { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.4); color: #a855f7; }
+
+  .progress-bar-wrap { height: 5px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #e94560, #a855f7); border-radius: 99px; transition: width 0.4s; }
+
+  .mod-answer-box {
+    background: rgba(241,196,15,0.06); border: 1px solid rgba(241,196,15,0.2);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;
+  }
+  .mod-answer-label { color: #887700; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .mod-correct { color: #f1c40f; font-weight: 700; font-size: 0.92rem; margin-bottom: 8px; }
+  .mod-picks { display: flex; gap: 16px; flex-wrap: wrap; }
+  .mod-pick { font-size: 0.84rem; font-weight: 600; }
+  .pick-correct { color: #27ae60; }
+  .pick-wrong   { color: #e74c3c; }
+  .pick-waiting { color: #556; font-style: italic; }
+
+  .q-category {
+    display: inline-block; border-radius: 99px; padding: 4px 12px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 14px;
+  }
+  .q-text { font-size: 1.1rem; font-weight: 600; line-height: 1.6; margin-bottom: 20px; }
+
+  .answers-grid { display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px; }
+  .answer-opt {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    font-size: 0.93rem; font-weight: 500; color: #99aacc;
+    transition: all 0.2s;
+  }
+  .answer-opt.correct { background: rgba(39,174,96,0.15); border-color: #27ae60; color: #27ae60; }
+  .answer-opt.wrong   { background: rgba(192,57,43,0.12); border-color: #c0392b; color: #e05050; }
+  .answer-letter {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 700;
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+    color: #445566;
+  }
+  .answer-opt.correct .answer-letter { background: #27ae6022; border-color: #27ae60; color: #27ae60; }
+  .answer-opt.wrong   .answer-letter { background: #c0392b22; border-color: #c0392b; color: #e05050; }
+  .answer-badges { margin-left: auto; display: flex; gap: 5px; }
+  .badge { padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 700; }
+  .badge-s1 { background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); color: #e94560; }
+  .badge-s2 { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); color: #a855f7; }
+
+  .mod-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 24px; border: none; border-radius: 11px;
+    font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-next  { background: linear-gradient(135deg, #e94560, #a855f7); color: white; }
+  .btn-reveal { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #ccc; }
+  .btn-reset { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.3); color: #e74c3c; }
+
+  /* ── PLAYER ── */
+  #player-screen { width: 100%; max-width: 480px; }
+  .player-header { text-align: center; margin-bottom: 20px; }
+  .player-name { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+  .player-score { font-size: 0.85rem; color: #556; }
+
+  .player-q-text { font-size: 1.05rem; font-weight: 600; line-height: 1.6; margin-bottom: 18px; color: #e0e0f0; }
+  .player-answers { display: flex; flex-direction: column; gap: 10px; }
+  .player-opt {
+    padding: 15px 18px; border-radius: 13px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    font-size: 0.95rem; font-weight: 500; color: #bbc;
+    cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 12px;
+    user-select: none;
+  }
+  .player-opt:active { transform: scale(0.98); }
+  .player-opt.selected-correct { background: rgba(39,174,96,0.18); border-color: #27ae60; color: #27ae60; }
+  .player-opt.selected-wrong   { background: rgba(192,57,43,0.15); border-color: #c0392b; color: #e05050; }
+  .player-opt.selected-pending { background: rgba(168,85,247,0.12); border-color: #a855f7; color: #a855f7; }
+  .player-opt.disabled { cursor: default; }
+
+  .waiting-msg {
+    text-align: center; padding: 20px; color: #445;
+    font-size: 0.9rem; font-style: italic;
+  }
+
+  .status-bar {
+    text-align: center; padding: 14px; border-radius: 12px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.88rem; color: #556; margin-bottom: 16px;
+  }
+
+  /* ── RESULTS ── */
+  .result-card { text-align: center; }
+  .result-emoji { font-size: 5rem; margin-bottom: 12px; }
+  .result-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+  .result-sub { color: #556; margin-bottom: 28px; }
+  .result-scores { display: flex; gap: 14px; margin-bottom: 28px; }
+  .result-score-box {
+    flex: 1; border-radius: 16px; padding: 22px 14px;
+    position: relative;
+  }
+  .result-score-box .big-num { font-size: 3rem; font-weight: 800; line-height: 1; }
+  .result-score-box .of-total { font-size: 0.78rem; margin-top: 4px; }
+  .winner-tag {
+    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+    padding: 2px 10px; border-radius: 99px;
+    font-size: 0.68rem; font-weight: 700; white-space: nowrap; color: white;
+  }
+
+  /* Spinner */
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #a855f7; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Funnel: narrow on mobile */
+  @media (max-width: 480px) {
+    .card { padding: 20px; }
+    .q-text, .player-q-text { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ROLE PICKER -->
+<div id="role-screen">
+  <h1>🧠 Quiz App</h1>
+  <p>Wähle deine Rolle</p>
+  <button class="role-btn role-mod"  onclick="joinAs('moderator')">👁️ Moderator</button>
+  <button class="role-btn role-s1"   onclick="joinAs('s1')">🟠 Spieler 1</button>
+  <button class="role-btn role-s2"   onclick="joinAs('s2')">🟣 Spieler 2</button>
+</div>
+
+<!-- MODERATOR -->
+<div id="mod-screen" style="display:none">
+  <div class="mod-header">
+    <span class="mod-title">👁️ Moderator</span>
+    <div class="score-bar">
+      <span class="score-pill s1-pill">🟠 S1: <span id="mod-s1-score">0</span></span>
+      <span class="score-pill s2-pill">🟣 S2: <span id="mod-s2-score">0</span></span>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="mod-progress" style="width:0%"></div></div>
+
+  <div class="card">
+    <!-- Moderator answer box -->
+    <div class="mod-answer-box">
+      <div class="mod-answer-label">👁️ MODERATOR-ANSICHT</div>
+      <div class="mod-correct" id="mod-correct-answer">–</div>
+      <div class="mod-picks">
+        <div class="mod-pick" id="mod-s1-pick"><span style="color:#445">S1: wartet...</span></div>
+        <div class="mod-pick" id="mod-s2-pick"><span style="color:#445">S2: wartet...</span></div>
+      </div>
+    </div>
+
+    <div id="mod-category" class="q-category"></div>
+    <div id="mod-q-text" class="q-text">Lade Frage...</div>
+    <div class="answers-grid" id="mod-answers"></div>
+
+    <div class="mod-controls">
+      <button class="btn btn-next" id="btn-next" onclick="nextQuestion()">Weiter →</button>
+      <button class="btn btn-reveal" id="btn-reveal" onclick="revealAnswers()">Auflösen</button>
+      <button class="btn btn-reset" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER -->
+<div id="player-screen" style="display:none">
+  <div class="player-header">
+    <div class="player-name" id="player-name-display"></div>
+    <div class="player-score">Punkte: <span id="player-score-display">0</span></div>
+  </div>
+  <div class="status-bar" id="player-status">Warte auf den Moderator...</div>
+  <div class="card">
+    <div id="player-q-num" style="color:#445; font-size:0.78rem; margin-bottom:10px;"></div>
+    <div id="player-q-text" class="player-q-text">Warte auf nächste Frage...</div>
+    <div class="player-answers" id="player-answers"></div>
+    <div class="waiting-msg" id="player-waiting" style="display:none">✓ Antwort gespeichert – warte auf anderen Spieler...</div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCXDcsJocNsiOFY4QUWp8diFRGiYl-BoK8",
+  authDomain: "quiz-app-82c51.firebaseapp.com",
+  projectId: "quiz-app-82c51",
+  storageBucket: "quiz-app-82c51.firebasestorage.app",
+  messagingSenderId: "490424508080",
+  appId: "1:490424508080:web:f93e1e14ae5c5b16076575",
+  databaseURL: "https://quiz-app-82c51-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ── QUIZ DATA ──────────────────────────────────────────────────────────────
+const quizData = [
+  { frage: "Honig verdirbt praktisch nie – in ägyptischen Pyramiden wurde jahrtausendealter Honig gefunden, der noch essbar war. Was macht Honig so haltbar?", antworten: ["Er enthält natürliche Antibiotika aus Bienengiften","Sein extrem niedriger Wassergehalt und Wasserstoffperoxid hemmen Bakterienwachstum","Die hohe Temperatur im Bienenstock sterilisiert ihn dauerhaft","Bienen imprägnieren ihn mit einem speziellen Wachs von innen"], richtig: 1, kategorie: "Essen & Wissenschaft" },
+  { frage: "Der Eiffelturm wächst im Sommer und schrumpft im Winter. Um wie viel verändert sich seine Höhe je nach Temperatur?", antworten: ["Ca. 1 cm","Ca. 5 cm","Ca. 15 cm","Ca. 30 cm"], richtig: 2, kategorie: "Architektur & Physik" },
+  { frage: "Cleopatra lebte zeitlich gesehen näher an der Mondlandung als an dem Bau der Pyramiden. Wie groß ist der zeitliche Abstand zwischen Pyramidenbau und Kleopatra?", antworten: ["Ca. 500 Jahre","Ca. 1.000 Jahre","Ca. 2.500 Jahre – mehr als doppelt so lang wie zwischen Kleopatra und uns","Ca. 4.000 Jahre"], richtig: 2, kategorie: "Geschichte" },
+  { frage: "Ein menschliches Gehirn erzeugt im Wachzustand elektrische Aktivität. Wie viel Watt leistet es dabei ungefähr?", antworten: ["Ca. 1 Watt","Ca. 12–25 Watt","Ca. 100 Watt","Ca. 500 Watt"], richtig: 1, kategorie: "Menschlicher Körper" },
+  { frage: "In Japan gibt es ein Phänomen namens 'Karoshi'. Was bedeutet dieser Begriff?", antworten: ["Die Kunst, Dinge schön zu verpacken","Tod durch Überarbeitung","Extreme Schüchternheit gegenüber Fremden","Das Gefühl der Leere nach einem großen Erfolg"], richtig: 1, kategorie: "Psychologie & Gesellschaft" },
+  { frage: "Das tiefste Loch, das Menschen je in die Erde gebohrt haben, ist die Kola-Bohrung in Russland. Wie tief reicht sie?", antworten: ["Ca. 1 km","Ca. 5 km","Ca. 12 km","Ca. 40 km"], richtig: 2, kategorie: "Geologie" },
+  { frage: "Beim Hören von Musik schüttet das Gehirn Dopamin aus – besonders in einem bestimmten Moment. Wann ist dieser Moment?", antworten: ["Beim ersten Ton eines bekannten Liedes","Kurz bevor der emotionale Höhepunkt eines Stückes eintritt (Anticipation)","Genau beim letzten Akkord eines Liedes","Nur beim Hören von Musik, die man selbst live spielt"], richtig: 1, kategorie: "Musik & Gehirn" },
+  { frage: "Russland ist das flächenmäßig größte Land der Welt. Mit wie vielen anderen Ländern teilt es eine Landgrenze?", antworten: ["6 Länder","10 Länder","14 Länder","18 Länder"], richtig: 2, kategorie: "Geographie" },
+  { frage: "Ein Lichtjahr klingt nach Zeit, ist aber eine Entfernung. Wie weit ist ein Lichtjahr in Kilometern ungefähr?", antworten: ["Ca. 300.000 km","Ca. 9,5 Billionen km","Ca. 150 Millionen km","Ca. 1 Trillion km"], richtig: 1, kategorie: "Weltall" },
+  { frage: "Die Angst vor langen Wörtern hat selbst einen sehr langen Namen. Wie lautet er?", antworten: ["Makroglossophobie","Hippopotomonstrosesquipedaliaphobie","Polysyllabophobia","Verbophobia"], richtig: 1, kategorie: "Fun Facts" },
+  { frage: "In Island gibt es kaum Nachnamen im klassischen Sinne. Wie funktioniert das isländische Namensystem stattdessen?", antworten: ["Alle Isländer tragen denselben Nachnamen nach ihrer Region","Kinder tragen den Vornamen ihres Vaters (oder der Mutter) plus -son oder -dóttir","Isländer haben nur einen Namen – Nachnamen wurden 1950 abgeschafft","Nachnamen werden durch Berufe ersetzt"], richtig: 1, kategorie: "Sprache & Kultur" },
+  { frage: "Der menschliche Körper besteht aus mehr Bakterienzellen als menschlichen Körperzellen. Wie ist das ungefähre Verhältnis?", antworten: ["10:1 – zehnmal mehr Bakterien","Etwa 1:1 – ungefähr gleich viele","100:1 – hundertmal mehr Bakterien","0,1:1 – tatsächlich weniger Bakterien"], richtig: 1, kategorie: "Biologie" },
+  { frage: "Nintendo wurde nicht als Videospielunternehmen gegründet. Was stellte Nintendo ursprünglich her, als es 1889 gegründet wurde?", antworten: ["Spielzeugautos aus Holz","Hanafuda-Spielkarten","Mechanische Uhren","Papierlaternen"], richtig: 1, kategorie: "Technik & Geschichte" },
+  { frage: "Bananen sind leicht radioaktiv – wegen des Kalium-40-Gehalts. Gibt es in der Wissenschaft eine informelle Einheit dafür?", antworten: ["Nein, das ist zu gering um gemessen zu werden","Ja – die 'Banana Equivalent Dose' (BED) wird tatsächlich als informelle Einheit verwendet","Ja – die Einheit heißt 'Potassium Unit' (PU)","Nein – Bananen sind nicht radioaktiv, das ist ein Mythos"], richtig: 1, kategorie: "Wissenschaft" },
+  { frage: "Das Wort 'Quiz' selbst hat eine kuriose Entstehungsgeschichte. Was ist die bekannteste Legende dazu?", antworten: ["Es stammt vom lateinischen 'quisitio' für Befragung","Ein Dubliner Theaterbesitzer soll es 1791 als Graffiti über die ganze Stadt geschrieben haben","Es wurde von einem englischen Schulmeister erfunden","Es ist ein lateinisches Akronym"], richtig: 1, kategorie: "Sprache" },
+];
+
+const katColor = {
+  "Essen & Wissenschaft":"#e67e22","Architektur & Physik":"#95a5a6","Geschichte":"#c0392b",
+  "Menschlicher Körper":"#e74c3c","Psychologie & Gesellschaft":"#9b59b6","Geologie":"#7f8c8d",
+  "Musik & Gehirn":"#1abc9c","Geographie":"#16a085","Weltall":"#8e44ad","Fun Facts":"#e91e8c",
+  "Sprache & Kultur":"#2980b9","Biologie":"#27ae60","Technik & Geschichte":"#e74c3c","Wissenschaft":"#27ae60","Sprache":"#3498db"
+};
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let myRole = null;   // 'moderator' | 's1' | 's2'
+let gameState = {};  // live mirror of Firebase
+
+const stateRef = ref(db, 'quizState');
+
+// ── INITIAL STATE ──────────────────────────────────────────────────────────
+const defaultState = {
+  currentQ: 0,
+  revealed: false,
+  phase: 'waiting', // waiting | answering | revealed | finished
+  s1Answer: null,
+  s2Answer: null,
+  s1Score: 0,
+  s2Score: 0,
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function show(id)  { document.getElementById(id).style.display = ''; }
+function hide(id)  { document.getElementById(id).style.display = 'none'; }
+function el(id)    { return document.getElementById(id); }
+function letterOf(i) { return String.fromCharCode(65+i); }
+
+// ── JOIN ──────────────────────────────────────────────────────────────────
+window.joinAs = async function(role) {
+  myRole = role;
+  hide('role-screen');
+
+  // Read current state; if none exists, create it (moderator only)
+  const snap = await get(stateRef);
+  if (!snap.exists()) {
+    await set(stateRef, defaultState);
+  }
+
+  if (role === 'moderator') {
+    show('mod-screen');
+  } else {
+    show('player-screen');
+    el('player-name-display').textContent = role === 's1' ? '🟠 Spieler 1' : '🟣 Spieler 2';
+    el('player-name-display').style.color  = role === 's1' ? '#e94560' : '#a855f7';
+  }
+
+  // Subscribe to state changes
+  onValue(stateRef, snap => {
+    if (!snap.exists()) return;
+    gameState = snap.val();
+    if (myRole === 'moderator') renderModerator();
+    else renderPlayer();
+  });
+};
+
+// ── MODERATOR RENDER ──────────────────────────────────────────────────────
+function renderModerator() {
+  const gs = gameState;
+  const total = quizData.length;
+
+  if (gs.phase === 'finished') { renderResults(); return; }
+
+  const q = quizData[gs.currentQ];
+  const pct = (gs.currentQ / total) * 100;
+
+  el('mod-progress').style.width = pct + '%';
+  el('mod-s1-score').textContent = gs.s1Score;
+  el('mod-s2-score').textContent = gs.s2Score;
+
+  // Category badge
+  const cat = el('mod-category');
+  cat.textContent = q.kategorie;
+  cat.style.background = (katColor[q.kategorie] || '#555') + '22';
+  cat.style.border = '1px solid ' + (katColor[q.kategorie] || '#555') + '55';
+  cat.style.color = katColor[q.kategorie] || '#aaa';
+
+  el('mod-q-text').textContent = q.frage;
+
+  // Moderator answer box – always show correct answer
+  el('mod-correct-answer').textContent =
+    '✓ Richtige Antwort: ' + letterOf(q.richtig) + ' – ' + q.antworten[q.richtig];
+
+  // S1 pick
+  const s1pick = el('mod-s1-pick');
+  if (gs.s1Answer !== null && gs.s1Answer !== undefined) {
+    const ok = gs.s1Answer === q.richtig;
+    s1pick.innerHTML = `<span class="${ok?'pick-correct':'pick-wrong'}">🟠 S1: ${letterOf(gs.s1Answer)} – ${q.antworten[gs.s1Answer]} ${ok?'✓':'✗'}</span>`;
+  } else {
+    s1pick.innerHTML = '<span class="pick-waiting">🟠 S1: wartet...</span>';
+  }
+
+  // S2 pick
+  const s2pick = el('mod-s2-pick');
+  if (gs.s2Answer !== null && gs.s2Answer !== undefined) {
+    const ok = gs.s2Answer === q.richtig;
+    s2pick.innerHTML = `<span class="${ok?'pick-correct':'pick-wrong'}">🟣 S2: ${letterOf(gs.s2Answer)} – ${q.antworten[gs.s2Answer]} ${ok?'✓':'✗'}</span>`;
+  } else {
+    s2pick.innerHTML = '<span class="pick-waiting">🟣 S2: wartet...</span>';
+  }
+
+  // Answer options
+  const container = el('mod-answers');
+  container.innerHTML = '';
+  q.antworten.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'answer-opt';
+    if (gs.revealed) {
+      if (i === q.richtig) div.classList.add('correct');
+      else if (i === gs.s1Answer || i === gs.s2Answer) div.classList.add('wrong');
+    }
+    let badges = '';
+    if (gs.revealed) {
+      if (gs.s1Answer === i) badges += '<span class="badge badge-s1">🟠 S1</span>';
+      if (gs.s2Answer === i) badges += '<span class="badge badge-s2">🟣 S2</span>';
+    }
+    div.innerHTML = `
+      <span class="answer-letter">${gs.revealed && i===q.richtig ? '✓' : letterOf(i)}</span>
+      <span style="flex:1">${a}</span>
+      ${badges ? `<span class="answer-badges">${badges}</span>` : ''}
+    `;
+    container.appendChild(div);
+  });
+
+  // Button states
+  el('btn-next').textContent = (gs.currentQ + 1 >= total) ? 'Ergebnis anzeigen 🏁' : 'Weiter →';
+}
+
+// ── PLAYER RENDER ─────────────────────────────────────────────────────────
+function renderPlayer() {
+  const gs = gameState;
+  const q = quizData[gs.currentQ];
+  const myAnswer = myRole === 's1' ? gs.s1Answer : gs.s2Answer;
+  const total = quizData.length;
+
+  if (gs.phase === 'finished') {
+    const myScore = myRole === 's1' ? gs.s1Score : gs.s2Score;
+    const otherScore = myRole === 's1' ? gs.s2Score : gs.s1Score;
+    el('player-status').textContent = '🏁 Quiz beendet!';
+    el('player-q-text').textContent = myScore > otherScore ? '🏆 Du hast gewonnen!' : myScore < otherScore ? 'Knapp daneben – gut gespielt!' : '🤝 Unentschieden!';
+    el('player-answers').innerHTML = `<div style="text-align:center;font-size:2rem;font-weight:800;color:#f1c40f;margin-top:10px">${myScore} / ${total}</div>`;
+    hide('player-waiting');
+    return;
+  }
+
+  el('player-q-num').textContent = `Frage ${gs.currentQ + 1} von ${total}`;
+  el('player-q-text').textContent = q.frage;
+  el('player-score-display').textContent = myRole === 's1' ? gs.s1Score : gs.s2Score;
+
+  // Status
+  if (gs.phase === 'waiting') {
+    el('player-status').textContent = '⏳ Warte auf den Moderator...';
+  } else if (gs.phase === 'answering') {
+    el('player-status').textContent = myAnswer !== null && myAnswer !== undefined ? '✓ Antwort gespeichert!' : '👇 Wähle deine Antwort';
+  } else if (gs.phase === 'revealed') {
+    el('player-status').textContent = '👁️ Moderator hat aufgedeckt';
+  }
+
+  // Waiting msg
+  if (myAnswer !== null && myAnswer !== undefined && gs.phase === 'answering') {
+    el('player-waiting').style.display = '';
+  } else {
+    el('player-waiting').style.display = 'none';
+  }
+
+  // Render answers
+  const container = el('player-answers');
+  container.innerHTML = '';
+  q.antworten.forEach((a, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'player-opt';
+
+    const isMyAnswer = myAnswer === i;
+    const canClick = gs.phase === 'answering' && (myAnswer === null || myAnswer === undefined);
+
+    if (gs.phase === 'revealed' && isMyAnswer) {
+      btn.classList.add(i === q.richtig ? 'selected-correct' : 'selected-wrong');
+      btn.classList.add('disabled');
+    } else if (isMyAnswer && gs.phase === 'answering') {
+      btn.classList.add('selected-pending');
+      btn.classList.add('disabled');
+    } else if (!canClick) {
+      btn.classList.add('disabled');
+      btn.style.opacity = '0.5';
+    }
+
+    btn.innerHTML = `<span class="answer-letter" style="background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);color:#445566">${letterOf(i)}</span><span>${a}</span>`;
+
+    if (canClick) {
+      btn.addEventListener('click', () => submitAnswer(i));
+    }
+    container.appendChild(btn);
+  });
+}
+
+// ── SUBMIT ANSWER ─────────────────────────────────────────────────────────
+async function submitAnswer(idx) {
+  if (gameState.phase !== 'answering') return;
+  const field = myRole === 's1' ? 's1Answer' : 's2Answer';
+  const scoreField = myRole === 's1' ? 's1Score' : 's2Score';
+  const q = quizData[gameState.currentQ];
+  const updates = { [field]: idx };
+  if (idx === q.richtig) {
+    updates[scoreField] = (gameState[scoreField] || 0) + 1;
+  }
+  await update(stateRef, updates);
+}
+
+// ── MOD CONTROLS ──────────────────────────────────────────────────────────
+window.revealAnswers = async function() {
+  await update(stateRef, { revealed: true, phase: 'revealed' });
+};
+
+window.nextQuestion = async function() {
+  const next = (gameState.currentQ || 0) + 1;
+  if (next >= quizData.length) {
+    await update(stateRef, { phase: 'finished' });
+  } else {
+    await update(stateRef, {
+      currentQ: next,
+      revealed: false,
+      phase: 'answering',
+      s1Answer: null,
+      s2Answer: null,
+    });
+  }
+};
+
+window.resetQuiz = async function() {
+  if (!confirm('Quiz wirklich zurücksetzen?')) return;
+  await set(stateRef, { ...defaultState, phase: 'waiting' });
+};
+
+// ── START QUIZ (mod only, called by button) ────────────────────────────────
+window.startQuiz = async function() {
+  await update(stateRef, { phase: 'answering' });
+};
+
+// ── RESULTS ───────────────────────────────────────────────────────────────
+function renderResults() {
+  const gs = gameState;
+  const s1 = gs.s1Score || 0;
+  const s2 = gs.s2Score || 0;
+  const total = quizData.length;
+  const winner = s1 > s2 ? 's1' : s2 > s1 ? 's2' : 'tie';
+
+  if (myRole === 'moderator') {
+    el('mod-screen').innerHTML = `
+      <div class="card result-card">
+        <div class="result-emoji">${winner==='tie'?'🤝':winner==='s1'?'🟠':'🟣'}</div>
+        <div class="result-title">${winner==='tie'?'Unentschieden!':winner==='s1'?'Spieler 1 gewinnt!':'Spieler 2 gewinnt!'}</div>
+        <div class="result-sub">Quiz beendet · ${total} Fragen</div>
+        <div class="result-scores">
+          <div class="result-score-box" style="background:rgba(233,69,96,0.08);border:2px solid ${winner==='s1'?'#e94560':'rgba(233,69,96,0.2)'}">
+            ${winner==='s1'?'<div class="winner-tag" style="background:#e94560">SIEGER 🏆</div>':''}
+            <div style="color:#e94560;font-weight:700;margin-bottom:8px">🟠 Spieler 1</div>
+            <div class="big-num" style="color:#f0f0f0">${s1}</div>
+            <div class="of-total" style="color:#445">von ${total} · ${Math.round(s1/total*100)} %</div>
+          </div>
+          <div class="result-score-box" style="background:rgba(168,85,247,0.08);border:2px solid ${winner==='s2'?'#a855f7':'rgba(168,85,247,0.2)'}">
+            ${winner==='s2'?'<div class="winner-tag" style="background:#a855f7">SIEGER 🏆</div>':''}
+            <div style="color:#a855f7;font-weight:700;margin-bottom:8px">🟣 Spieler 2</div>
+            <div class="big-num" style="color:#f0f0f0">${s2}</div>
+            <div class="of-total" style="color:#445">von ${total} · ${Math.round(s2/total*100)} %</div>
+          </div>
+        </div>
+        <button class="btn btn-reset" onclick="resetQuiz()" style="width:100%">Nochmal spielen 🔄</button>
+      </div>
+    `;
+  }
+}
+
+// ── Moderator start button shown during 'waiting' phase ───────────────────
+// Patch: add a start button to mod controls if phase is waiting
+const origRenderMod = renderModerator;
+// We just add logic into renderModerator via a patch below the answers
+// (handled inline above via btn-next + startQuiz)
+
+// Actually: wire btn-next to startQuiz if phase=waiting
+el('btn-next').addEventListener('click', async function() {
+  if (gameState.phase === 'waiting') {
+    await startQuiz();
+  } else {
+    await nextQuestion();
+  }
+});
+// Remove onclick to avoid double-fire
+el('btn-next').removeAttribute('onclick');
+
+</script>
+</body>
+</html>
