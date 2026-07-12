@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Quiz Upload Tool</title>
+<style>
+:root {
+  --bg:#0d0d1a;--card:rgba(255,255,255,0.05);--card-b:rgba(255,255,255,0.1);
+  --text:#e0e0f0;--text2:#7788aa;--text3:#445566;
+  --s1:#e94560;--s2:#a855f7;--green:#27ae60;--red:#e74c3c;--gold:#f1c40f;
+  --r:14px;--r-sm:10px;
+}
+[data-theme="light"]{
+  --bg:#f0f2f8;--card:rgba(255,255,255,0.85);--card-b:rgba(0,0,0,0.1);
+  --text:#1a1a2e;--text2:#445577;--text3:#8899bb;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;padding:20px;
+  transition:background .2s,color .2s;
+}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r);padding:22px}
+h1{font-size:1.7rem;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
+h2{font-size:1rem;font-weight:700;margin-bottom:12px}
+.muted{color:var(--text2);font-size:.87rem}
+.label{font-size:.7rem;font-weight:700;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:7px}
+
+/* Inputs */
+input,textarea{
+  width:100%;padding:11px 14px;border-radius:var(--r-sm);
+  border:1.5px solid var(--card-b);background:var(--card);
+  color:var(--text);font-size:.93rem;outline:none;
+  transition:border-color .2s;font-family:inherit;
+}
+input:focus,textarea:focus{border-color:var(--s2)}
+input[type="password"]{letter-spacing:.1em}
+textarea{resize:vertical;min-height:280px;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.5}
+
+/* Buttons */
+.btn{
+  padding:11px 20px;border:none;border-radius:var(--r-sm);
+  font-size:.91rem;font-weight:700;cursor:pointer;
+  transition:opacity .2s,transform .1s;
+  display:inline-flex;align-items:center;gap:7px
+}
+.btn:active{transform:scale(.97)}
+.btn:hover{opacity:.87}
+.btn-primary{background:linear-gradient(135deg,var(--s1),var(--s2));color:#fff}
+.btn-ghost{background:var(--card);border:1px solid var(--card-b);color:var(--text2)}
+.btn-danger{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:var(--red)}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:7px 13px;font-size:.8rem}
+
+/* Status */
+.status{
+  padding:13px 16px;border-radius:var(--r-sm);font-size:.88rem;font-weight:600;
+  display:none;align-items:center;gap:10px;
+}
+.status.ok  {display:flex;background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.3);color:var(--green)}
+.status.err {display:flex;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);color:var(--red)}
+.status.info{display:flex;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:var(--s2)}
+
+/* Pack list */
+.pack-list{display:flex;flex-direction:column;gap:7px}
+.pack-item{
+  display:flex;align-items:center;gap:10px;padding:10px 13px;
+  border-radius:var(--r-sm);border:1px solid var(--card-b);background:var(--card);
+}
+.pack-name{font-weight:600;font-size:.9rem;flex:1}
+.pack-count{font-size:.76rem;color:var(--text3)}
+.pack-del{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:6px;transition:color .2s}
+.pack-del:hover{color:var(--red)}
+
+/* Theme */
+#theme-btn{
+  position:fixed;top:12px;right:12px;z-index:200;
+  background:var(--card);border:1px solid var(--card-b);
+  border-radius:99px;padding:6px 12px;font-size:.82rem;
+  cursor:pointer;color:var(--text2)
+}
+
+/* Token field */
+.token-wrap{position:relative}
+.token-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--text3);font-size:.82rem
+}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{
+  flex:1;padding:9px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);
+  background:var(--card);color:var(--text2);font-size:.83rem;font-weight:600;
+  cursor:pointer;text-align:center;transition:all .18s
+}
+.tab.active{border-color:var(--s2);background:rgba(168,85,247,.1);color:var(--s2)}
+
+/* JSON preview */
+.json-hint{font-size:.72rem;color:var(--text3);margin-top:7px;line-height:1.6}
+
+/* Divider */
+.div{height:1px;background:var(--card-b);margin:6px 0}
+
+@media(max-width:480px){body{padding:10px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<button id="theme-btn" onclick="toggleTheme()">☀️ Hell</button>
+
+<div class="wrap">
+  <div class="card">
+    <h1>📦 Quiz Upload Tool</h1>
+    <p class="muted">Fragenpakete direkt auf GitHub hochladen</p>
+  </div>
+
+  <!-- TOKEN -->
+  <div class="card">
+    <h2>🔑 GitHub Token</h2>
+    <div class="token-wrap">
+      <input type="password" id="token-input" placeholder="ghp_..." oninput="saveToken()">
+      <button class="token-toggle" onclick="toggleToken()">👁</button>
+    </div>
+    <p class="json-hint" style="margin-top:8px">
+      Token wird nur lokal im Browser gespeichert – nie übertragen außer direkt an GitHub.<br>
+      Erstellen unter: <strong>github.com/settings/tokens</strong> → Scope: <code>repo</code>
+    </p>
+  </div>
+
+  <!-- TABS -->
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('upload')">⬆️ Hochladen</div>
+      <div class="tab"        onclick="switchTab('packs')">📋 Pakete verwalten</div>
+    </div>
+
+    <!-- UPLOAD TAB -->
+    <div id="tab-upload">
+      <div class="label">Paket-ID (Dateiname ohne .json)</div>
+      <input type="text" id="pack-id" placeholder="Wird automatisch ausgefüllt..." style="margin-bottom:12px" oninput="this.dataset.autoFilled='false';updatePreview()">
+
+      <div class="label">JSON-Inhalt</div>
+      <textarea id="json-input" placeholder='{"name":"Harry Potter","emoji":"⚡","questions":[{"q":"Frage?","a":["A","B","C","D"],"r":0,"cat":"Kategorie"}]}' oninput="updatePreview()"></textarea>
+      <div class="json-hint">
+        Format: <code>{"name":"…","emoji":"…","questions":[{"q":"…","a":["A","B","C","D"],"r":0,"cat":"…"}]}</code><br>
+        <strong>r</strong> = Index der richtigen Antwort (0=A, 1=B, 2=C, 3=D)
+      </div>
+
+      <div class="div" style="margin:14px 0"></div>
+
+      <div id="preview-box" style="display:none;margin-bottom:14px">
+        <div class="label">Vorschau</div>
+        <div id="preview-content" style="font-size:.83rem;color:var(--text2);line-height:1.7"></div>
+      </div>
+
+      <div id="upload-status" class="status"></div>
+      <div style="height:10px"></div>
+
+      <button class="btn btn-primary btn-full" onclick="uploadPack()" id="upload-btn">
+        ⬆️ Auf GitHub hochladen
+      </button>
+    </div>
+
+    <!-- PACKS TAB -->
+    <div id="tab-packs" style="display:none">
+      <div id="packs-status" class="status" style="margin-bottom:12px"></div>
+      <button class="btn btn-ghost btn-sm" onclick="loadPackList()" style="margin-bottom:14px">🔄 Pakete laden</button>
+      <div class="pack-list" id="pack-list">
+        <p class="muted">Klicke auf „Pakete laden" um die aktuelle Liste zu sehen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="card">
+    <h2>ℹ️ So funktioniert's</h2>
+    <ol style="color:var(--text2);font-size:.86rem;line-height:2;padding-left:18px">
+      <li>Claude erstellt das Quiz als JSON im Chat</li>
+      <li>JSON hier einfügen + Paket-ID vergeben</li>
+      <li>Upload klicken → erscheint automatisch in der Quiz App</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+const OWNER = 'erhas93';
+const REPO  = 'Quiz-app';
+const BRANCH = 'main';
+
+// ── THEME ─────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const d = document.documentElement;
+  const light = d.getAttribute('data-theme') === 'light';
+  d.setAttribute('data-theme', light ? 'dark' : 'light');
+  document.getElementById('theme-btn').textContent = light ? '☀️ Hell' : '🌙 Dunkel';
+}
+
+// ── TOKEN ─────────────────────────────────────────────────────────────────
+function saveToken() {
+  localStorage.setItem('gh_token', document.getElementById('token-input').value.trim());
+}
+function getToken() {
+  return localStorage.getItem('gh_token') || '';
+}
+function toggleToken() {
+  const inp = document.getElementById('token-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (tab==='upload'&&i===0)||(tab==='packs'&&i===1)));
+  document.getElementById('tab-upload').style.display = tab==='upload' ? '' : 'none';
+  document.getElementById('tab-packs').style.display  = tab==='packs'  ? '' : 'none';
+  if (tab === 'packs') loadPackList();
+}
+
+// ── STATUS ────────────────────────────────────────────────────────────────
+function setStatus(elId, type, msg) {
+  const el = document.getElementById(elId);
+  el.className = 'status ' + type;
+  el.innerHTML = `<span>${type==='ok'?'✅':type==='err'?'❌':'⏳'}</span><span>${msg}</span>`;
+}
+
+// ── PREVIEW ───────────────────────────────────────────────────────────────
+function updatePreview() {
+  const box = document.getElementById('preview-box');
+  const raw = document.getElementById('json-input').value.trim();
+  if (!raw) { box.style.display='none'; return; }
+  try {
+    const data = JSON.parse(raw);
+    const qCount = data.questions ? data.questions.length : '?';
+
+    // Auto-fill pack ID from name if field is empty or was auto-generated before
+    const idField = document.getElementById('pack-id');
+    if (data.name && (!idField.value || idField.dataset.autoFilled === 'true')) {
+      const autoId = data.name
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+        .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+        .replace(/[^a-z0-9]+/g, '-')  // replace non-alphanumeric with dash
+        .replace(/^-+|-+$/g, '');     // trim leading/trailing dashes
+      idField.value = autoId;
+      idField.dataset.autoFilled = 'true';
+    }
+
+    document.getElementById('preview-content').innerHTML =
+      `📦 <strong>${data.name || '–'}</strong> ${data.emoji || ''}<br>` +
+      `${qCount} Fragen · ID: <code>${idField.value || '–'}</code>`;
+    box.style.display = '';
+  } catch(e) {
+    document.getElementById('preview-content').innerHTML = '<span style="color:var(--red)">⚠️ Ungültiges JSON</span>';
+    box.style.display = '';
+  }
+}
+
+// ── GITHUB API ────────────────────────────────────────────────────────────
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
+    headers: { Authorization: `token ${getToken()}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!r.ok) throw new Error(`GitHub API Fehler: ${r.status}`);
+  return r.json();
+}
+
+async function ghPut(path, content, message, sha) {
+  const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch: BRANCH };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `token ${getToken()}`,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) {
+    const err = await r.json();
+    throw new Error(err.message || `GitHub Fehler ${r.status}`);
+  }
+  return r.json();
+}
+
+// ── GET FILE SHA (for updates) ────────────────────────────────────────────
+async function getSha(path) {
+  try {
+    const data = await ghGet(path);
+    return data.sha;
+  } catch(e) { return null; }
+}
+
+// ── UPLOAD PACK ───────────────────────────────────────────────────────────
+async function uploadPack() {
+  const token  = getToken();
+  const packId = document.getElementById('pack-id').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const raw    = document.getElementById('json-input').value.trim();
+
+  if (!token) { setStatus('upload-status','err','Kein Token eingegeben!'); return; }
+  if (!packId) { setStatus('upload-status','err','Bitte Paket-ID eingeben (z.B. harry-potter)'); return; }
+  if (!raw)    { setStatus('upload-status','err','Kein JSON-Inhalt eingegeben'); return; }
+
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch(e) { setStatus('upload-status','err','Ungültiges JSON – bitte prüfen'); return; }
+
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Wird hochgeladen...';
+  setStatus('upload-status','info','Verbinde mit GitHub...');
+
+  try {
+    // 1. Upload pack JSON
+    const packPath = `packs/${packId}.json`;
+    const packSha  = await getSha(packPath);
+    setStatus('upload-status','info',`Lade ${packId}.json hoch...`);
+    await ghPut(packPath, JSON.stringify(parsed, null, 2), `Add quiz pack: ${packId}`, packSha);
+
+    // 2. Update index.json
+    setStatus('upload-status','info','Aktualisiere index.json...');
+    let indexList = [];
+    let indexSha  = null;
+    try {
+      const indexData = await ghGet('packs/index.json');
+      indexSha  = indexData.sha;
+      indexList = JSON.parse(atob(indexData.content.replace(/\n/g,'')));
+    } catch(e) { indexList = []; }
+
+    if (!indexList.includes(packId)) {
+      indexList.push(packId);
+      await ghPut('packs/index.json', JSON.stringify(indexList, null, 2), `Update index: add ${packId}`, indexSha);
+    }
+
+    setStatus('upload-status','ok', `✅ "${parsed.name}" (${parsed.questions?.length||0} Fragen) erfolgreich hochgeladen! Die Quiz-App lädt es beim nächsten Start automatisch.`);
+    document.getElementById('json-input').value = '';
+    document.getElementById('pack-id').value    = '';
+    document.getElementById('preview-box').style.display = 'none';
+
+  } catch(e) {
+    setStatus('upload-status','err', e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬆️ Auf GitHub hochladen';
+  }
+}
+
+// ── LOAD PACK LIST ────────────────────────────────────────────────────────
+async function loadPackList() {
+  const token = getToken();
+  if (!token) { setStatus('packs-status','err','Kein Token eingegeben!'); return; }
+  setStatus('packs-status','info','Lade Paketliste...');
+
+  try {
+    const indexData = await ghGet('packs/index.json');
+    const ids = JSON.parse(atob(indexData.content.replace(/\n/g,'')));
+
+    const details = await Promise.all(ids.map(async id => {
+      try {
+        const d = await ghGet(`packs/${id}.json`);
+        const p = JSON.parse(atob(d.content.replace(/\n/g,'')));
+        return { id, name: p.name, emoji: p.emoji, count: p.questions?.length||0, sha: d.sha };
+      } catch(e) { return { id, name: id, emoji:'❓', count:'?', sha:null }; }
+    }));
+
+    const list = document.getElementById('pack-list');
+    list.innerHTML = '';
+    details.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'pack-item';
+      div.innerHTML = `
+        <span style="font-size:1.1rem">${p.emoji}</span>
+        <span class="pack-name">${p.name}</span>
+        <span class="pack-count">${p.count} Fragen</span>
+        <button class="pack-del" onclick="deletePack('${p.id}')" title="Löschen">🗑️</button>
+      `;
+      list.appendChild(div);
+    });
+
+    setStatus('packs-status','ok',`${ids.length} Paket${ids.length!==1?'e':''} gefunden`);
+  } catch(e) {
+    setStatus('packs-status','err', e.message);
+  }
+}
+
+// ── DELETE PACK ───────────────────────────────────────────────────────────
+async function deletePack(packId) {
+  if (!confirm(`Paket "${packId}" wirklich löschen?`)) return;
+  setStatus('packs-status','info',`Lösche ${packId}...`);
+  try {
+    // Remove from index
+    const indexData = await ghGet('packs/index.json');
+    let ids = JSON.parse(atob(indexData.content.replace(/\n/g,'')));
+    ids = ids.filter(id => id !== packId);
+    await ghPut('packs/index.json', JSON.stringify(ids, null, 2), `Remove pack: ${packId}`, indexData.sha);
+
+    // Delete file
+    const fileData = await ghGet(`packs/${packId}.json`);
+    await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/packs/${packId}.json`, {
+      method: 'DELETE',
+      headers: { Authorization: `token ${getToken()}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Delete pack: ${packId}`, sha: fileData.sha, branch: BRANCH }),
+    });
+
+    setStatus('packs-status','ok',`Paket "${packId}" gelöscht`);
+    loadPackList();
+  } catch(e) {
+    setStatus('packs-status','err', e.message);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+window.onload = () => {
+  const saved = getToken();
+  if (saved) document.getElementById('token-input').value = saved;
+};
+</script>
+</body>
+</html>
