@@ -90,7 +90,7 @@ h2{font-size:1.05rem;font-weight:700;line-height:1.55}
 
 /* ── PROGRESS ────────────────────────────────────────────────────────────── */
 .prog-wrap{height:3px;background:var(--card-b);border-radius:99px;overflow:hidden;margin-top:4px}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--s1),var(--s2));border-radius:99px;transition:width .4s}
+.prog-fill{height:100%;background:var(--s2);border-radius:99px;transition:width .4s}
 
 /* ── CATEGORY BADGE ──────────────────────────────────────────────────────── */
 .cat{display:inline-block;border-radius:6px;padding:2px 9px;font-size:.66rem;font-weight:600;letter-spacing:.04em}
@@ -142,12 +142,12 @@ h2{font-size:1.05rem;font-weight:700;line-height:1.55}
 .mkr2{background:rgba(29,127,232,.18);border-color:var(--s2);color:var(--s2)}
 
 /* ── MOD HEADER (fixed) ──────────────────────────────────────────────────── */
-.mod-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:10px}
-.mod-hdr-left{display:flex;align-items:center;gap:10px;min-width:0}
-.mod-hdr-tag{font-size:.78rem;font-weight:800;letter-spacing:.05em;color:var(--gold);background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.25);border-radius:5px;padding:3px 9px;flex-shrink:0}
-.mod-hdr-qnum{font-size:.88rem;color:var(--text2);font-weight:600;flex-shrink:0}
-.mod-scores{display:flex;gap:8px;flex-shrink:0}
-.score-pill{padding:5px 12px;border-radius:6px;font-weight:800;font-size:.88rem;display:flex;align-items:center;gap:5px}
+.mod-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px}
+.mod-hdr-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.mod-hdr-tag{font-size:.72rem;font-weight:800;letter-spacing:.05em;color:var(--gold);background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.25);border-radius:5px;padding:3px 8px;flex-shrink:0}
+.mod-hdr-qnum{font-size:.82rem;color:var(--text2);font-weight:600;flex-shrink:0;white-space:nowrap}
+.mod-scores{display:flex;gap:7px;flex-shrink:0}
+.score-pill{padding:5px 11px;border-radius:6px;font-weight:800;font-size:.84rem;display:flex;align-items:center;gap:4px;white-space:nowrap}
 .sp1{background:rgba(230,57,70,.14);border:1px solid rgba(230,57,70,.3);color:var(--s1)}
 .sp2{background:rgba(29,127,232,.14);border:1px solid rgba(29,127,232,.3);color:var(--s2)}
 
@@ -299,7 +299,7 @@ h2{font-size:1.05rem;font-weight:700;line-height:1.55}
 </head>
 <body>
 <button id="theme-btn" onclick="Q.toggleTheme()">&#9790; Dunkel</button>
-<div id="vtag">v2.4.0</div>
+<div id="vtag">v2.5.0</div>
 
 <!-- Score overlay -->
 <div id="pg-score-reveal">
@@ -408,10 +408,9 @@ h2{font-size:1.05rem;font-weight:700;line-height:1.55}
         <span class="mod-hdr-qnum" id="mg-qnum">–</span>
       </div>
       <div class="mod-scores">
-        <div class="score-pill sp1">S1 <span id="mg-n1">–</span> <span id="mg-sc1" style="font-size:.9rem">0</span></div>
-        <div class="score-pill sp2">S2 <span id="mg-n2">–</span> <span id="mg-sc2" style="font-size:.9rem">0</span></div>
+        <div class="score-pill sp1"><span id="mg-n1">S1</span><span style="opacity:.4">·</span><span id="mg-sc1">0</span></div>
+        <div class="score-pill sp2"><span id="mg-n2">S2</span><span style="opacity:.4">·</span><span id="mg-sc2">0</span></div>
       </div>
-      <button class="btn btn-danger btn-sm" onclick="Q.fullReset()">Reset</button>
     </div>
     <div class="prog-wrap"><div class="prog-fill" id="mg-prog" style="width:0%"></div></div>
     <!-- Timer row -->
@@ -452,8 +451,9 @@ h2{font-size:1.05rem;font-weight:700;line-height:1.55}
       <div class="fact-text" id="mg-fact-text"></div>
     </div>
     <!-- Actions -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <button class="btn btn-ghost" id="mg-action-btn" onclick="Q.action()">Antworten zeigen</button>
+      <button class="btn btn-danger btn-sm" onclick="Q.fullReset()" style="margin-left:auto">Reset</button>
     </div>
   </div>
 </div>
@@ -838,8 +838,9 @@ function renderMod(){
   const modCon=el('mg-answers');modCon.innerHTML='';
   const isOpenQ=q.type==='estimate'||q.type==='open';
   if(isOpenQ){
-    // For open/estimate: show placeholder
-    modCon.innerHTML=`<div style="padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--card-b);color:var(--text3);font-size:.84rem;text-align:center">${q.type==='estimate'?'Schätzfrage':'Freitextfrage'} · Antworten nach "Antworten zeigen" sichtbar</div>`;
+    // For open/estimate: hide placeholder when panel is visible, show otherwise
+    const showingPanel = ph==='shown'||ph==='revealed'||ph==='answering'||ph==='locked';
+    modCon.innerHTML=showingPanel?'':`<div style="padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--card-b);color:var(--text3);font-size:.84rem;text-align:center">${q.type==='estimate'?'Schätzfrage':'Freitextfrage'}</div>`;
   }else{
     q.a.forEach((a,i)=>{
       const d=document.createElement('div');d.className='ans disabled';
@@ -879,8 +880,8 @@ function renderMod(){
       else if(d2!=null)winner=n2d;
       hint.style.display='';
       hint.innerHTML=`<strong>Richtige Antwort: ${correct}</strong><br>`
-        +(s1a!=null?`${n1d}: ${s1a} (Differenz: ${d1!=null?d1.toFixed(1):'-'})<br>`:'<span style="color:var(--text3)">${n1d}: noch keine Antwort<br></span>')
-        +(s2a!=null?`${n2d}: ${s2a} (Differenz: ${d2!=null?d2.toFixed(1):'-'})<br>`:'<span style="color:var(--text3)">${n2d}: noch keine Antwort<br></span>')
+        +(s1a!=null?`${n1d}: ${s1a} (Differenz: ${d1!=null?d1.toFixed(1):'-'})<br>`:`<span style="color:var(--text3)">${n1d}: noch keine Antwort<br></span>`)
+        +(s2a!=null?`${n2d}: ${s2a} (Differenz: ${d2!=null?d2.toFixed(1):'-'})<br>`:`<span style="color:var(--text3)">${n2d}: noch keine Antwort<br></span>`)
         +(winner?`<strong>Theoretischer Gewinner: ${winner}</strong>`:'');
     }else if(q.type==='open'){
       // For open type, just show correct answer to mod
