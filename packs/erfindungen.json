@@ -1,0 +1,171 @@
+{
+  "name": "Erfindungen",
+  "emoji": "💡",
+  "questions": [
+    {
+      "q": "Wer gilt als Erfinder des Telefons und meldete es 1876 zum Patent an?",
+      "a": [
+        "Thomas Edison",
+        "Alexander Graham Bell",
+        "Nikola Tesla",
+        "Guglielmo Marconi"
+      ],
+      "r": 1,
+      "cat": "Kommunikation"
+    },
+    {
+      "q": "In welchem Jahr wurde das World Wide Web von Tim Berners-Lee erfunden?",
+      "a": [
+        "1983",
+        "1989",
+        "1994",
+        "1999"
+      ],
+      "r": 1,
+      "cat": "Technologie"
+    },
+    {
+      "q": "Wer erfand die Glühbirne und ließ sie 1879 patentieren?",
+      "a": [
+        "Nikola Tesla",
+        "Benjamin Franklin",
+        "Thomas Edison",
+        "James Watt"
+      ],
+      "r": 2,
+      "cat": "Energie & Licht"
+    },
+    {
+      "q": "Welches Land erfand den Buchdruck mit beweglichen Lettern im 15. Jahrhundert?",
+      "a": [
+        "England",
+        "Frankreich",
+        "Italien",
+        "Deutschland"
+      ],
+      "r": 3,
+      "cat": "Druck & Medien"
+    },
+    {
+      "q": "Wer gilt als Erfinder des Automobils mit Verbrennungsmotor (Patent 1886)?",
+      "a": [
+        "Henry Ford",
+        "Gottlieb Daimler",
+        "Karl Benz",
+        "Rudolf Diesel"
+      ],
+      "r": 2,
+      "cat": "Mobilität"
+    },
+    {
+      "q": "Was erfand Percy Spencer 1945 zufällig, als er mit Radargeräten arbeitete?",
+      "a": [
+        "Den Kühlschrank",
+        "Die Mikrowelle",
+        "Den Toaster",
+        "Die Gefriertruhe"
+      ],
+      "r": 1,
+      "cat": "Haushalt"
+    },
+    {
+      "q": "Wer erfand das Penicillin im Jahr 1928?",
+      "a": [
+        "Louis Pasteur",
+        "Robert Koch",
+        "Alexander Fleming",
+        "Joseph Lister"
+      ],
+      "r": 2,
+      "cat": "Medizin"
+    },
+    {
+      "q": "In welchem Jahr wurde das erste iPhone von Apple vorgestellt?",
+      "a": [
+        "2005",
+        "2006",
+        "2007",
+        "2008"
+      ],
+      "r": 2,
+      "cat": "Technologie"
+    },
+    {
+      "q": "Welche Erfindung von Levi Strauss und Jacob Davis aus dem Jahr 1873 wird bis heute weltweit getragen?",
+      "a": [
+        "Der Reißverschluss",
+        "Das Jeans-Hosenbein aus Denim",
+        "Der Hosenträger",
+        "Die Jeansjacke"
+      ],
+      "r": 1,
+      "cat": "Alltagsgegenstände"
+    },
+    {
+      "q": "Wer erfand das Dynamit und stiftete später den nach ihm benannten Preis?",
+      "a": [
+        "Alfred Nobel",
+        "Robert Oppenheimer",
+        "Fritz Haber",
+        "Carl Bosch"
+      ],
+      "r": 0,
+      "cat": "Chemie & Physik"
+    },
+    {
+      "q": "Was erfand King Camp Gillette im Jahr 1901?",
+      "a": [
+        "Den elektrischen Rasierapparat",
+        "Den Einweg-Rasierer mit Wechselklinge",
+        "Die Zahnbürste",
+        "Den Haartrockner"
+      ],
+      "r": 1,
+      "cat": "Alltagsgegenstände"
+    },
+    {
+      "q": "Wer meldete 1903 den ersten erfolgreichen Motorflug der Geschichte?",
+      "a": [
+        "Louis Blériot",
+        "Charles Lindbergh",
+        "Die Gebrüder Wright",
+        "Otto Lilienthal"
+      ],
+      "r": 2,
+      "cat": "Mobilität"
+    },
+    {
+      "q": "Welche Erfindung aus dem Jahr 1938 revolutionierte das Schreiben im Alltag?",
+      "a": [
+        "Der Tintenfüller",
+        "Der Kugelschreiber",
+        "Der Filzstift",
+        "Die Schreibmaschine"
+      ],
+      "r": 1,
+      "cat": "Alltagsgegenstände"
+    },
+    {
+      "q": "Was erfand Karl von Drais 1817, das als Vorläufer des Fahrrads gilt?",
+      "a": [
+        "Die Dampflokomotive",
+        "Die Laufmaschine (Draisine)",
+        "Den Rollstuhl",
+        "Den Einspänner"
+      ],
+      "r": 1,
+      "cat": "Mobilität"
+    },
+    {
+      "q": "Wer entwickelte die erste funktionsfähige Dampfmaschine, die die Industrielle Revolution einläutete?",
+      "a": [
+        "Thomas Newcomen",
+        "James Watt",
+        "George Stephenson",
+        "Richard Arkwright"
+      ],
+      "r": 1,
+      "cat": "Industrie"
+    }
+  ]
+}
