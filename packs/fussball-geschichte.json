@@ -1,0 +1,171 @@
+{
+  "name": "Fußball Geschichte",
+  "emoji": "⚽",
+  "questions": [
+    {
+      "q": "In welchem Jahr fand die erste FIFA Fußball-Weltmeisterschaft statt?",
+      "a": [
+        "1924",
+        "1930",
+        "1938",
+        "1950"
+      ],
+      "r": 1,
+      "cat": "WM Geschichte"
+    },
+    {
+      "q": "Welches Land gewann die erste FIFA Weltmeisterschaft 1930?",
+      "a": [
+        "Brasilien",
+        "Argentinien",
+        "Uruguay",
+        "Italien"
+      ],
+      "r": 2,
+      "cat": "WM Geschichte"
+    },
+    {
+      "q": "Pelé gewann die Weltmeisterschaft insgesamt dreimal. In welchem Jahr gewann er seinen ersten WM-Titel?",
+      "a": [
+        "1954",
+        "1958",
+        "1962",
+        "1966"
+      ],
+      "r": 1,
+      "cat": "Legenden"
+    },
+    {
+      "q": "Welcher Spieler erzielte beim WM-Finale 1966 einen berühmten, bis heute umstrittenen Treffer für England gegen Deutschland?",
+      "a": [
+        "Bobby Moore",
+        "Geoff Hurst",
+        "Bobby Charlton",
+        "Roger Hunt"
+      ],
+      "r": 1,
+      "cat": "WM Geschichte"
+    },
+    {
+      "q": "Deutschland gewann 2014 die Weltmeisterschaft in Brasilien. Mit welchem Ergebnis besiegte Deutschland den Gastgeber Brasilien im Halbfinale?",
+      "a": [
+        "5:0",
+        "6:0",
+        "7:1",
+        "8:0"
+      ],
+      "r": 2,
+      "cat": "WM Geschichte"
+    },
+    {
+      "q": "Wer hält den Rekord für die meisten Tore bei einer einzigen Weltmeisterschaft (13 Tore, 1958)?",
+      "a": [
+        "Ronaldo",
+        "Just Fontaine",
+        "Gerd Müller",
+        "Eusébio"
+      ],
+      "r": 1,
+      "cat": "Rekorde"
+    },
+    {
+      "q": "Welcher Klub gewann als erster den Europapokal der Landesmeister (Vorläufer der Champions League) fünfmal in Folge?",
+      "a": [
+        "FC Barcelona",
+        "AC Milan",
+        "Real Madrid",
+        "Ajax Amsterdam"
+      ],
+      "r": 2,
+      "cat": "Europapokal"
+    },
+    {
+      "q": "Das 'Wunder von Bern' bezeichnet Deutschlands WM-Sieg 1954. Gegen wen gewann Deutschland das Finale?",
+      "a": [
+        "Brasilien",
+        "Ungarn",
+        "Österreich",
+        "Frankreich"
+      ],
+      "r": 1,
+      "cat": "WM Geschichte"
+    },
+    {
+      "q": "Welcher Spieler wurde bei der WM 2006 in Deutschland im Finale gegen Frankreich mit einer Kopfstoß-Attacke gegen Materazzi vom Platz gestellt?",
+      "a": [
+        "Thierry Henry",
+        "Zinédine Zidane",
+        "Patrick Vieira",
+        "Ronaldinho"
+      ],
+      "r": 1,
+      "cat": "WM Geschichte"
+    },
+    {
+      "q": "Die Bosman-Entscheidung von 1995 veränderte den Fußball grundlegend. Was regelte sie?",
+      "a": [
+        "Einführung der Drei-Punkte-Regel pro Sieg",
+        "Spieler dürfen nach Vertragsende ablösefrei den Verein wechseln",
+        "Begrenzung ausländischer Spieler pro Mannschaft auf drei",
+        "Einführung des Videobeweises in europäischen Wettbewerben"
+      ],
+      "r": 1,
+      "cat": "Geschichte & Regelwerk"
+    },
+    {
+      "q": "Welcher Verein gewann die erste UEFA Champions League Saison (1992/93) unter ihrem neuen Namen?",
+      "a": [
+        "AC Milan",
+        "FC Barcelona",
+        "Olympique Marseille",
+        "Ajax Amsterdam"
+      ],
+      "r": 2,
+      "cat": "Europapokal"
+    },
+    {
+      "q": "Gerd Müller erzielte bei der WM 1970 und 1974 zusammen 14 Tore. Wie viele Länderspieltore schoss er insgesamt für Deutschland?",
+      "a": [
+        "58",
+        "68",
+        "78",
+        "88"
+      ],
+      "r": 1,
+      "cat": "Legenden"
+    },
+    {
+      "q": "Die Tragödie von Heysel 1985 führte zu einem jahrelangen Europapokal-Bann für englische Klubs. Welche Vereine standen im Endspiel?",
+      "a": [
+        "FC Liverpool vs. Juventus Turin",
+        "Manchester United vs. AC Milan",
+        "FC Everton vs. Bayern München",
+        "Tottenham vs. Juventus Turin"
+      ],
+      "r": 0,
+      "cat": "Europapokal"
+    },
+    {
+      "q": "Bei welcher WM wurde die Gelbe und Rote Karte zum ersten Mal eingeführt?",
+      "a": [
+        "1962 in Chile",
+        "1966 in England",
+        "1970 in Mexiko",
+        "1974 in Deutschland"
+      ],
+      "r": 2,
+      "cat": "Geschichte & Regelwerk"
+    },
+    {
+      "q": "Welches Land ist das einzige, das an jeder FIFA Weltmeisterschaft seit 1930 teilgenommen hat?",
+      "a": [
+        "Deutschland",
+        "Italien",
+        "Argentinien",
+        "Brasilien"
+      ],
+      "r": 3,
+      "cat": "Rekorde"
+    }
+  ]
+}
