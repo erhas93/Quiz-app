@@ -83,10 +83,10 @@
       "fact": "Die offizielle Höhe wurde 2020 von China und Nepal gemeinsam auf 8.848,86 m festgelegt (abgerundet: 8849 m). Frühere Messungen gaben 8.848 m an. Edmund Hillary und Tenzing Norgay erreichten den Gipfel erstmals am 29. Mai 1953."
     },
     {
-      "q": "Erkläre kurz: Was ist der Unterschied zwischen Meteoroid, Meteor und Meteorit?",
-      "cat": "Wissenschaft",
+      "q": "Wie nennt man den leuchtenden Streifen, den ein Gesteinsbrocken beim Eintritt in die Erdatmosphäre hinterlässt? (ein Wort)",
+      "cat": "Astronomie",
       "type": "open",
-      "fact": "Meteoroid = Gesteinsbrocken im Weltall. Meteor = das Leuchten beim Eintritt in die Atmosphäre (Sternschnuppe). Meteorit = was auf der Erde aufschlägt. Einfach: draußen → Meteoroid, beim Eintreten → Meteor, gelandet → Meteorit."
+      "fact": "Meteoroid = Gesteinsbrocken im Weltall. Meteor = das Aufleuchten beim Eintritt (umgangssprachlich: Sternschnuppe). Meteorit = was auf der Erde aufschlägt. Der leuchtende Streifen ist also ein Meteor."
     },
     {
       "q": "Wie lange dauert ein Lichtstrahl von der Sonne bis zur Erde (in Minuten)?",
@@ -116,10 +116,10 @@
       "fact": "Im Deutschen: 1 Billion = 1.000.000.000.000 (10¹²). Achtung: Im Englischen ist 'one billion' = 1 Milliarde (10⁹). Diese Verwechslung führt bei internationalen Nachrichten häufig zu Missverständnissen."
     },
     {
-      "q": "Was versteht man unter dem Begriff 'Cognitive Bias' (kognitive Verzerrung)? Nenne ein Beispiel.",
+      "q": "Wie nennt man die systematischen Denkfehler, die unser Urteil unbewusst beeinflussen? (englischer Fachbegriff, zwei Worte)",
       "cat": "Psychologie",
       "type": "open",
-      "fact": "Kognitive Verzerrungen sind systematische Denkfehler, die unser Urteil beeinflussen. Bekannte Beispiele: Confirmation Bias (nur bestätigende Infos suchen), Dunning-Kruger-Effekt (Inkompetente überschätzen sich), Survivorship Bias (nur Überlebende sehen)."
+      "fact": "Cognitive Bias (kognitive Verzerrung) – bekannte Beispiele: Confirmation Bias (nur bestätigende Infos suchen), Dunning-Kruger-Effekt (Inkompetente überschätzen sich), Survivorship Bias (nur Überlebende sehen)."
     },
     {
       "q": "Wie viele Planeten hat unser Sonnensystem (nach der IAU-Definition von 2006)?",
@@ -129,4 +129,4 @@
       "fact": "Seit 2006 hat Pluto den Planetenstatus verloren und ist ein 'Zwergplanet'. Die 8 Planeten: Merkur, Venus, Erde, Mars, Jupiter, Saturn, Uranus, Neptun. Plutons Entdecker Clyde Tombaugh war zu diesem Zeitpunkt bereits verstorben."
     }
   ]
-}
+} 
