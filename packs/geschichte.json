@@ -1,0 +1,16 @@
+{
+  "name": "Historische Ereignisse",
+  "emoji": "⚔️",
+  "questions": [
+    {"q":"In welchem Jahr fiel die Berliner Mauer?","a":["1979","1983","1989","1995"],"r":2,"cat":"Moderne Geschichte"},
+    {"q":"Welches Land wurde 1945 als erstes mit einer Atombombe angegriffen?","a":["China","Korea","Japan","Vietnam"],"r":2,"cat":"Weltkriege"},
+    {"q":"Welches Ereignis löste offiziell den Ersten Weltkrieg aus?","a":["Der Einmarsch Deutschlands in Belgien","Das Attentat auf Erzherzog Franz Ferdinand","Die Versenkung der Lusitania","Der Zusammenbruch des Osmanischen Reichs"],"r":1,"cat":"Weltkriege"},
+    {"q":"Welche Zivilisation baute Machu Picchu?","a":["Azteken","Maya","Inka","Olmeken"],"r":2,"cat":"Antike Kulturen"},
+    {"q":"In welchem Jahr begann die Französische Revolution?","a":["1756","1789","1815","1848"],"r":1,"cat":"Europa"},
+    {"q":"Wie hieß die Operation der alliierten Landung in der Normandie 1944?","a":["Operation Overlord","Operation Barbarossa","Operation Market Garden","Operation Torch"],"r":0,"cat":"Weltkriege"},
+    {"q":"In welchem Jahr wurde die Titanic versenkt?","a":["1905","1912","1918","1923"],"r":1,"cat":"Moderne Geschichte"},
+    {"q":"Welche Stadt war die Hauptstadt des Byzantinischen Reichs?","a":["Athen","Rom","Alexandria","Konstantinopel"],"r":3,"cat":"Antike Kulturen"},
+    {"q":"Welcher US-Präsident wurde 1963 in Dallas ermordet?","a":["Dwight D. Eisenhower","Lyndon B. Johnson","John F. Kennedy","Richard Nixon"],"r":2,"cat":"Moderne Geschichte"},
+    {"q":"In welchem Jahr wurde die Bundesrepublik Deutschland offiziell wiedervereint?","a":["1985","1990","1993","1998"],"r":1,"cat":"Deutschland"}
+  ]
+}

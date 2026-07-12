@@ -1,0 +1,16 @@
+{
+  "name": "Fun Facts",
+  "emoji": "🤯",
+  "questions": [
+    {"q":"Honig verdirbt praktisch nie – in ägyptischen Pyramiden wurde jahrtausendealter Honig gefunden, der noch essbar war. Was macht Honig so haltbar?","a":["Er enthält natürliche Antibiotika aus Bienengiften","Sein extrem niedriger Wassergehalt und Wasserstoffperoxid hemmen Bakterienwachstum","Die hohe Temperatur im Bienenstock sterilisiert ihn dauerhaft","Bienen imprägnieren ihn mit einem speziellen Wachs"],"r":1,"cat":"Essen & Wissenschaft"},
+    {"q":"Der Eiffelturm wächst im Sommer und schrumpft im Winter. Um wie viel verändert sich seine Höhe je nach Temperatur?","a":["Ca. 1 cm","Ca. 5 cm","Ca. 15 cm","Ca. 30 cm"],"r":2,"cat":"Architektur & Physik"},
+    {"q":"Cleopatra lebte zeitlich gesehen näher an der Mondlandung als an dem Bau der Pyramiden. Wie groß ist der zeitliche Abstand zwischen Pyramidenbau und Kleopatra?","a":["Ca. 500 Jahre","Ca. 1.000 Jahre","Ca. 2.500 Jahre – mehr als doppelt so lang wie zwischen Kleopatra und uns","Ca. 4.000 Jahre"],"r":2,"cat":"Geschichte"},
+    {"q":"Ein menschliches Gehirn erzeugt im Wachzustand elektrische Aktivität. Wie viel Watt leistet es dabei ungefähr?","a":["Ca. 1 Watt","Ca. 12–25 Watt","Ca. 100 Watt","Ca. 500 Watt"],"r":1,"cat":"Menschlicher Körper"},
+    {"q":"In Japan gibt es ein Phänomen namens 'Karoshi'. Was bedeutet dieser Begriff?","a":["Die Kunst, Dinge schön zu verpacken","Tod durch Überarbeitung","Extreme Schüchternheit gegenüber Fremden","Das Gefühl der Leere nach einem großen Erfolg"],"r":1,"cat":"Psychologie"},
+    {"q":"Das tiefste Loch, das Menschen je in die Erde gebohrt haben, ist die Kola-Bohrung in Russland. Wie tief reicht sie?","a":["Ca. 1 km","Ca. 5 km","Ca. 12 km","Ca. 40 km"],"r":2,"cat":"Geologie"},
+    {"q":"Beim Hören von Musik schüttet das Gehirn Dopamin aus – besonders in einem bestimmten Moment. Wann ist dieser Moment?","a":["Beim ersten Ton eines bekannten Liedes","Kurz bevor der emotionale Höhepunkt eintritt (Anticipation)","Genau beim letzten Akkord","Nur beim Hören von Musik die man selbst spielt"],"r":1,"cat":"Musik & Gehirn"},
+    {"q":"Russland ist das flächenmäßig größte Land der Welt. Mit wie vielen anderen Ländern teilt es eine Landgrenze?","a":["6 Länder","10 Länder","14 Länder","18 Länder"],"r":2,"cat":"Geographie"},
+    {"q":"Ein Lichtjahr klingt nach Zeit, ist aber eine Entfernung. Wie weit ist ein Lichtjahr in Kilometern ungefähr?","a":["Ca. 300.000 km","Ca. 9,5 Billionen km","Ca. 150 Millionen km","Ca. 1 Trillion km"],"r":1,"cat":"Weltall"},
+    {"q":"Nintendo wurde nicht als Videospielunternehmen gegründet. Was stellte Nintendo ursprünglich her, als es 1889 gegründet wurde?","a":["Spielzeugautos aus Holz","Hanafuda-Spielkarten","Mechanische Uhren","Papierlaternen"],"r":1,"cat":"Technik & Geschichte"}
+  ]
+}
