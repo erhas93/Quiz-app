@@ -5,312 +5,502 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Quiz App</title>
 <style>
-/* ── TOKENS ─────────────────────────────────────────────────────────────── */
-:root{
-  --bg:#0d0d1a;--bg2:#13131f;
-  --card:rgba(255,255,255,0.05);--card-b:rgba(255,255,255,0.09);
-  --text:#e8eaf0;--text2:#7788aa;--text3:#445566;--ans:#c8d8f0;
-  --s1:#e63946;--s2:#1d7fe8;
-  --gold:#f1c40f;--gold-dim:#776600;--green:#27ae60;--red:#e74c3c;--orange:#e67e22;
-  --r:14px;--r-sm:10px;--t:.2s ease;
-  --shadow:0 2px 10px rgba(0,0,0,0.3);
-  --ans-shadow:0 3px 12px rgba(0,0,0,0.35);
-  --header-h:90px;
+/* ── DESIGN TOKENS ───────────────────────────────────────────────────────── */
+:root {
+  --bg:        #0e0e1a;
+  --bg-header: #13131f;
+  --card:      rgba(255,255,255,0.06);
+  --card-b:    rgba(255,255,255,0.1);
+  --text:      #e8eaf0;
+  --text2:     #6a7a9a;
+  --s1:        #e63946;
+  --s2:        #1d7fe8;
+  --gold:      #f1c40f;
+  --green:     #27ae60;
+  --red:       #e74c3c;
+  --orange:    #e67e22;
+  --r:         12px;
+  --t:         .18s ease;
+  --shadow:    0 2px 10px rgba(0,0,0,0.3);
+  --ans-sh:    0 3px 12px rgba(0,0,0,0.35);
+  /* FIXED SIZES – never change */
+  --hdr-h:     26vh;   /* header always exactly 26% of viewport */
+  --fs-main:   1rem;   /* 16px base */
+  --fs-large:  1.2rem; /* only two sizes */
 }
-[data-theme="light"]{
-  --bg:#f0f2f8;--card:rgba(255,255,255,0.92);--card-b:rgba(0,0,0,0.09);
-  --text:#1a1a2e;--text2:#445577;--text3:#8899bb;--ans:#2a3a5a;
-  --shadow:0 2px 10px rgba(0,0,0,0.1);--ans-shadow:0 3px 12px rgba(0,0,0,0.12);
+[data-theme="light"] {
+  --bg:        #f0f2f8;
+  --bg-header: #e2e6f0;
+  --card:      rgba(255,255,255,0.9);
+  --card-b:    rgba(0,0,0,0.09);
+  --text:      #1a1a2e;
+  --text2:     #556688;
+  --shadow:    0 2px 10px rgba(0,0,0,0.1);
+  --ans-sh:    0 3px 12px rgba(0,0,0,0.12);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow-x:hidden}
-body{
-  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  background:var(--bg);color:var(--text);
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;transition:background var(--t),color var(--t);
-  font-size:17px;
+
+/* ── RESET ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; font-size: 16px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; align-items: center;
+  height: 100vh; overflow: hidden;
+  transition: background var(--t), color var(--t);
 }
 
 /* ── SCREENS ─────────────────────────────────────────────────────────────── */
-.screen{width:100%;max-width:660px;display:none;flex-direction:column}
-.screen.active{display:flex}
+/* Non-game screens: centered scrollable */
+.screen { display: none; width: 100%; max-width: 640px; }
+.screen.active { display: flex; flex-direction: column; }
 
-/* Screens without fixed header */
-#role-screen.active,#lobby-mod-screen.active,#lobby-player-screen.active,#results-screen.active{
-  padding:14px;gap:11px;justify-content:center;min-height:100vh;
+#role-screen.active,
+#lobby-mod-screen.active,
+#lobby-player-screen.active,
+#results-screen.active {
+  height: 100vh;
+  overflow-y: auto;
+  padding: 20px 14px;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Game screens handled by flex layout above */
-
-/* ── GAME SCREEN LAYOUT: header fixed, body scrolls ─────────────────────── */
-#mod-game-screen.active,#player-game-screen.active{
-  height:100vh;overflow:hidden;flex-direction:column;
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  max-width:660px;margin:0 auto;
-}
-.game-header{
-  flex-shrink:0;
-  background:var(--bg2);
-  border-bottom:2px solid var(--card-b);
-  padding:10px 16px 8px;
-}
-[data-theme="light"] .game-header{background:var(--bg2)}
-.game-body{
-  flex:1;overflow-y:auto;
-  padding:12px 14px 24px;
-  display:flex;flex-direction:column;gap:10px;
+/* Game screens: fixed split layout */
+#mod-game-screen.active,
+#player-game-screen.active {
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* ── THEME / VERSION ─────────────────────────────────────────────────────── */
-#theme-btn{position:fixed;top:10px;left:10px;z-index:200;background:var(--card);border:1px solid var(--card-b);border-radius:6px;padding:5px 10px;font-size:.72rem;cursor:pointer;color:var(--text2);box-shadow:var(--shadow)}
-#vtag{position:fixed;bottom:8px;left:10px;z-index:200;font-size:.6rem;color:var(--text3);font-weight:700;letter-spacing:.05em}
+/* ── GAME LAYOUT ─────────────────────────────────────────────────────────── */
+.g-header {
+  height: var(--hdr-h);
+  min-height: var(--hdr-h);
+  max-height: var(--hdr-h);
+  background: var(--bg-header);
+  border-bottom: 2px solid var(--card-b);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  flex-shrink: 0;
+  width: 100%;
+}
 
-/* ── CARD ────────────────────────────────────────────────────────────────── */
-.card{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.g-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
 
-/* ── TYPE ────────────────────────────────────────────────────────────────── */
-h1{font-size:1.7rem;font-weight:800;letter-spacing:-.03em}
-h2{font-size:1.05rem;font-weight:700;line-height:1.55}
-.muted{color:var(--text2);font-size:.84rem}
-.label{font-size:.67rem;font-weight:700;letter-spacing:.07em;color:var(--text3);text-transform:uppercase}
+/* ── HEADER ROWS ─────────────────────────────────────────────────────────── */
+/* Row 1: label + question number */
+.hdr-row1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hdr-tag {
+  font-size: var(--fs-main);
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: var(--gold);
+  background: rgba(241,196,15,.12);
+  border: 1px solid rgba(241,196,15,.25);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+.hdr-qnum {
+  font-size: var(--fs-main);
+  font-weight: 600;
+  color: var(--text2);
+}
 
-/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
-.btn{padding:10px 18px;border:none;border-radius:var(--r-sm);font-size:.86rem;font-weight:700;cursor:pointer;transition:opacity var(--t),transform .1s;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
-.btn:active{transform:scale(.97)}
-.btn:hover{opacity:.87}
-.btn:disabled{opacity:.3;cursor:default;transform:none;box-shadow:none}
-.btn-primary{background:linear-gradient(135deg,var(--s1),var(--s2));color:#fff}
-.btn-ghost{background:var(--card);border:1px solid var(--card-b);color:var(--text2)}
-.btn-danger{background:rgba(231,76,60,.14);border:1px solid rgba(231,76,60,.28);color:var(--red)}
-.btn-gold{background:linear-gradient(135deg,#f1c40f,#e67e22);color:#1a1000}
-.btn-green{background:rgba(39,174,96,.14);border:1px solid rgba(39,174,96,.3);color:var(--green)}
-.btn-full{width:100%;justify-content:center}
-.btn-sm{padding:6px 11px;font-size:.76rem}
+/* Row 2: scores */
+.hdr-scores {
+  display: flex;
+  gap: 10px;
+}
+.hdr-score-box {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--card-b);
+  border-radius: var(--r);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hdr-score-name {
+  font-size: var(--fs-main);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 55%;
+}
+.hdr-score-pts {
+  font-size: var(--fs-large);
+  font-weight: 900;
+  flex-shrink: 0;
+}
 
-/* ── PROGRESS ────────────────────────────────────────────────────────────── */
-.prog-wrap{height:3px;background:var(--card-b);border-radius:99px;overflow:hidden;margin-top:4px}
-.prog-fill{height:100%;background:var(--s2);border-radius:99px;transition:width .4s}
+/* Row 3: progress + timer */
+.hdr-row3 {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.prog-wrap {
+  height: 4px;
+  background: var(--card-b);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: var(--s2);
+  border-radius: 99px;
+  transition: width .4s;
+}
 
-/* ── CATEGORY BADGE ──────────────────────────────────────────────────────── */
-.cat{display:inline-block;border-radius:6px;padding:2px 9px;font-size:.66rem;font-weight:600;letter-spacing:.04em}
+/* Timer row */
+.hdr-timer {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+.hdr-timer.visible { display: flex; }
+.t-num {
+  font-size: var(--fs-large);
+  font-weight: 900;
+  min-width: 52px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: color .3s;
+}
+.t-num.warn   { color: var(--orange); }
+.t-num.urgent { color: var(--red); animation: pulse .5s infinite alternate; }
+@keyframes pulse { from { opacity: 1; } to { opacity: .4; } }
+.t-track { flex: 1; height: 6px; background: var(--card-b); border-radius: 99px; overflow: hidden; }
+.t-fill  { height: 100%; border-radius: 99px; transition: width .25s linear, background .5s; }
+.t-btns  { display: flex; gap: 6px; flex-shrink: 0; }
 
 /* ── QUESTION BOX ────────────────────────────────────────────────────────── */
-.q-box{
-  background:var(--card);
-  border:1px solid var(--card-b);
-  border-left:3px solid var(--s2);
-  border-radius:var(--r);
-  padding:16px 18px;
-  box-shadow:var(--shadow);
+.q-box {
+  background: var(--card);
+  border: 1px solid var(--card-b);
+  border-left: 3px solid var(--s2);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
 }
-.q-box h2{font-size:1.05rem;font-weight:700;line-height:1.6;color:var(--text)}
+.q-box .q-cat {
+  display: inline-block;
+  border-radius: 6px;
+  padding: 2px 9px;
+  font-size: var(--fs-main);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.q-box .q-text {
+  font-size: var(--fs-large);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text);
+}
 
 /* ── ANSWERS ─────────────────────────────────────────────────────────────── */
-.answers{display:flex;flex-direction:column;gap:8px}
-.ans{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 14px;border-radius:var(--r-sm);
-  border:1.5px solid var(--card-b);background:var(--card);
-  color:var(--ans);font-size:.9rem;font-weight:500;
-  cursor:pointer;transition:all .15s;user-select:none;
-  box-shadow:var(--ans-shadow);
+.answers { display: flex; flex-direction: column; gap: 8px; }
+.ans {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--card-b);
+  background: var(--card);
+  color: var(--text);
+  font-size: var(--fs-main);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+  box-shadow: var(--ans-sh);
 }
-.ans:hover:not(.disabled){
-  border-color:rgba(29,127,232,.5);background:rgba(29,127,232,.08);
-  transform:translateY(-1px);box-shadow:0 5px 16px rgba(0,0,0,.4);
+.ans:hover:not(.disabled) {
+  border-color: rgba(29,127,232,.5);
+  background: rgba(29,127,232,.08);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(0,0,0,.4);
 }
-.ans.correct{background:rgba(39,174,96,.14);border-color:var(--green);color:var(--green);box-shadow:0 3px 12px rgba(39,174,96,.18)}
-.ans.wrong{background:rgba(231,76,60,.11);border-color:var(--red);color:var(--red);box-shadow:0 3px 12px rgba(231,76,60,.15)}
-.ans.pending{background:rgba(29,127,232,.11);border-color:var(--s2);color:var(--s2)}
-.ans.faded{opacity:.38}
-.ans.hidden{opacity:.1;pointer-events:none;box-shadow:none}
-.ans.disabled{cursor:default}
-.ans.disabled:not(.correct):not(.wrong):not(.pending):hover{transform:none;box-shadow:var(--ans-shadow)}
-.ans-l{
-  width:26px;height:26px;border-radius:6px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.76rem;font-weight:800;
-  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);color:var(--text3);
+.ans.correct { background: rgba(39,174,96,.14); border-color: var(--green); color: var(--green); }
+.ans.wrong   { background: rgba(231,76,60,.12); border-color: var(--red);   color: var(--red);   }
+.ans.pending { background: rgba(29,127,232,.12); border-color: var(--s2);   color: var(--s2);   }
+.ans.faded   { opacity: .35; }
+.ans.hidden  { opacity: .1; pointer-events: none; }
+.ans.disabled { cursor: default; }
+.ans.disabled:not(.correct):not(.wrong):not(.pending):hover { transform: none; }
+.ans-l {
+  width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-main); font-weight: 800;
+  background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.12);
+  color: var(--text2);
 }
-.ans.correct .ans-l{background:rgba(39,174,96,.2);border-color:var(--green);color:var(--green)}
-.ans.wrong .ans-l{background:rgba(231,76,60,.15);border-color:var(--red);color:var(--red)}
-.ans.pending .ans-l{background:rgba(29,127,232,.15);border-color:var(--s2);color:var(--s2)}
-.ans-markers{margin-left:auto;display:flex;gap:3px;flex-shrink:0}
-.mkr{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;border:1.5px solid}
-.mkr1{background:rgba(230,57,70,.18);border-color:var(--s1);color:var(--s1)}
-.mkr2{background:rgba(29,127,232,.18);border-color:var(--s2);color:var(--s2)}
+.ans.correct .ans-l { background: rgba(39,174,96,.2);  border-color: var(--green); color: var(--green); }
+.ans.wrong   .ans-l { background: rgba(231,76,60,.15); border-color: var(--red);   color: var(--red);   }
+.ans.pending .ans-l { background: rgba(29,127,232,.15);border-color: var(--s2);    color: var(--s2);    }
+.ans-markers { margin-left: auto; display: flex; gap: 3px; flex-shrink: 0; }
+.mkr {
+  width: 22px; height: 22px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 800; border: 1.5px solid;
+}
+.mkr1 { background: rgba(230,57,70,.18); border-color: var(--s1); color: var(--s1); }
+.mkr2 { background: rgba(29,127,232,.18); border-color: var(--s2); color: var(--s2); }
 
-/* ── MOD HEADER (fixed) ──────────────────────────────────────────────────── */
-.mod-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px}
-.mod-hdr-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
-.mod-hdr-tag{font-size:.72rem;font-weight:800;letter-spacing:.05em;color:var(--gold);background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.25);border-radius:5px;padding:3px 8px;flex-shrink:0}
-.mod-hdr-qnum{font-size:.82rem;color:var(--text2);font-weight:600;flex-shrink:0;white-space:nowrap}
-.mod-scores{display:flex;gap:7px;flex-shrink:0}
-.score-pill{padding:5px 11px;border-radius:6px;font-weight:800;font-size:.84rem;display:flex;align-items:center;gap:4px;white-space:nowrap}
-.sp1{background:rgba(230,57,70,.14);border:1px solid rgba(230,57,70,.3);color:var(--s1)}
-.sp2{background:rgba(29,127,232,.14);border:1px solid rgba(29,127,232,.3);color:var(--s2)}
-
-/* ── PLAYER HEADER ───────────────────────────────────────────────────────── */
-.pl-hdr{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.pl-hdr-left{display:flex;align-items:center;gap:10px}
-.pl-hdr-name{font-size:.95rem;font-weight:800}
-.pl-hdr-label{font-size:.7rem;color:var(--text3);font-weight:600}
-.pl-hdr-score{font-size:.95rem;font-weight:800;text-align:right}
-
-/* ── TIMER ───────────────────────────────────────────────────────────────── */
-.timer-row{display:flex;align-items:center;gap:10px;margin-top:6px}
-.tnum{font-size:1.1rem;font-weight:800;font-variant-numeric:tabular-nums;min-width:42px;text-align:center;transition:color .3s}
-.tnum.urgent{color:var(--red);animation:pulse .5s infinite alternate}
-.tnum.warn{color:var(--orange)}
-@keyframes pulse{from{opacity:1}to{opacity:.4}}
-.t-track{flex:1;height:5px;background:var(--card-b);border-radius:99px;overflow:hidden}
-.t-fill{height:100%;border-radius:99px;transition:width .25s linear,background .5s}
-.t-btns{display:flex;gap:5px;flex-shrink:0}
-
-/* ── TIMER SETUP ─────────────────────────────────────────────────────────── */
-.t-modes{display:flex;gap:6px;margin-bottom:9px}
-.t-mode{flex:1;padding:7px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--card);color:var(--text2);font-size:.76rem;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
-.t-mode.active{border-color:var(--s2);background:rgba(29,127,232,.1);color:var(--s2)}
-.t-opts{display:flex;flex-wrap:wrap;gap:5px}
-.t-opt{padding:5px 11px;border-radius:99px;border:1.5px solid var(--card-b);background:var(--card);color:var(--text2);font-size:.76rem;font-weight:600;cursor:pointer;transition:all .15s}
-.t-opt:hover{border-color:var(--gold)}
-.t-opt.active{border-color:var(--gold);background:rgba(241,196,15,.1);color:var(--gold)}
-.t-custom{display:flex;align-items:center;gap:8px;margin-top:8px}
-.t-custom input{width:72px;padding:6px 9px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--card);color:var(--text);font-size:.95rem;font-weight:700;text-align:center;outline:none}
-.t-custom input:focus{border-color:var(--gold)}
+/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
+.btn {
+  padding: 11px 18px; border: none; border-radius: var(--r);
+  font-size: var(--fs-main); font-weight: 700; cursor: pointer;
+  transition: opacity var(--t), transform .1s;
+  display: inline-flex; align-items: center; gap: 7px;
+  box-shadow: var(--shadow);
+}
+.btn:active  { transform: scale(.97); }
+.btn:hover   { opacity: .87; }
+.btn:disabled { opacity: .3; cursor: default; transform: none; }
+.btn-primary { background: linear-gradient(135deg, var(--s1), var(--s2)); color: #fff; }
+.btn-ghost   { background: var(--card); border: 1px solid var(--card-b); color: var(--text2); }
+.btn-danger  { background: rgba(231,76,60,.14); border: 1px solid rgba(231,76,60,.28); color: var(--red); }
+.btn-gold    { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #1a1000; }
+.btn-green   { background: rgba(39,174,96,.14); border: 1px solid rgba(39,174,96,.3); color: var(--green); }
+.btn-full    { width: 100%; justify-content: center; }
+.btn-sm      { padding: 7px 12px; font-size: .82rem; }
 
 /* ── STATUS BAR ──────────────────────────────────────────────────────────── */
-.status-bar{
-  text-align:center;padding:7px 12px;border-radius:var(--r-sm);
-  background:var(--card);border:1px solid var(--card-b);font-size:.8rem;color:var(--text2);
+.status-bar {
+  text-align: center; padding: 8px 14px; border-radius: var(--r);
+  background: var(--card); border: 1px solid var(--card-b);
+  font-size: var(--fs-main); color: var(--text2);
 }
 
-/* ── SCORE OVERLAY ───────────────────────────────────────────────────────── */
-#pg-score-reveal{
-  display:none;position:fixed;top:0;left:0;right:0;z-index:150;
-  background:var(--bg);border-bottom:2px solid var(--card-b);
-  padding:14px 20px 12px;text-align:center;
-  box-shadow:0 4px 20px rgba(0,0,0,.5);
-  animation:slideDown .3s ease;
+/* ── MOD FACT / OPEN PANEL ───────────────────────────────────────────────── */
+.fact-box {
+  background: rgba(241,196,15,.06); border: 1px solid rgba(241,196,15,.22);
+  border-radius: var(--r); padding: 12px 14px;
 }
-@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-.pgr-result{font-size:2.2rem;font-weight:900;line-height:1;margin-bottom:2px}
-.pgr-label{font-size:.76rem;color:var(--text2)}
-.pgr-pts{font-size:.92rem;font-weight:700;margin-top:5px}
-
-/* ── MOD FACT BOX ────────────────────────────────────────────────────────── */
-.fact-box{background:rgba(241,196,15,.06);border:1px solid rgba(241,196,15,.22);border-radius:var(--r-sm);padding:12px 14px}
-.fact-text{color:var(--text2);font-size:.83rem;line-height:1.7}
-
-/* ── JOKER ROW ───────────────────────────────────────────────────────────── */
-.joker-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--card-b)}
-.jbtn{padding:5px 12px;border-radius:6px;border:1.5px solid rgba(241,196,15,.25);background:rgba(241,196,15,.06);color:var(--gold);font-size:.76rem;font-weight:700;cursor:pointer;transition:all .15s}
-.jbtn:hover:not(:disabled){background:rgba(241,196,15,.14);border-color:var(--gold)}
-.jbtn:disabled{opacity:.22;cursor:default}
-
-/* ── LOBBY ───────────────────────────────────────────────────────────────── */
-.lobby-slots{display:flex;gap:10px;margin:10px 0}
-.slot{flex:1;border-radius:var(--r);padding:13px 10px;text-align:center;border:2px dashed var(--card-b);background:var(--card);transition:all var(--t);box-shadow:var(--shadow)}
-.slot.joined{border-style:solid}
-.slot-icon{font-size:.9rem;font-weight:700;margin-bottom:4px;color:var(--text3)}
-.slot-name{font-weight:700;font-size:.88rem}
-.slot-status{font-size:.68rem;color:var(--text3);margin-top:2px}
-.name-inp{width:100%;padding:10px 13px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--card);color:var(--text);font-size:.92rem;font-weight:600;outline:none;transition:border-color var(--t)}
-.name-inp:focus{border-color:var(--s2)}
-.name-inp::placeholder{color:var(--text3)}
-.ready-btn{width:100%;padding:12px;border:1.5px solid var(--card-b);border-radius:var(--r);font-size:.9rem;font-weight:700;cursor:pointer;margin-top:11px;transition:all .2s;background:var(--card);color:var(--text2)}
-.ready-btn.active{background:rgba(39,174,96,.13);border-color:var(--green);color:var(--green)}
-
-/* ── PACK GRID ───────────────────────────────────────────────────────────── */
-.pack-grid{display:flex;flex-direction:column;gap:6px}
-.pack{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--card);cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
-.pack:hover{border-color:rgba(29,127,232,.4)}
-.pack.active{border-color:var(--s2);background:rgba(29,127,232,.07)}
-.pack-dot{width:7px;height:7px;border-radius:50%;background:var(--s2);flex-shrink:0;opacity:0;transition:opacity .2s}
-.pack.active .pack-dot{opacity:1}
-
-/* ── DIVIDER ─────────────────────────────────────────────────────────────── */
-.hdiv{width:100%;height:1px;background:var(--card-b);margin:4px 0}
-
-/* ── RESULTS ─────────────────────────────────────────────────────────────── */
-.res-scores{display:flex;gap:10px}
-.res-box{flex:1;border-radius:var(--r);padding:16px 12px;text-align:center;position:relative;box-shadow:var(--shadow)}
-.res-box .big{font-size:2.6rem;font-weight:800;line-height:1}
-.winner-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);padding:2px 8px;border-radius:5px;font-size:.63rem;font-weight:700;white-space:nowrap;color:#fff}
-.hist-wrap{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:12px}
-.hist-dot{width:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;padding:3px 2px}
-
-/* ── ROLE SCREEN ─────────────────────────────────────────────────────────── */
-#role-screen{align-items:center;text-align:center}
-.rb{display:block;width:100%;padding:13px 18px;margin-bottom:8px;border:none;border-radius:var(--r);font-size:.92rem;font-weight:700;cursor:pointer;transition:opacity var(--t),transform .1s;box-shadow:var(--shadow)}
-.rb:active{transform:scale(.98)}
-.rb:hover{opacity:.88}
-.rb-mod{background:linear-gradient(135deg,#e8b800,#c87000);color:#fff}
-.rb-s1{background:linear-gradient(135deg,#e63946,#b02030);color:#fff}
-.rb-s2{background:linear-gradient(135deg,#1d7fe8,#1258b0);color:#fff}
-
-/* ── SPIN ────────────────────────────────────────────────────────────────── */
-.spin{width:26px;height:26px;border:2.5px solid var(--card-b);border-top-color:var(--s2);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:420px){font-size:16px;.card,.q-box{padding:13px}}
+.fact-text { color: var(--text2); font-size: var(--fs-main); line-height: 1.65; }
+.estimate-hint {
+  padding: 10px 13px; border-radius: var(--r);
+  background: rgba(241,196,15,.07); border: 1px solid rgba(241,196,15,.22);
+  font-size: var(--fs-main); color: var(--text2); line-height: 1.7;
+}
+.estimate-hint strong { color: var(--gold); }
+.judge-row { display: flex; gap: 8px; margin-top: 8px; }
+.judge-btn {
+  flex: 1; padding: 9px; border: none; border-radius: var(--r);
+  font-size: var(--fs-main); font-weight: 700; cursor: pointer; transition: opacity var(--t);
+}
+.judge-btn:hover { opacity: .85; }
+.judge-correct         { background: rgba(39,174,96,.18); border: 1.5px solid var(--green); color: var(--green); }
+.judge-wrong           { background: rgba(231,76,60,.14); border: 1.5px solid var(--red);   color: var(--red);   }
+.judge-correct.active  { background: var(--green); color: #fff; }
+.judge-wrong.active    { background: var(--red);   color: #fff; }
 
 /* ── INPUT ANSWER ────────────────────────────────────────────────────────── */
-.ans-input-wrap{display:flex;flex-direction:column;gap:8px}
-.ans-input{
-  width:100%;padding:13px 16px;border-radius:var(--r-sm);
-  border:1.5px solid var(--card-b);background:var(--card);
-  color:var(--text);font-size:1.1rem;font-weight:700;
-  text-align:center;outline:none;transition:border-color var(--t);
-  box-shadow:var(--ans-shadow);
+.ans-input-wrap { display: flex; flex-direction: column; gap: 8px; }
+.ans-input {
+  width: 100%; padding: 13px 16px; border-radius: var(--r);
+  border: 1.5px solid var(--card-b); background: var(--card);
+  color: var(--text); font-size: var(--fs-large); font-weight: 700;
+  text-align: center; outline: none; transition: border-color var(--t);
+  box-shadow: var(--ans-sh);
 }
-.ans-input:focus{border-color:var(--s2)}
-.ans-input[type="number"]{font-size:1.4rem;letter-spacing:.05em}
-.ans-input::placeholder{color:var(--text3);font-weight:400;font-size:.9rem}
-.ans-confirm-btn{
-  width:100%;padding:12px;border:none;border-radius:var(--r-sm);
-  font-size:.9rem;font-weight:700;cursor:pointer;
-  background:linear-gradient(135deg,var(--s1),var(--s2));color:#fff;
-  box-shadow:var(--shadow);transition:opacity var(--t);
+.ans-input:focus { border-color: var(--s2); }
+.ans-input::placeholder { color: var(--text2); font-weight: 400; font-size: var(--fs-main); }
+.ans-confirm-btn {
+  width: 100%; padding: 12px; border: none; border-radius: var(--r);
+  font-size: var(--fs-main); font-weight: 700; cursor: pointer;
+  background: linear-gradient(135deg, var(--s1), var(--s2)); color: #fff;
+  box-shadow: var(--shadow); transition: opacity var(--t);
 }
-.ans-confirm-btn:hover{opacity:.87}
-.ans-confirm-btn:disabled{opacity:.3;cursor:default}
-.ans-submitted{
-  padding:14px;border-radius:var(--r-sm);text-align:center;
-  background:rgba(29,127,232,.1);border:1.5px solid var(--s2);
-  color:var(--s2);font-weight:700;font-size:.9rem;
+.ans-confirm-btn:hover    { opacity: .87; }
+.ans-confirm-btn:disabled { opacity: .3; cursor: default; }
+.ans-submitted {
+  padding: 14px; border-radius: var(--r); text-align: center;
+  border: 1.5px solid var(--s2);
+  background: rgba(29,127,232,.1); color: var(--s2);
+  font-size: var(--fs-main); font-weight: 700;
 }
-/* Mod manual judge buttons */
-.judge-row{display:flex;gap:8px;margin-top:8px}
-.judge-btn{flex:1;padding:10px;border:none;border-radius:var(--r-sm);font-size:.84rem;font-weight:700;cursor:pointer;transition:opacity var(--t)}
-.judge-btn:hover{opacity:.85}
-.judge-correct{background:rgba(39,174,96,.2);border:1.5px solid var(--green);color:var(--green)}
-.judge-wrong{background:rgba(231,76,60,.15);border:1.5px solid var(--red);color:var(--red)}
-.judge-correct.active{background:var(--green);color:#fff}
-.judge-wrong.active{background:var(--red);color:#fff}
-/* Estimate diff display */
-.estimate-hint{
-  padding:10px 14px;border-radius:var(--r-sm);
-  background:rgba(241,196,15,.07);border:1px solid rgba(241,196,15,.22);
-  font-size:.82rem;color:var(--text2);line-height:1.7;
+
+/* ── JOKER ───────────────────────────────────────────────────────────────── */
+.joker-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.jbtn {
+  padding: 6px 13px; border-radius: 6px;
+  border: 1.5px solid rgba(241,196,15,.25);
+  background: rgba(241,196,15,.06); color: var(--gold);
+  font-size: var(--fs-main); font-weight: 700;
+  cursor: pointer; transition: all .15s;
 }
-.estimate-hint strong{color:var(--gold)}
+.jbtn:hover:not(:disabled) { background: rgba(241,196,15,.15); border-color: var(--gold); }
+.jbtn:disabled { opacity: .22; cursor: default; }
+
+/* ── LOBBY ───────────────────────────────────────────────────────────────── */
+.lobby-slots { display: flex; gap: 10px; }
+.slot {
+  flex: 1; border-radius: var(--r); padding: 14px 10px; text-align: center;
+  border: 2px dashed var(--card-b); background: var(--card);
+  transition: all var(--t);
+}
+.slot.joined { border-style: solid; }
+.slot-label  { font-size: var(--fs-main); font-weight: 800; margin-bottom: 4px; }
+.slot-name   { font-size: var(--fs-main); font-weight: 600; }
+.slot-status { font-size: var(--fs-main); color: var(--text2); margin-top: 2px; }
+.name-inp {
+  width: 100%; padding: 10px 13px; border-radius: var(--r);
+  border: 1.5px solid var(--card-b); background: var(--card);
+  color: var(--text); font-size: var(--fs-main); font-weight: 600;
+  outline: none; transition: border-color var(--t);
+}
+.name-inp:focus { border-color: var(--s2); }
+.name-inp::placeholder { color: var(--text2); }
+.ready-btn {
+  width: 100%; padding: 12px; border: 1.5px solid var(--card-b);
+  border-radius: var(--r); font-size: var(--fs-main); font-weight: 700;
+  cursor: pointer; background: var(--card); color: var(--text2);
+  transition: all .2s;
+}
+.ready-btn.active { background: rgba(39,174,96,.13); border-color: var(--green); color: var(--green); }
+
+/* ── PACK GRID ───────────────────────────────────────────────────────────── */
+.pack-grid { display: flex; flex-direction: column; gap: 7px; }
+.pack {
+  display: flex; align-items: center; gap: 9px; padding: 10px 12px;
+  border-radius: var(--r); border: 1.5px solid var(--card-b);
+  background: var(--card); cursor: pointer; transition: all .15s;
+}
+.pack:hover  { border-color: rgba(29,127,232,.4); }
+.pack.active { border-color: var(--s2); background: rgba(29,127,232,.07); }
+.pack-dot    { width: 8px; height: 8px; border-radius: 50%; background: var(--s2); opacity: 0; transition: opacity .2s; }
+.pack.active .pack-dot { opacity: 1; }
+
+/* ── TIMER SETUP ─────────────────────────────────────────────────────────── */
+.t-modes { display: flex; gap: 6px; margin-bottom: 9px; }
+.t-mode  {
+  flex: 1; padding: 7px; border-radius: var(--r); border: 1.5px solid var(--card-b);
+  background: var(--card); color: var(--text2); font-size: var(--fs-main);
+  font-weight: 600; cursor: pointer; text-align: center; transition: all .15s;
+}
+.t-mode.active { border-color: var(--s2); background: rgba(29,127,232,.1); color: var(--s2); }
+.t-opts { display: flex; flex-wrap: wrap; gap: 5px; }
+.t-opt  {
+  padding: 5px 11px; border-radius: 99px; border: 1.5px solid var(--card-b);
+  background: var(--card); color: var(--text2); font-size: var(--fs-main);
+  font-weight: 600; cursor: pointer; transition: all .15s;
+}
+.t-opt:hover        { border-color: var(--gold); }
+.t-opt.active       { border-color: var(--gold); background: rgba(241,196,15,.1); color: var(--gold); }
+.t-custom           { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.t-custom input     {
+  width: 72px; padding: 6px 9px; border-radius: var(--r);
+  border: 1.5px solid var(--card-b); background: var(--card);
+  color: var(--text); font-size: var(--fs-main); font-weight: 700;
+  text-align: center; outline: none;
+}
+.t-custom input:focus { border-color: var(--gold); }
+
+/* ── RESULTS ─────────────────────────────────────────────────────────────── */
+.res-scores { display: flex; gap: 10px; }
+.res-box {
+  flex: 1; border-radius: var(--r); padding: 16px 12px;
+  text-align: center; position: relative;
+}
+.res-box .big { font-size: 2.6rem; font-weight: 900; line-height: 1; }
+.winner-tag {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  padding: 2px 9px; border-radius: 5px; font-size: var(--fs-main);
+  font-weight: 700; white-space: nowrap; color: #fff;
+}
+.hist-wrap { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.hist-dot  {
+  width: 34px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 2px; padding: 3px 2px;
+}
+
+/* ── ROLE SCREEN ─────────────────────────────────────────────────────────── */
+#role-screen { text-align: center; }
+.rb {
+  display: block; width: 100%; padding: 14px 18px; margin-bottom: 9px;
+  border: none; border-radius: var(--r); font-size: var(--fs-large);
+  font-weight: 700; cursor: pointer; transition: opacity var(--t), transform .1s;
+  box-shadow: var(--shadow);
+}
+.rb:active { transform: scale(.98); }
+.rb:hover  { opacity: .88; }
+.rb-mod { background: linear-gradient(135deg, #d4a200, #a06000); color: #fff; }
+.rb-s1  { background: linear-gradient(135deg, #e63946, #b02030); color: #fff; }
+.rb-s2  { background: linear-gradient(135deg, #1d7fe8, #1258b0); color: #fff; }
+
+/* ── SCORE OVERLAY ───────────────────────────────────────────────────────── */
+#pg-score-reveal {
+  display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: var(--bg-header); border-bottom: 2px solid var(--card-b);
+  padding: 16px 20px 14px; text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  animation: slideDown .3s ease;
+}
+@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.pgr-result { font-size: 2rem; font-weight: 900; line-height: 1; margin-bottom: 3px; }
+.pgr-label  { font-size: var(--fs-main); color: var(--text2); }
+.pgr-pts    { font-size: var(--fs-main); font-weight: 700; margin-top: 5px; }
+
+/* ── CARD ────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--card); border: 1px solid var(--card-b);
+  border-radius: var(--r); padding: 16px; box-shadow: var(--shadow);
+}
+
+/* ── UTIL ────────────────────────────────────────────────────────────────── */
+.label { font-size: var(--fs-main); font-weight: 700; letter-spacing: .05em; color: var(--text2); text-transform: uppercase; }
+.muted { color: var(--text2); font-size: var(--fs-main); }
+.spin  { width: 28px; height: 28px; border: 2.5px solid var(--card-b); border-top-color: var(--s2); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── CONTROLS ────────────────────────────────────────────────────────────── */
+#theme-btn {
+  position: fixed; bottom: 12px; left: 12px; z-index: 300;
+  background: var(--card); border: 1px solid var(--card-b);
+  border-radius: 6px; padding: 5px 10px; font-size: var(--fs-main);
+  cursor: pointer; color: var(--text2);
+}
+#vtag {
+  position: fixed; bottom: 12px; right: 12px; z-index: 300;
+  font-size: .7rem; color: var(--text2); font-weight: 600;
+}
 </style>
 </head>
 <body>
-<button id="theme-btn" onclick="Q.toggleTheme()">&#9790; Dunkel</button>
-<div id="vtag">v2.5.0</div>
 
-<!-- Score overlay -->
+<button id="theme-btn" onclick="Q.toggleTheme()">Hell</button>
+<div id="vtag">v2.6.0</div>
+
+<!-- Score reveal overlay -->
 <div id="pg-score-reveal">
   <div class="pgr-result" id="pgr-result">–</div>
-  <div class="pgr-label" id="pgr-label">–</div>
-  <div class="pgr-pts" id="pgr-pts">–</div>
+  <div class="pgr-label"  id="pgr-label">–</div>
+  <div class="pgr-pts"    id="pgr-pts">–</div>
 </div>
 
-<!-- ROLE -->
+<!-- ── ROLE ──────────────────────────────────────────────────────────────── -->
 <div id="role-screen" class="screen active">
-  <h1 style="margin-bottom:5px">Quiz App</h1>
+  <h1 style="font-size:var(--fs-large);font-weight:900;margin-bottom:6px">Quiz App</h1>
   <p class="muted" style="margin-bottom:22px">Wähle deine Rolle</p>
   <div style="width:100%;max-width:300px">
     <button class="rb rb-mod" onclick="Q.join('moderator')">Moderator</button>
@@ -319,135 +509,136 @@ h2{font-size:1.05rem;font-weight:700;line-height:1.55}
   </div>
 </div>
 
-<!-- LOBBY MOD -->
+<!-- ── LOBBY MOD ─────────────────────────────────────────────────────────── -->
 <div id="lobby-mod-screen" class="screen">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
-    <h1 style="font-size:1.15rem">Moderator · Lobby</h1>
-    <button class="btn btn-danger btn-sm" onclick="Q.fullReset()">Reset</button>
-  </div>
-  <div class="card">
-    <div class="label" style="margin-bottom:8px">Spieler</div>
-    <div class="lobby-slots">
-      <div class="slot" id="ms1-slot" style="border-color:rgba(230,57,70,.3)">
-        <div class="slot-icon" style="color:var(--s1)">S1</div>
-        <div class="slot-name" id="ms1-name">–</div>
-        <div class="slot-status" id="ms1-status">Wartet</div>
+  <div style="width:100%;max-width:640px;display:flex;flex-direction:column;gap:12px">
+    <h1 style="font-size:var(--fs-large);font-weight:900">Moderator · Lobby</h1>
+    <div class="card">
+      <div class="label" style="margin-bottom:10px">Spieler</div>
+      <div class="lobby-slots" style="margin-bottom:8px">
+        <div class="slot" id="ms1-slot" style="border-color:rgba(230,57,70,.3)">
+          <div class="slot-label" style="color:var(--s1)">S1</div>
+          <div class="slot-name"   id="ms1-name">–</div>
+          <div class="slot-status" id="ms1-status">Wartet</div>
+        </div>
+        <div class="slot" id="ms2-slot" style="border-color:rgba(29,127,232,.3)">
+          <div class="slot-label" style="color:var(--s2)">S2</div>
+          <div class="slot-name"   id="ms2-name">–</div>
+          <div class="slot-status" id="ms2-status">Wartet</div>
+        </div>
       </div>
-      <div class="slot" id="ms2-slot" style="border-color:rgba(29,127,232,.3)">
-        <div class="slot-icon" style="color:var(--s2)">S2</div>
-        <div class="slot-name" id="ms2-name">–</div>
-        <div class="slot-status" id="ms2-status">Wartet</div>
+      <div id="mod-ready-hint" class="muted" style="text-align:center"></div>
+    </div>
+    <div class="card">
+      <div class="label" style="margin-bottom:10px">Fragenpaket</div>
+      <div class="pack-grid" id="pack-grid"><div class="spin" style="margin:10px auto"></div></div>
+    </div>
+    <div class="card">
+      <div class="label" style="margin-bottom:10px">Timer</div>
+      <div class="t-modes">
+        <div class="t-mode active" data-m="none"   onclick="Q.setTimerMode('none')">Kein Timer</div>
+        <div class="t-mode"        data-m="auto"   onclick="Q.setTimerMode('auto')">Auto</div>
+        <div class="t-mode"        data-m="manual" onclick="Q.setTimerMode('manual')">Manuell</div>
+      </div>
+      <div id="t-sec-wrap" style="display:none">
+        <div class="t-opts">
+          <div class="t-opt" data-s="10" onclick="Q.setPreset(10)">10 s</div>
+          <div class="t-opt" data-s="20" onclick="Q.setPreset(20)">20 s</div>
+          <div class="t-opt active" data-s="30" onclick="Q.setPreset(30)">30 s</div>
+          <div class="t-opt" data-s="45" onclick="Q.setPreset(45)">45 s</div>
+          <div class="t-opt" data-s="60" onclick="Q.setPreset(60)">60 s</div>
+          <div class="t-opt" data-s="0"  onclick="Q.setPreset(0)">Eigene</div>
+        </div>
+        <div class="t-custom" id="t-custom" style="display:none">
+          <input type="number" id="t-custom-val" min="5" max="300" placeholder="Sek" oninput="Q.setCustom()">
+          <span class="muted">Sekunden</span>
+        </div>
       </div>
     </div>
-    <div id="mod-ready-hint" class="muted" style="text-align:center;font-size:.78rem;margin-top:2px"></div>
+    <button class="btn btn-primary btn-full" id="start-btn" onclick="Q.start()" style="padding:13px">Quiz starten</button>
   </div>
-  <div class="card">
-    <div class="label" style="margin-bottom:8px">Fragenpaket</div>
-    <div class="pack-grid" id="pack-grid"><div class="spin" style="margin:10px auto"></div></div>
-  </div>
-  <div class="card">
-    <div class="label" style="margin-bottom:8px">Timer</div>
-    <div class="t-modes">
-      <div class="t-mode active" data-m="none"   onclick="Q.setTimerMode('none')">Kein Timer</div>
-      <div class="t-mode"        data-m="auto"   onclick="Q.setTimerMode('auto')">Auto</div>
-      <div class="t-mode"        data-m="manual" onclick="Q.setTimerMode('manual')">Manuell</div>
-    </div>
-    <div id="t-sec-wrap" style="display:none">
-      <div class="t-opts">
-        <div class="t-opt" data-s="10" onclick="Q.setPreset(10)">10 s</div>
-        <div class="t-opt" data-s="20" onclick="Q.setPreset(20)">20 s</div>
-        <div class="t-opt active" data-s="30" onclick="Q.setPreset(30)">30 s</div>
-        <div class="t-opt" data-s="45" onclick="Q.setPreset(45)">45 s</div>
-        <div class="t-opt" data-s="60" onclick="Q.setPreset(60)">60 s</div>
-        <div class="t-opt" data-s="0"  onclick="Q.setPreset(0)">Eigene</div>
-      </div>
-      <div class="t-custom" id="t-custom" style="display:none">
-        <input type="number" id="t-custom-val" min="5" max="300" placeholder="Sek" oninput="Q.setCustom()">
-        <span class="muted">Sekunden</span>
-      </div>
-    </div>
-  </div>
-  <button class="btn btn-primary btn-full" id="start-btn" onclick="Q.start()" style="font-size:.92rem;padding:12px">
-    Quiz starten
-  </button>
 </div>
 
-<!-- LOBBY PLAYER -->
+<!-- ── LOBBY PLAYER ───────────────────────────────────────────────────────── -->
 <div id="lobby-player-screen" class="screen">
-  <div class="card" style="text-align:center">
-    <div class="label" style="margin-bottom:4px" id="pl-role-label">SPIELER 1</div>
-    <div class="label" style="margin-bottom:9px;font-size:.75rem;color:var(--text2)">Dein Name</div>
-    <input class="name-inp" id="pl-name" placeholder="Name eingeben..." maxlength="20" oninput="Q.nameInput()">
-    <button class="ready-btn" id="ready-btn" onclick="Q.toggleReady()">Bereit</button>
-  </div>
-  <div class="card">
-    <div class="label" style="margin-bottom:8px">Lobby</div>
-    <div class="lobby-slots">
-      <div class="slot" id="ps1-slot" style="border-color:rgba(230,57,70,.3)">
-        <div class="slot-icon" style="color:var(--s1)">S1</div>
-        <div class="slot-name" id="ps1-name">–</div>
-        <div class="slot-status" id="ps1-status">Wartet</div>
-      </div>
-      <div class="slot" id="ps2-slot" style="border-color:rgba(29,127,232,.3)">
-        <div class="slot-icon" style="color:var(--s2)">S2</div>
-        <div class="slot-name" id="ps2-name">–</div>
-        <div class="slot-status" id="ps2-status">Wartet</div>
-      </div>
+  <div style="width:100%;max-width:640px;display:flex;flex-direction:column;gap:12px">
+    <div class="card" style="text-align:center">
+      <div class="label" id="pl-role-label" style="margin-bottom:4px">SPIELER 1</div>
+      <input class="name-inp" id="pl-name" placeholder="Name eingeben..." maxlength="20" oninput="Q.nameInput()" style="margin-bottom:10px">
+      <button class="ready-btn" id="ready-btn" onclick="Q.toggleReady()">Bereit</button>
     </div>
-    <div id="pl-lobby-hint" class="muted" style="text-align:center;font-size:.78rem;margin-top:2px"></div>
+    <div class="card">
+      <div class="label" style="margin-bottom:10px">Lobby</div>
+      <div class="lobby-slots" style="margin-bottom:8px">
+        <div class="slot" id="ps1-slot" style="border-color:rgba(230,57,70,.3)">
+          <div class="slot-label" style="color:var(--s1)">S1</div>
+          <div class="slot-name"   id="ps1-name">–</div>
+          <div class="slot-status" id="ps1-status">Wartet</div>
+        </div>
+        <div class="slot" id="ps2-slot" style="border-color:rgba(29,127,232,.3)">
+          <div class="slot-label" style="color:var(--s2)">S2</div>
+          <div class="slot-name"   id="ps2-name">–</div>
+          <div class="slot-status" id="ps2-status">Wartet</div>
+        </div>
+      </div>
+      <div id="pl-lobby-hint" class="muted" style="text-align:center"></div>
+    </div>
   </div>
 </div>
 
-<!-- MOD GAME -->
+<!-- ── MOD GAME ───────────────────────────────────────────────────────────── -->
 <div id="mod-game-screen" class="screen">
-  <!-- Fixed header -->
-  <div class="game-header" id="mod-game-hdr">
-    <div class="mod-hdr">
-      <div class="mod-hdr-left">
-        <span class="mod-hdr-tag">MOD</span>
-        <span class="mod-hdr-qnum" id="mg-qnum">–</span>
+  <!-- FIXED HEADER: always 26vh -->
+  <div class="g-header">
+    <!-- Row 1: tag + question number -->
+    <div class="hdr-row1">
+      <div class="hdr-tag">Moderator</div>
+      <div class="hdr-qnum" id="mg-qnum">Frage – / –</div>
+    </div>
+    <!-- Row 2: scores -->
+    <div class="hdr-scores">
+      <div class="hdr-score-box" id="mg-s1-box" style="border-color:rgba(230,57,70,.3)">
+        <div class="hdr-score-name" id="mg-n1" style="color:var(--s1)">S1</div>
+        <div class="hdr-score-pts"  id="mg-sc1">0</div>
       </div>
-      <div class="mod-scores">
-        <div class="score-pill sp1"><span id="mg-n1">S1</span><span style="opacity:.4">·</span><span id="mg-sc1">0</span></div>
-        <div class="score-pill sp2"><span id="mg-n2">S2</span><span style="opacity:.4">·</span><span id="mg-sc2">0</span></div>
+      <div class="hdr-score-box" id="mg-s2-box" style="border-color:rgba(29,127,232,.3)">
+        <div class="hdr-score-name" id="mg-n2" style="color:var(--s2)">S2</div>
+        <div class="hdr-score-pts"  id="mg-sc2">0</div>
       </div>
     </div>
-    <div class="prog-wrap"><div class="prog-fill" id="mg-prog" style="width:0%"></div></div>
-    <!-- Timer row -->
-    <div class="timer-row" id="mg-timer" style="display:none">
-      <div class="tnum" id="mg-tnum">–</div>
-      <div class="t-track"><div class="t-fill" id="mg-tbar" style="width:100%;background:var(--green)"></div></div>
-      <div class="t-btns" id="mg-tbtns"></div>
+    <!-- Row 3: progress + timer -->
+    <div class="hdr-row3">
+      <div class="prog-wrap"><div class="prog-fill" id="mg-prog" style="width:0%"></div></div>
+      <div class="hdr-timer" id="mg-timer">
+        <div class="t-num" id="mg-tnum">–</div>
+        <div class="t-track"><div class="t-fill" id="mg-tbar" style="width:100%;background:var(--green)"></div></div>
+        <div class="t-btns" id="mg-tbtns"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Scrollable body -->
-  <div class="game-body" id="mod-game-body">
-    <div class="hdiv"></div>
+  <!-- SCROLLABLE BODY -->
+  <div class="g-body">
     <!-- Question -->
     <div class="q-box">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
-        <span id="mg-cat" class="cat"></span>
-      </div>
-      <h2 id="mg-qtxt">Lade...</h2>
+      <span id="mg-cat" class="q-cat"></span>
+      <div id="mg-qtxt" class="q-text">Lade...</div>
     </div>
     <!-- Answers -->
     <div class="answers" id="mg-answers"></div>
-    <!-- Jokers -->
-    <div class="joker-row">
-      <span class="label" style="width:100%;margin-bottom:3px">50:50 Joker</span>
-      <button class="jbtn" id="j1-btn" onclick="Q.giveJoker('s1')">S1: <span id="j1-name">–</span></button>
-      <button class="jbtn" id="j2-btn" onclick="Q.giveJoker('s2')">S2: <span id="j2-name">–</span></button>
-    </div>
-    <!-- Mod open/estimate answer display + judge -->
+    <!-- Open/estimate panel -->
     <div id="mg-open-panel" style="display:none">
-      <div class="label" style="margin-bottom:6px">Antworten der Spieler</div>
       <div id="mg-estimate-hint" class="estimate-hint" style="display:none;margin-bottom:8px"></div>
-      <div style="display:flex;flex-direction:column;gap:8px" id="mg-player-answers-display"></div>
+      <div id="mg-player-answers-display" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <!-- Joker -->
+    <div class="joker-row">
+      <button class="jbtn" id="j1-btn" onclick="Q.giveJoker('s1')">Joker S1: <span id="j1-name">–</span></button>
+      <button class="jbtn" id="j2-btn" onclick="Q.giveJoker('s2')">Joker S2: <span id="j2-name">–</span></button>
     </div>
     <!-- Fact box -->
     <div class="fact-box" id="mg-fact-box" style="display:none">
-      <div class="label" style="color:var(--gold-dim);margin-bottom:5px">Hintergrund</div>
+      <div class="label" style="color:rgba(241,196,15,.6);margin-bottom:5px">Hintergrund</div>
       <div class="fact-text" id="mg-fact-text"></div>
     </div>
     <!-- Actions -->
@@ -458,66 +649,72 @@ h2{font-size:1.05rem;font-weight:700;line-height:1.55}
   </div>
 </div>
 
-<!-- PLAYER GAME -->
+<!-- ── PLAYER GAME ────────────────────────────────────────────────────────── -->
 <div id="player-game-screen" class="screen">
-  <!-- Fixed header -->
-  <div class="game-header" id="pl-game-hdr">
-    <div class="pl-hdr">
-      <div class="pl-hdr-left">
-        <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0" id="pl-dot"></div>
-        <div>
-          <div class="pl-hdr-label">Spieler</div>
-          <div class="pl-hdr-name" id="pg-name">–</div>
-        </div>
+  <!-- FIXED HEADER: same height as mod -->
+  <div class="g-header">
+    <!-- Row 1: role tag + question number -->
+    <div class="hdr-row1">
+      <div class="hdr-tag" id="pg-role-tag" style="background:rgba(230,57,70,.12);border-color:rgba(230,57,70,.3);color:var(--s1)">Spieler 1</div>
+      <div class="hdr-qnum" id="pg-qnum">Frage – / –</div>
+    </div>
+    <!-- Row 2: own score + opponent score -->
+    <div class="hdr-scores">
+      <div class="hdr-score-box" id="pg-my-box">
+        <div class="hdr-score-name" id="pg-name" style="color:var(--s1)">–</div>
+        <div class="hdr-score-pts"  id="pg-score" style="transition:color .3s">0</div>
       </div>
-      <div>
-        <div class="pl-hdr-label" style="text-align:right">Punkte</div>
-        <div class="pl-hdr-score" id="pg-score" style="transition:color .3s">0</div>
+      <div class="hdr-score-box" id="pg-other-box" style="opacity:.7">
+        <div class="hdr-score-name" id="pg-other-name" style="color:var(--text2)">–</div>
+        <div class="hdr-score-pts"  id="pg-other-score">0</div>
       </div>
     </div>
-    <div class="prog-wrap" style="margin-top:5px"><div class="prog-fill" id="pg-prog" style="width:0%"></div></div>
-    <!-- Timer -->
-    <div class="timer-row" id="pg-timer" style="display:none">
-      <div class="tnum" id="pg-tnum">–</div>
-      <div class="t-track"><div class="t-fill" id="pg-tbar" style="width:100%;background:var(--green)"></div></div>
+    <!-- Row 3: progress + timer -->
+    <div class="hdr-row3">
+      <div class="prog-wrap"><div class="prog-fill" id="pg-prog" style="width:0%"></div></div>
+      <div class="hdr-timer" id="pg-timer">
+        <div class="t-num" id="pg-tnum">–</div>
+        <div class="t-track"><div class="t-fill" id="pg-tbar" style="width:100%;background:var(--green)"></div></div>
+      </div>
     </div>
   </div>
 
-  <!-- Scrollable body -->
-  <div class="game-body">
-    <div class="hdiv"></div>
+  <!-- SCROLLABLE BODY -->
+  <div class="g-body">
     <div class="status-bar" id="pg-status">Warte...</div>
     <!-- Question -->
     <div class="q-box">
-      <div style="font-size:.68rem;color:var(--text3);margin-bottom:5px" id="pg-qnum"></div>
-      <h2 id="pg-qtxt" style="color:var(--text)">Warte auf Frage...</h2>
+      <div style="font-size:var(--fs-main);color:var(--text2);margin-bottom:5px" id="pg-cat"></div>
+      <div id="pg-qtxt" class="q-text">Warte auf Frage...</div>
     </div>
     <!-- Answers (MC) -->
     <div class="answers" id="pg-answers"></div>
-    <!-- Input answer (estimate / open) -->
+    <!-- Input (open/estimate) -->
     <div id="pg-input-wrap" class="ans-input-wrap" style="display:none">
       <input id="pg-ans-input" class="ans-input" placeholder="Deine Antwort..." oninput="Q.onAnsInput()">
       <button class="ans-confirm-btn" id="pg-ans-confirm" onclick="Q.confirmAnswer()" disabled>Antwort bestätigen</button>
     </div>
     <div id="pg-ans-submitted" class="ans-submitted" style="display:none"></div>
-    <div id="pg-wait" style="display:none;text-align:center;padding:9px 0;color:var(--text2);font-size:.8rem">Antwort gespeichert – warte...</div>
+    <div id="pg-wait" style="display:none;text-align:center;padding:9px 0;color:var(--text2);font-size:var(--fs-main)">Antwort gespeichert – warte...</div>
     <!-- Joker -->
     <div id="pg-joker-wrap" style="display:none">
-      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(241,196,15,.09);border:1.5px solid rgba(241,196,15,.28);color:var(--gold);font-size:.84rem">50:50 Joker einsetzen</button>
+      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(241,196,15,.09);border:1.5px solid rgba(241,196,15,.28);color:var(--gold)">50:50 Joker einsetzen</button>
     </div>
   </div>
 </div>
 
-<!-- RESULTS -->
+<!-- ── RESULTS ────────────────────────────────────────────────────────────── -->
 <div id="results-screen" class="screen">
-  <div class="card" style="text-align:center">
-    <div style="font-size:2.8rem;margin-bottom:7px" id="res-emoji">–</div>
-    <h1 style="font-size:1.35rem;margin-bottom:4px" id="res-title">–</h1>
-    <p class="muted" id="res-sub" style="margin-bottom:18px">–</p>
-    <div class="res-scores" id="res-scores"></div>
-    <div class="hist-wrap" id="res-hist" style="margin-top:14px"></div>
+  <div style="width:100%;max-width:640px;display:flex;flex-direction:column;gap:12px">
+    <div class="card" style="text-align:center">
+      <div id="res-emoji" style="font-size:2rem;font-weight:900;margin-bottom:8px">–</div>
+      <div id="res-title" style="font-size:var(--fs-large);font-weight:900;margin-bottom:4px">–</div>
+      <div id="res-sub"   class="muted" style="margin-bottom:18px">–</div>
+      <div class="res-scores" id="res-scores"></div>
+      <div class="hist-wrap"  id="res-hist" style="margin-top:14px"></div>
+    </div>
+    <button class="btn btn-ghost btn-full" onclick="Q.fullReset()">Neues Spiel</button>
   </div>
-  <button class="btn btn-ghost btn-full" onclick="Q.fullReset()">Neues Spiel</button>
 </div>
 
 <script type="module">
@@ -579,7 +776,7 @@ const el=id=>document.getElementById(id);
 const L=i=>String.fromCharCode(65+i);
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));el(id).classList.add('active');}
 
-function setHeaderHeight(){
+function setHeaderHeightNoop(){
   // Measure actual header height and set --header-h
   ['mod-game-hdr','pl-game-hdr'].forEach(hid=>{
     const h=el(hid);if(!h)return;
@@ -609,9 +806,9 @@ function tickTimer(){
   const color=rem<=5?'var(--red)':rem<=10?'var(--orange)':'var(--green)';
   const cls=rem<=5?'urgent':rem<=10?'warn':'';
   ['mg','pg'].forEach(p=>{
-    const block=el(p+'-timer');if(!block||block.style.display==='none')return;
+    const block=el(p+'-timer');if(!block||!block.classList.contains('visible'))return;
     const num=el(p+'-tnum'),bar=el(p+'-tbar');
-    num.textContent=Math.ceil(rem)+'s';num.className='tnum'+(cls?' '+cls:'');
+    num.textContent=Math.ceil(rem)+'s';num.className='t-num'+(cls?' '+cls:'');
     bar.style.width=pct+'%';bar.style.background=color;
   });
   if(rem<=0){stopRaf();if(role==='moderator')update(SR,{phase:'locked',timerRunning:false,timerStart:null,timerPauseLeft:null});return;}
@@ -626,7 +823,7 @@ function resetInputField(){
 function showTimerStatic(sec,pct){
   ['mg','pg'].forEach(p=>{
     const num=el(p+'-tnum'),bar=el(p+'-tbar');if(!num)return;
-    num.textContent=Math.ceil(sec)+'s';num.className='tnum';
+    num.textContent=Math.ceil(sec)+'s';num.className='t-num';
     bar.style.width=pct+'%';bar.style.background='var(--green)';
   });
 }
@@ -800,8 +997,6 @@ function renderMod(){
   }
   if(gs.phase==='finished'){showScreen('results-screen');renderResults();return;}
   showScreen('mod-game-screen');
-  setTimeout(setHeaderHeight,50);
-
   const pack=getPack(),total=pack.questions.length,q=pack.questions[gs.currentQ||0];
   const n1=gs.s1Name||'S1',n2=gs.s2Name||'S2';
 
@@ -813,7 +1008,8 @@ function renderMod(){
 
   // Timer
   const hasT=gs.timerMode&&gs.timerMode!=='none';
-  el('mg-timer').style.display=hasT?'':'none';
+  const timerEl=el('mg-timer');
+  if(hasT){timerEl.classList.add('visible');}else{timerEl.classList.remove('visible');stopRaf();}
   if(hasT){
     if(gs.timerMode==='manual'){
       const tbtns=el('mg-tbtns');
@@ -823,7 +1019,7 @@ function renderMod(){
     }else el('mg-tbtns').innerHTML='';
     if(gs.timerRunning&&gs.timerStart)startRaf();
     else{stopRaf();const disp=gs.timerPauseLeft!=null?gs.timerPauseLeft:gs.timerSec||30;showTimerStatic(disp,gs.timerPauseLeft!=null?(gs.timerPauseLeft/(gs.timerSec||30)*100):100);}
-  }else stopRaf();
+  }
 
   // Question
   const cc=CC[q.cat]||'#8899bb';
@@ -940,8 +1136,6 @@ function renderPlayer(){
   }
   if(gs.phase==='finished'){el('pg-score-reveal').style.display='none';showScreen('results-screen');renderResults();return;}
   showScreen('player-game-screen');
-  setTimeout(setHeaderHeight,50);
-
   const pack=getPack(),total=pack.questions.length,q=pack.questions[gs.currentQ||0];
   const myAns=role==='s1'?gs.s1Answer:gs.s2Answer;
   const mySc=role==='s1'?(gs.s1Score||0):(gs.s2Score||0);
@@ -955,9 +1149,19 @@ function renderPlayer(){
   el('pg-name').textContent=myN;el('pg-name').style.color=myC;
   el('pg-score').textContent=mySc;
   el('pg-qnum').textContent=`Frage ${(gs.currentQ||0)+1} / ${total}`;
+  // Opponent score
+  const otherSc=role==='s1'?(gs.s2Score||0):(gs.s1Score||0);
+  const otherNm2=role==='s1'?(gs.s2Name||'S2'):(gs.s1Name||'S1');
+  if(el('pg-other-name'))el('pg-other-name').textContent=otherNm2;
+  if(el('pg-other-score'))el('pg-other-score').textContent=otherSc;
+  // Role tag color
+  const rtag=el('pg-role-tag');
+  if(rtag){rtag.textContent=myN;rtag.style.color=myC;rtag.style.background=role==='s1'?'rgba(230,57,70,.12)':'rgba(29,127,232,.12)';rtag.style.borderColor=role==='s1'?'rgba(230,57,70,.3)':'rgba(29,127,232,.3)';}
+  // Category
+  const pgCat=el('pg-cat');if(pgCat){const cc=CC[q.cat]||'#8899bb';pgCat.textContent=q.cat;pgCat.style.color=cc;}
 
   // Progress bar for player too
-  const pprog=el('pg-prog');if(pprog)pprog.style.width=((gs.currentQ||0)/total*100)+'%';
+    const pprog=el('pg-prog');if(pprog)pprog.style.width=((gs.currentQ||0)/total*100)+'%';
 
   // Score reveal on 'revealed' phase
   const curQ=gs.currentQ||0;
@@ -969,10 +1173,10 @@ function renderPlayer(){
 
   // Timer
   const hasT=gs.timerMode&&gs.timerMode!=='none';
-  el('pg-timer').style.display=hasT?'':'none';
+  const pgTimerEl=el('pg-timer');
+  if(hasT){pgTimerEl.classList.add('visible');}else{pgTimerEl.classList.remove('visible');stopRaf();}
   if(hasT&&gs.timerRunning&&gs.timerStart)startRaf();
   else if(hasT&&!gs.timerRunning){stopRaf();const disp=gs.timerPauseLeft!=null?gs.timerPauseLeft:gs.timerSec||30;showTimerStatic(disp,gs.timerPauseLeft!=null?(gs.timerPauseLeft/(gs.timerSec||30)*100):100);}
-  else if(!hasT)stopRaf();
 
   // Reset input on new question
   if(ph==='answering'&&myAns==null) resetInputField();
