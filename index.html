@@ -50,7 +50,7 @@
   --t:         .18s ease;
   --shadow:    0 4px 16px rgba(0,0,0,0.4);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --hdr-h:     26vh;
+  --hdr-h:     20vh;
 
   /* ── TYPOGRAPHY (2 sizes only) ──────────────────── */
   --fs:    1rem;
@@ -97,7 +97,7 @@ body {
 
 #mod-game-screen.active,
 #player-game-screen.active {
-  height: 100vh; overflow: hidden;
+  height: 100vh; overflow: hidden; flex-direction: column;
 }
 
 /* ── GAME LAYOUT ─────────────────────────────────────────────────────────── */
@@ -106,23 +106,24 @@ body {
   min-height: var(--hdr-h);
   max-height: var(--hdr-h);
   background: var(--bg2);
-  border-bottom: 1px solid var(--card-b);
+  border-bottom: 2px solid var(--card-b);
   display: flex; flex-direction: column;
   justify-content: space-between;
-  padding: 14px 16px 12px;
+  padding: 10px 14px 8px;
   flex-shrink: 0; width: 100%;
 }
 .g-body {
-  flex: 1; overflow-y: auto;
-  padding: 14px 16px 28px;
-  display: flex; flex-direction: column; gap: 10px;
-  width: 100%;
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 12px 14px 24px;
+  display: flex; flex-direction: column; gap: 9px;
+  width: 100%; min-height: 0;
   background: var(--bg);
 }
 
 /* ── HEADER ROWS ─────────────────────────────────────────────────────────── */
 .hdr-r1 {
   display: flex; align-items: center; justify-content: space-between;
+  padding-right: 52px; /* space for theme button */
 }
 .hdr-badge {
   font-size: var(--fs); font-weight: 800; letter-spacing: .04em;
@@ -136,13 +137,13 @@ body {
 .hdr-scores { display: flex; gap: 10px; }
 .hdr-sbox {
   flex: 1; background: var(--bg3); border-radius: var(--r-sm);
-  padding: 10px 14px;
+  padding: 6px 12px;
   display: flex; align-items: center; justify-content: space-between;
   border: 1px solid var(--card-b);
 }
 .hdr-sname {
   font-size: var(--fs); font-weight: 700;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;
 }
 .hdr-spts {
   font-size: var(--fs-lg); font-weight: 900; flex-shrink: 0;
@@ -459,22 +460,22 @@ body {
 
 /* ── CONTROLS ────────────────────────────────────────────────────────────── */
 #theme-btn {
-  position: fixed; bottom: 14px; left: 14px; z-index: 400;
+  position: fixed; top: 10px; right: 10px; z-index: 400;
   background: var(--bg3); border: 1px solid var(--card-b);
-  border-radius: var(--r-sm); padding: 6px 12px;
-  font-size: var(--fs); cursor: pointer; color: var(--text2);
+  border-radius: var(--r-sm); padding: 5px 10px;
+  font-size: .8rem; cursor: pointer; color: var(--text2);
   box-shadow: var(--shadow-sm);
 }
 #vtag {
-  position: fixed; bottom: 14px; right: 14px; z-index: 400;
-  font-size: .72rem; color: var(--text3); font-weight: 600;
+  position: fixed; bottom: 8px; right: 10px; z-index: 400;
+  font-size: .66rem; color: var(--text3); font-weight: 600;
 }
 </style>
 </head>
 <body>
 
 <button id="theme-btn" onclick="Q.toggleTheme()">Hell</button>
-<div id="vtag">v3.1.0</div>
+<div id="vtag">v3.2.0</div>
 
 <!-- Score reveal overlay -->
 <div id="pg-score-reveal">
@@ -656,20 +657,24 @@ body {
 <!-- ── PLAYER GAME ────────────────────────────────────────────────────────── -->
 <div id="player-game-screen" class="screen">
   <div class="g-hdr">
-    <div class="hdr-r1">
-      <div class="hdr-badge" id="pg-role-tag">Spieler 1</div>
-      <div class="hdr-qnum" id="pg-qnum">– / –</div>
+    <!-- Row 1: name + score + qnum -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div id="pg-role-tag" style="font-size:var(--fs);font-weight:800;padding:3px 10px;border-radius:var(--r-sm)">–</div>
+      <div id="pg-qnum" style="font-size:var(--fs);color:var(--text2);font-weight:600">– / –</div>
     </div>
-    <div class="hdr-scores">
-      <div class="hdr-sbox" id="pg-my-box">
+    <!-- Row 2: my score vs opponent score compact -->
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="hdr-sbox" style="flex:1">
         <div class="hdr-sname" id="pg-name">–</div>
         <div class="hdr-spts"  id="pg-score" style="transition:color .3s">0</div>
       </div>
-      <div class="hdr-sbox" id="pg-other-box" style="opacity:.65">
+      <div style="color:var(--text3);font-size:var(--fs);font-weight:700">vs</div>
+      <div class="hdr-sbox" style="flex:1;opacity:.7">
         <div class="hdr-sname" id="pg-other-name" style="color:var(--text2)">–</div>
         <div class="hdr-spts"  id="pg-other-score">0</div>
       </div>
     </div>
+    <!-- Row 3: progress + timer -->
     <div class="hdr-r3">
       <div class="prog-wrap"><div class="prog-fill" id="pg-prog" style="width:0%"></div></div>
       <div class="hdr-timer" id="pg-timer">
@@ -1347,6 +1352,11 @@ function renderPlayer() {
   const myJudged=role==='s1'?gs.s1Judged:gs.s2Judged;
   const ph=gs.phase;
 
+  // Question text + category
+  el('pg-qtxt').textContent = q.q;
+  const pgCat=el('pg-cat');
+  if(pgCat){const cc=CC[q.cat]||'#2A9D8F';pgCat.textContent=q.cat;pgCat.style.color=cc;}
+
   // Role tag
   const rt=el('pg-role-tag');
   rt.textContent=myN; rt.style.background=myC==='var(--s1)'?'rgba(231,111,81,.2)':'rgba(42,157,143,.2)';
@@ -1358,9 +1368,6 @@ function renderPlayer() {
   el('pg-other-score').textContent=othSc;
   el('pg-qnum').textContent=`${(gs.currentQ||0)+1} / ${total}`;
   el('pg-prog').style.width=((gs.currentQ||0)/total*100)+'%';
-
-  const pgCat=el('pg-cat');
-  if(pgCat){const cc=CC[q.cat]||'#2A9D8F';pgCat.textContent=q.cat;pgCat.style.color=cc;}
 
   // Score color on reveal
   const curQ=gs.currentQ||0;
