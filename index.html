@@ -1325,8 +1325,7 @@ function renderMod() {
   const c  = el('mg-cat'); c.textContent = q.cat; c.style.cssText = `background:${cc}1a;border:1px solid ${cc}44;color:${cc}`;
   el('mg-qtxt').textContent = q.q;
 
-  // Jokers
-  const ph = gs.phase;
+  // Jokers (ph already declared above)
   el('j1-btn').disabled = !!gs.s1JokerUsed || ph === 'revealed';
   el('j2-btn').disabled = !!gs.s2JokerUsed || ph === 'revealed';
 
@@ -1353,7 +1352,7 @@ function renderMod() {
   }
 
   // Open panel
-  const showingPanel = isOT && (ph3==='answering'||ph3==='locked'||ph3==='shown'||ph3==='revealed');
+  const showingPanel = isOT && (ph==='answering'||ph==='locked'||ph==='shown'||ph==='revealed');
   const op = el('mg-open-panel');
   op.style.display = showingPanel ? 'flex' : 'none';
   if (showingPanel) {
@@ -1400,7 +1399,7 @@ function renderMod() {
   // Speed panel (after shown/revealed for MC questions)
   const sp = el('mg-speed-panel');
   const s1t = gs.s1Time, s2t = gs.s2Time;
-  const showSpeed = !isOT && (ph3==='shown'||ph3==='revealed') && (s1t!=null||s2t!=null);
+  const showSpeed = !isOT && (ph==='shown'||ph==='revealed') && (s1t!=null||s2t!=null);
   sp.style.display = showSpeed ? '' : 'none';
   if (showSpeed) {
     const fmt = ms => ms != null ? (ms/1000).toFixed(2)+'s' : '–';
@@ -1412,7 +1411,7 @@ function renderMod() {
       +`<div class="speed-row"><span class="speed-label">${n2}</span><span class="speed-val">${fmt(s2t)}</span></div>`
       +(winner?`<div class="speed-row"><span class="speed-label">Schnellster</span><span class="speed-winner">${winner}</span></div>`:'');
     const sj = el('mg-speed-judge');
-    if (ph3 === 'revealed') {
+    if (ph === 'revealed') {
       sj.style.display = '';
       el('spd-s1-btn').className = 'judge-btn judge-c'+(gs.speedBonus==='s1'?' on':'');
       el('spd-s2-btn').className = 'judge-btn judge-c'+(gs.speedBonus==='s2'?' on':'');
@@ -1421,13 +1420,12 @@ function renderMod() {
 
   // Fact box
   const fb = el('mg-fact-box'), fact = q.fact||null;
-  fb.style.display = (ph3==='revealed'&&fact) ? '' : 'none';
-  if (ph3==='revealed'&&fact) el('mg-fact-text').textContent = fact;
+  fb.style.display = (ph==='revealed'&&fact) ? '' : 'none';
+  if (ph==='revealed'&&fact) el('mg-fact-text').textContent = fact;
 
   // Action button
   const ab = el('mg-action-btn');
-  const ph3 = gs.phase;
-  if (ph3==='answering'||ph3==='locked') { ab.textContent='Antworten zeigen'; ab.className='btn btn-ghost'; }
+  if (ph==='answering'||ph==='locked') { ab.textContent='Antworten zeigen'; ab.className='btn btn-ghost'; }
   else if (ph3==='shown')    { ab.textContent='Auflösen';   ab.className='btn btn-gold'; }
   else if (ph3==='revealed') { ab.textContent=(gs.currentQ||0)+1>=total?'Ergebnis':'Weiter'; ab.className='btn btn-primary'; }
 }
@@ -1509,8 +1507,6 @@ function renderPlayer() {
   const othAns=role==='s1'?gs.s2Answer:gs.s1Answer;
   const jActive=role==='s1'?!!gs.s1JokerActive:!!gs.s2JokerActive;
   const myJudged=role==='s1'?gs.s1Judged:gs.s2Judged;
-  const ph=ph2; // use ph2 from category check above
-
   // Question text + category
   el('pg-qtxt').textContent = q.q;
   const pgCat=el('pg-cat');
@@ -1530,25 +1526,25 @@ function renderPlayer() {
 
   // Score color on reveal
   const curQ=gs.currentQ||0;
-  if (ph==='revealed'&&lastRevealedQ!==curQ) {
+  if (ph2==='revealed'&&lastRevealedQ!==curQ) {
     lastRevealedQ=curQ;
     const isOTq=q.type==='estimate'||q.type==='open';
     const correct=isOTq?(myJudged==='correct'):(myAns===q.r);
     showScoreReveal(correct, mySc, total);
     el('pg-score').style.color=correct?'var(--c2)':'var(--c5)';
-  } else if (ph!=='revealed') { el('pg-score').style.color='var(--text)'; }
+  } else if (ph2!=='revealed') { el('pg-score').style.color='var(--text)'; }
 
   timerUI('pg');
 
   // Status
   let statusTxt='';
-  if (ph==='answering') {
+  if (ph2==='answering') {
     if (myAns!=null&&othAns!=null) statusTxt='Beide haben geantwortet';
     else if (myAns!=null) statusTxt=`${othN} überlegt noch...`;
     else statusTxt='Wähle deine Antwort';
-  } else if (ph==='locked')   statusTxt='Zeit abgelaufen';
-  else if (ph==='shown')      statusTxt='Moderator zeigt Antworten';
-  else if (ph==='revealed') {
+  } else if (ph2==='locked')   statusTxt='Zeit abgelaufen';
+  else if (ph2==='shown')      statusTxt='Moderator zeigt Antworten';
+  else if (ph2==='revealed') {
     const isOTq=q.type==='estimate'||q.type==='open';
     const correct=isOTq?(myJudged==='correct'):(myAns===q.r);
     statusTxt=correct?'Richtig beantwortet':'Falsch beantwortet';
@@ -1560,7 +1556,7 @@ function renderPlayer() {
   el('pg-input-wrap').style.display='none';
   el('pg-ans-submitted').style.display='none';
   el('pg-wait').style.display='none';
-  el('pg-joker-wrap').style.display=(jActive&&myAns==null&&ph==='answering'&&!isOT)?'':'none';
+  el('pg-joker-wrap').style.display=(jActive&&myAns==null&&ph2==='answering'&&!isOT)?'':'none';
 
   if (!isOT) {
     // MC answers
@@ -1570,22 +1566,22 @@ function renderPlayer() {
     q.a.forEach((a,i)=>{
       const d=document.createElement('div');d.className='ans';
       const isMe=myAns===i, isHidden=jActive&&hidden.includes(i)&&myAns==null;
-      const canClick=ph==='answering'&&myAns==null&&!isHidden;
+      const canClick=ph2==='answering'&&myAns==null&&!isHidden;
       if(isHidden){d.classList.add('hidden','disabled');}
-      else if(ph==='revealed'){
+      else if(ph2==='revealed'){
         if(i===q.r)d.classList.add('correct');
         else if(isMe)d.classList.add('wrong');
         else d.classList.add('faded');
         d.classList.add('disabled');
-      }else if(ph==='shown'){if(isMe)d.classList.add('pending');d.classList.add('disabled');}
+      }else if(ph2==='shown'){if(isMe)d.classList.add('pending');d.classList.add('disabled');}
       else if(isMe){d.classList.add('pending','disabled');}
       else if(!canClick){d.classList.add('disabled');if(!isHidden)d.style.opacity='.42';}
-      d.innerHTML=`<span class="ans-l">${ph==='revealed'&&i===q.r?'✓':L(i)}</span><span>${a}</span>`;
+      d.innerHTML=`<span class="ans-l">${ph2==='revealed'&&i===q.r?'✓':L(i)}</span><span>${a}</span>`;
       if(canClick)d.addEventListener('click',()=>answer(i));
       con.appendChild(d);
     });
     // After reveal: show opponent's answer too
-    if (ph==='revealed'&&othAns!=null&&othAns!==myAns) {
+    if (ph2==='revealed'&&othAns!=null&&othAns!==myAns) {
       const items=con.querySelectorAll('.ans');
       if(items[othAns]){
         const mk=document.createElement('div');mk.className='ans-markers';
@@ -1596,7 +1592,7 @@ function renderPlayer() {
   } else {
     // Open/estimate
     const sub=el('pg-ans-submitted');
-    if (ph==='revealed') {
+    if (ph2==='revealed') {
       sub.style.display='';
       const correct=myJudged==='correct';
       sub.style.borderColor=correct?'var(--c2)':'var(--c5)';
@@ -1611,7 +1607,7 @@ function renderPlayer() {
       sub.style.display='';
       sub.style.borderColor='var(--c2)';sub.style.background='rgba(42,157,143,.15)';sub.style.color='var(--c2)';
       sub.textContent=`Antwort: ${myAns} ✓`;
-    } else if (ph==='answering') {
+    } else if (ph2==='answering') {
       el('pg-input-wrap').style.display='flex';
       const inp=el('pg-ans-input');
       inp.type=q.type==='estimate'?'number':'text';
@@ -1625,7 +1621,7 @@ function renderPlayer() {
   }
 
   // Reset input on new question
-  if (ph==='answering'&&myAns==null) {
+  if (ph2==='answering'&&myAns==null) {
     const inp=el('pg-ans-input');
     if(inp&&inp.dataset.inited==='1'){inp.value='';inp.dataset.inited='';el('pg-ans-confirm').disabled=true;}
   }
