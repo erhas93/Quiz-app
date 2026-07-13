@@ -7,31 +7,43 @@
 <style>
 /* ── DESIGN TOKENS ───────────────────────────────────────────────────────── */
 :root {
-  /* Blues */
-  --blue:      #2563eb;
-  --blue-dark: #1d4ed8;
-  --blue-dim:  rgba(37,99,235,0.15);
-  --blue-b:    rgba(37,99,235,0.35);
-  /* Background layers */
-  --bg:        #0f1523;
-  --bg2:       #161d2e;
-  --bg3:       #1e2740;
-  /* Cards */
-  --card:      rgba(255,255,255,0.05);
-  --card-b:    rgba(255,255,255,0.08);
-  --card2:     rgba(255,255,255,0.09);
-  /* Text */
-  --text:      #eef0f6;
-  --text2:     #7b8db0;
-  --text3:     #4a5a78;
-  /* Semantic */
-  --s1:        #e63946;
-  --s2:        #2563eb;
-  --gold:      #f59e0b;
-  --green:     #10b981;
-  --red:       #ef4444;
-  --orange:    #f97316;
-  /* Layout */
+  /* ── PALETTE (Farooq Design) ───────────────────── */
+  --c1: #264653;   /* Dunkelblau-Grün – Hintergrund   */
+  --c2: #2A9D8F;   /* Türkis – S2, primäre Akzente    */
+  --c3: #E9C46A;   /* Gold – Highlights, Timer, Joker  */
+  --c4: #F4A261;   /* Orange – S1, Warnungen           */
+  --c5: #E76F51;   /* Koralle – Fehler, Rot            */
+
+  /* ── SEMANTIC ALIASES ──────────────────────────── */
+  --s1:    var(--c4);          /* Spieler 1 orange     */
+  --s2:    var(--c2);          /* Spieler 2 türkis     */
+  --gold:  var(--c3);
+  --green: var(--c2);          /* Richtig = türkis     */
+  --red:   var(--c5);          /* Falsch  = koralle    */
+  --orange:var(--c4);
+
+  /* ── COMPAT ALIASES ───────────────────────────── */
+  --blue:      var(--c2);
+  --blue-dark: #1f7a6e;
+  --blue-dim:  rgba(42,157,143,0.15);
+  --blue-b:    rgba(42,157,143,0.35);
+
+  /* ── BACKGROUNDS (3 layers from c1) ────────────── */
+  --bg:  #1a3340;   /* darkest  */
+  --bg2: #1e3d4a;   /* mid      */
+  --bg3: #264653;   /* = c1, lightest layer */
+
+  /* ── CARDS ──────────────────────────────────────── */
+  --card:   rgba(255,255,255,0.06);
+  --card-b: rgba(255,255,255,0.1);
+  --card2:  rgba(255,255,255,0.1);
+
+  /* ── TEXT ───────────────────────────────────────── */
+  --text:  #f0f4f4;
+  --text2: #7aabb0;
+  --text3: #4a7a80;
+
+  /* ── LAYOUT ─────────────────────────────────────── */
   --r:         14px;
   --r-sm:      10px;
   --r-lg:      20px;
@@ -39,22 +51,24 @@
   --shadow:    0 4px 16px rgba(0,0,0,0.4);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
   --hdr-h:     26vh;
-  /* Typography – exactly 2 sizes */
-  --fs:        1rem;
-  --fs-lg:     1.2rem;
+
+  /* ── TYPOGRAPHY (2 sizes only) ──────────────────── */
+  --fs:    1rem;
+  --fs-lg: 1.2rem;
 }
+
 [data-theme="light"] {
-  --bg:    #e8edf8;
-  --bg2:   #dce3f5;
-  --bg3:   #cdd6ef;
-  --card:  rgba(255,255,255,0.85);
-  --card-b:rgba(37,99,235,0.15);
+  --bg:    #e8f0ef;
+  --bg2:   #d4e8e5;
+  --bg3:   #c0ddd8;
+  --card:  rgba(255,255,255,0.82);
+  --card-b:rgba(42,157,143,0.2);
   --card2: rgba(255,255,255,0.95);
-  --text:  #0f1523;
-  --text2: #3a4a6a;
-  --text3: #6a7a9a;
-  --shadow:    0 4px 16px rgba(0,0,0,0.12);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --text:  #132028;
+  --text2: #2a6b65;
+  --text3: #5a9a94;
+  --shadow:    0 4px 16px rgba(0,0,0,0.1);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
 }
 
 /* ── RESET ───────────────────────────────────────────────────────────────── */
@@ -113,10 +127,10 @@ body {
 .hdr-badge {
   font-size: var(--fs); font-weight: 800; letter-spacing: .04em;
   color: #fff;
-  background: var(--blue);
+  background: var(--c2);
   border-radius: var(--r-sm); padding: 4px 12px;
 }
-.hdr-badge.mod { background: linear-gradient(135deg, var(--gold), #d97706); color: #1a0f00; }
+.hdr-badge.mod { background: linear-gradient(135deg, var(--gold), #c9973a); color: #132028; }
 .hdr-qnum { font-size: var(--fs); font-weight: 600; color: var(--text2); }
 
 .hdr-scores { display: flex; gap: 10px; }
@@ -136,7 +150,7 @@ body {
 
 .hdr-r3 { display: flex; flex-direction: column; gap: 6px; }
 .prog-wrap { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
-.prog-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width .4s; }
+.prog-fill { height: 100%; background: var(--c2); border-radius: 99px; transition: width .4s; }
 
 /* Timer */
 .hdr-timer { display: none; align-items: center; gap: 10px; }
@@ -147,10 +161,10 @@ body {
   color: var(--text); transition: color .3s;
 }
 .t-num.warn   { color: var(--orange); }
-.t-num.urgent { color: var(--red); animation: pulse .5s infinite alternate; }
+.t-num.urgent { color: var(--c5); animation: pulse .5s infinite alternate; }
 @keyframes pulse { from { opacity: 1; } to { opacity: .35; } }
 .t-track { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
-.t-fill  { height: 100%; border-radius: 99px; transition: width .25s linear, background .5s; background: var(--green); }
+.t-fill  { height: 100%; border-radius: 99px; transition: width .25s linear, background .5s; background: var(--c2); }
 .t-btns  { display: flex; gap: 6px; flex-shrink: 0; }
 
 /* ── CARDS ───────────────────────────────────────────────────────────────── */
@@ -167,7 +181,7 @@ body {
 /* ── QUESTION BOX ────────────────────────────────────────────────────────── */
 .q-box {
   background: var(--bg2); border: 1px solid var(--card-b);
-  border-left: 3px solid var(--blue);
+  border-left: 3px solid var(--c2);
   border-radius: var(--r-lg); padding: 16px 18px;
   box-shadow: var(--shadow-sm);
 }
@@ -189,12 +203,12 @@ body {
   box-shadow: var(--shadow-sm);
 }
 .ans:hover:not(.disabled) {
-  border-color: var(--blue); background: var(--blue-dim);
+  border-color: var(--c2); background: rgba(42,157,143,.12);
   transform: translateY(-1px); box-shadow: var(--shadow);
 }
-.ans.correct { background: rgba(16,185,129,.15); border-color: var(--green); color: var(--green); }
-.ans.wrong   { background: rgba(239,68,68,.12);  border-color: var(--red);   color: var(--red);  }
-.ans.pending { background: var(--blue-dim);       border-color: var(--blue);  color: var(--blue); }
+.ans.correct { background: rgba(42,157,143,.18); border-color: var(--c2); color: var(--c2); }
+.ans.wrong   { background: rgba(231,111,81,.14); border-color: var(--c5); color: var(--c5);  }
+.ans.pending { background: rgba(42,157,143,.15); border-color: var(--c2); color: var(--c2); }
 .ans.faded   { opacity: .3; }
 .ans.hidden  { opacity: .08; pointer-events: none; }
 .ans.disabled { cursor: default; }
@@ -206,16 +220,16 @@ body {
   background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.1);
   color: var(--text2);
 }
-.ans.correct .ans-l { background: rgba(16,185,129,.2);  border-color: var(--green); color: var(--green); }
-.ans.wrong   .ans-l { background: rgba(239,68,68,.18);  border-color: var(--red);   color: var(--red);  }
-.ans.pending .ans-l { background: var(--blue-dim);       border-color: var(--blue);  color: var(--blue); }
+.ans.correct .ans-l { background: rgba(42,157,143,.22); border-color: var(--c2); color: var(--c2); }
+.ans.wrong   .ans-l { background: rgba(231,111,81,.2);  border-color: var(--c5); color: var(--c5);  }
+.ans.pending .ans-l { background: rgba(42,157,143,.15); border-color: var(--c2); color: var(--c2); }
 .ans-markers { margin-left: auto; display: flex; gap: 4px; flex-shrink: 0; }
 .mkr {
   padding: 2px 7px; border-radius: 5px;
   font-size: .75rem; font-weight: 800; border: 1.5px solid;
 }
-.mkr1 { background: rgba(230,57,70,.18); border-color: var(--s1); color: var(--s1); }
-.mkr2 { background: rgba(37,99,235,.18); border-color: var(--s2); color: var(--s2); }
+.mkr1 { background: rgba(244,162,97,.2); border-color: var(--c4); color: var(--c4); }
+.mkr2 { background: rgba(42,157,143,.2); border-color: var(--c2); color: var(--c2); }
 
 /* ── BUTTONS ─────────────────────────────────────────────────────────────── */
 .btn {
@@ -228,11 +242,11 @@ body {
 .btn:active  { transform: scale(.97); }
 .btn:hover   { opacity: .87; }
 .btn:disabled { opacity: .3; cursor: default; transform: none; }
-.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary { background: var(--c2); color: #fff; }
 .btn-ghost   { background: var(--bg3); border: 1px solid var(--card-b); color: var(--text2); }
-.btn-danger  { background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.3); color: var(--red); }
-.btn-gold    { background: linear-gradient(135deg, #f59e0b, #d97706); color: #1a0f00; }
-.btn-green   { background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.3); color: var(--green); }
+.btn-danger  { background: rgba(231,111,81,.14); border: 1px solid rgba(231,111,81,.3); color: var(--c5); }
+.btn-gold    { background: linear-gradient(135deg, #e9c46a, #d4a843); color: #132028; }
+.btn-green   { background: rgba(42,157,143,.15); border: 1px solid rgba(42,157,143,.35); color: var(--c2); }
 .btn-full    { width: 100%; justify-content: center; }
 .btn-sm      { padding: 7px 12px; font-size: .82rem; }
 
@@ -245,26 +259,26 @@ body {
 
 /* ── MOD PANELS ──────────────────────────────────────────────────────────── */
 .fact-box {
-  background: rgba(245,158,11,.07); border: 1px solid rgba(245,158,11,.25);
+  background: rgba(233,196,106,.08); border: 1px solid rgba(233,196,106,.3);
   border-radius: var(--r); padding: 14px 16px;
 }
 .fact-text { color: var(--text2); font-size: var(--fs); line-height: 1.65; }
 .est-hint {
   padding: 12px 14px; border-radius: var(--r);
-  background: rgba(245,158,11,.07); border: 1px solid rgba(245,158,11,.22);
+  background: rgba(233,196,106,.08); border: 1px solid rgba(233,196,106,.28);
   font-size: var(--fs); color: var(--text2); line-height: 1.75;
 }
-.est-hint strong { color: var(--gold); }
+.est-hint strong { color: var(--c3); }
 .judge-row { display: flex; gap: 8px; margin-top: 10px; }
 .judge-btn {
   flex: 1; padding: 10px; border: 1.5px solid; border-radius: var(--r);
   font-size: var(--fs); font-weight: 700; cursor: pointer; transition: opacity var(--t), background var(--t);
 }
 .judge-btn:hover { opacity: .85; }
-.judge-c       { background: rgba(16,185,129,.14); border-color: var(--green); color: var(--green); }
-.judge-w       { background: rgba(239,68,68,.12);  border-color: var(--red);   color: var(--red);  }
-.judge-c.on    { background: var(--green); color: #fff; border-color: var(--green); }
-.judge-w.on    { background: var(--red);   color: #fff; border-color: var(--red);  }
+.judge-c       { background: rgba(42,157,143,.14); border-color: var(--c2); color: var(--c2); }
+.judge-w       { background: rgba(231,111,81,.14); border-color: var(--c5); color: var(--c5);  }
+.judge-c.on    { background: var(--c2); color: #fff; border-color: var(--c2); }
+.judge-w.on    { background: var(--c5); color: #fff; border-color: var(--c5); }
 
 /* ── INPUT ANSWER ────────────────────────────────────────────────────────── */
 .ans-input-wrap { display: flex; flex-direction: column; gap: 10px; }
@@ -275,43 +289,43 @@ body {
   text-align: center; outline: none; transition: border-color var(--t);
   box-shadow: var(--shadow-sm);
 }
-.ans-input:focus { border-color: var(--blue); }
+.ans-input:focus { border-color: var(--c2); }
 .ans-input::placeholder { color: var(--text3); font-weight: 400; font-size: var(--fs); }
 .ans-confirm {
   width: 100%; padding: 13px; border: none; border-radius: var(--r);
   font-size: var(--fs); font-weight: 700; cursor: pointer;
-  background: var(--blue); color: #fff;
+  background: var(--c2); color: #fff;
   box-shadow: var(--shadow-sm); transition: opacity var(--t);
 }
 .ans-confirm:hover    { opacity: .87; }
 .ans-confirm:disabled { opacity: .3; cursor: default; }
 .ans-submitted {
   padding: 14px; border-radius: var(--r);
-  border: 1.5px solid var(--blue); background: var(--blue-dim);
-  color: var(--blue); font-size: var(--fs); font-weight: 600;
+  border: 1.5px solid var(--c2); background: rgba(42,157,143,.15);
+  color: var(--c2); font-size: var(--fs); font-weight: 600;
 }
 
 /* ── JOKER ───────────────────────────────────────────────────────────────── */
 .joker-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .jbtn {
   padding: 7px 14px; border-radius: var(--r-sm);
-  border: 1.5px solid rgba(245,158,11,.3);
-  background: rgba(245,158,11,.07); color: var(--gold);
+  border: 1.5px solid rgba(233,196,106,.35);
+  background: rgba(233,196,106,.09); color: var(--c3);
   font-size: var(--fs); font-weight: 700; cursor: pointer; transition: all .15s;
 }
-.jbtn:hover:not(:disabled) { background: rgba(245,158,11,.15); border-color: var(--gold); }
+.jbtn:hover:not(:disabled) { background: rgba(233,196,106,.15); border-color: var(--c3); }
 .jbtn:disabled { opacity: .2; cursor: default; }
 
 /* ── SPEED BONUS (mod) ───────────────────────────────────────────────────── */
 .speed-panel {
-  background: rgba(37,99,235,.08); border: 1px solid var(--blue-b);
+  background: rgba(42,157,143,.08); border: 1px solid var(--blue-b);
   border-radius: var(--r); padding: 12px 14px;
   display: flex; flex-direction: column; gap: 8px;
 }
 .speed-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .speed-label { font-size: var(--fs); color: var(--text2); font-weight: 500; }
-.speed-val   { font-size: var(--fs); font-weight: 800; color: var(--blue); }
-.speed-winner{ font-size: var(--fs); font-weight: 700; color: var(--gold); }
+.speed-val   { font-size: var(--fs); font-weight: 800; color: var(--c2); }
+.speed-winner{ font-size: var(--fs); font-weight: 700; color: var(--c3); }
 
 /* ── LOBBY ───────────────────────────────────────────────────────────────── */
 .lobby-slots { display: flex; gap: 10px; }
@@ -329,14 +343,14 @@ body {
   color: var(--text); font-size: var(--fs); font-weight: 600;
   outline: none; transition: border-color var(--t);
 }
-.name-inp:focus { border-color: var(--blue); }
+.name-inp:focus { border-color: var(--c2); }
 .name-inp::placeholder { color: var(--text3); }
 .ready-btn {
   width: 100%; padding: 12px; border: 1.5px solid var(--card-b);
   border-radius: var(--r); font-size: var(--fs); font-weight: 700;
   cursor: pointer; background: var(--bg3); color: var(--text2); transition: all .2s;
 }
-.ready-btn.on { background: rgba(16,185,129,.14); border-color: var(--green); color: var(--green); }
+.ready-btn.on { background: rgba(42,157,143,.15); border-color: var(--c2); color: var(--c2); }
 
 /* ── PACK GRID ───────────────────────────────────────────────────────────── */
 .pack-grid { display: flex; flex-direction: column; gap: 7px; }
@@ -345,9 +359,9 @@ body {
   border-radius: var(--r); border: 1.5px solid var(--card-b);
   background: var(--bg3); cursor: pointer; transition: all .15s;
 }
-.pack:hover  { border-color: var(--blue); }
-.pack.on     { border-color: var(--blue); background: var(--blue-dim); }
-.pack-dot    { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); opacity: 0; transition: opacity .2s; }
+.pack:hover  { border-color: var(--c2); }
+.pack.on     { border-color: var(--c2); background: rgba(42,157,143,.12); }
+.pack-dot    { width: 8px; height: 8px; border-radius: 50%; background: var(--c2); opacity: 0; transition: opacity .2s; }
 .pack.on .pack-dot { opacity: 1; }
 
 /* ── TIMER SETUP ─────────────────────────────────────────────────────────── */
@@ -358,22 +372,22 @@ body {
   color: var(--text2); font-size: var(--fs); font-weight: 600;
   cursor: pointer; text-align: center; transition: all .15s;
 }
-.t-mode.on { border-color: var(--blue); background: var(--blue-dim); color: var(--blue); }
+.t-mode.on { border-color: var(--c2); background: rgba(42,157,143,.12); color: var(--c2); }
 .t-opts { display: flex; flex-wrap: wrap; gap: 5px; }
 .t-opt  {
   padding: 6px 12px; border-radius: 99px;
   border: 1.5px solid var(--card-b); background: var(--bg3);
   color: var(--text2); font-size: var(--fs); font-weight: 600; cursor: pointer; transition: all .15s;
 }
-.t-opt:hover { border-color: var(--gold); }
-.t-opt.on    { border-color: var(--gold); background: rgba(245,158,11,.1); color: var(--gold); }
+.t-opt:hover { border-color: var(--c3); }
+.t-opt.on    { border-color: var(--gold); background: rgba(233,196,106,.1); color: var(--c3); }
 .t-custom    { display: flex; align-items: center; gap: 9px; margin-top: 9px; }
 .t-custom input {
   width: 74px; padding: 7px 10px; border-radius: var(--r-sm);
   border: 1.5px solid var(--card-b); background: var(--bg3);
   color: var(--text); font-size: var(--fs); font-weight: 700; text-align: center; outline: none;
 }
-.t-custom input:focus { border-color: var(--gold); }
+.t-custom input:focus { border-color: var(--c3); }
 
 /* ── RESULTS ─────────────────────────────────────────────────────────────── */
 .res-scores { display: flex; gap: 10px; }
@@ -385,7 +399,7 @@ body {
 .winner-tag {
   position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
   padding: 2px 10px; border-radius: 5px; font-size: var(--fs);
-  font-weight: 700; white-space: nowrap; color: #fff; background: var(--blue);
+  font-weight: 700; white-space: nowrap; color: #fff; background: var(--c2);
 }
 .hist-wrap { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
 .hist-dot  {
@@ -395,7 +409,7 @@ body {
   background: var(--bg3); border: 1px solid var(--card-b);
 }
 .speed-result {
-  background: var(--blue-dim); border: 1px solid var(--blue-b);
+  background: rgba(42,157,143,.1); border: 1px solid rgba(42,157,143,.3);
   border-radius: var(--r); padding: 14px 16px; margin-top: 4px;
 }
 
@@ -409,9 +423,9 @@ body {
 }
 .rb:active { transform: scale(.98); }
 .rb:hover  { opacity: .88; }
-.rb-mod { background: linear-gradient(135deg, #f59e0b, #d97706); color: #1a0f00; }
-.rb-s1  { background: linear-gradient(135deg, #e63946, #b02030); color: #fff; }
-.rb-s2  { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; }
+.rb-mod { background: linear-gradient(135deg, #e9c46a, #d4a843); color: #132028; }
+.rb-s1  { background: linear-gradient(135deg, #f4a261, #d4813e); color: #132028; }
+.rb-s2  { background: linear-gradient(135deg, #2a9d8f, #1f7a6e); color: #fff; }
 
 /* ── WAIT SCREEN ─────────────────────────────────────────────────────────── */
 .wait-screen {
@@ -426,7 +440,7 @@ body {
 /* ── SCORE OVERLAY ───────────────────────────────────────────────────────── */
 #pg-score-reveal {
   display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-  background: var(--bg2); border-bottom: 2px solid var(--card-b);
+  background: var(--bg3); border-bottom: 2px solid rgba(42,157,143,.3);
   padding: 16px 20px 14px; text-align: center;
   box-shadow: 0 8px 32px rgba(0,0,0,.6);
   animation: slideDown .3s ease;
@@ -439,7 +453,7 @@ body {
 /* ── UTIL ────────────────────────────────────────────────────────────────── */
 .label { font-size: var(--fs); font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .05em; }
 .muted { color: var(--text2); font-size: var(--fs); }
-.spin  { width: 28px; height: 28px; border: 2.5px solid var(--card-b); border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto; }
+.spin  { width: 28px; height: 28px; border: 2.5px solid var(--card-b); border-top-color: var(--c2); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .divider { height: 1px; background: var(--card-b); }
 
@@ -460,7 +474,7 @@ body {
 <body>
 
 <button id="theme-btn" onclick="Q.toggleTheme()">Hell</button>
-<div id="vtag">v3.0.0</div>
+<div id="vtag">v3.1.0</div>
 
 <!-- Score reveal overlay -->
 <div id="pg-score-reveal">
@@ -498,12 +512,12 @@ body {
     <div class="card">
       <div class="label" style="margin-bottom:10px">Spieler</div>
       <div class="lobby-slots" style="margin-bottom:10px">
-        <div class="slot" id="ms1-slot" style="border-color:rgba(230,57,70,.35)">
+        <div class="slot" id="ms1-slot" style="border-color:rgba(244,162,97,.4)">
           <div class="slot-label" style="color:var(--s1)">S1</div>
           <div class="slot-name"   id="ms1-name">–</div>
           <div class="slot-status" id="ms1-status">Wartet</div>
         </div>
-        <div class="slot" id="ms2-slot" style="border-color:rgba(37,99,235,.35)">
+        <div class="slot" id="ms2-slot" style="border-color:rgba(42,157,143,.4)">
           <div class="slot-label" style="color:var(--s2)">S2</div>
           <div class="slot-name"   id="ms2-name">–</div>
           <div class="slot-status" id="ms2-status">Wartet</div>
@@ -558,12 +572,12 @@ body {
     <div class="card">
       <div class="label" style="margin-bottom:10px">Lobby</div>
       <div class="lobby-slots" style="margin-bottom:10px">
-        <div class="slot" id="ps1-slot" style="border-color:rgba(230,57,70,.35)">
+        <div class="slot" id="ps1-slot" style="border-color:rgba(244,162,97,.4)">
           <div class="slot-label" style="color:var(--s1)">S1</div>
           <div class="slot-name"   id="ps1-name">–</div>
           <div class="slot-status" id="ps1-status">Wartet</div>
         </div>
-        <div class="slot" id="ps2-slot" style="border-color:rgba(37,99,235,.35)">
+        <div class="slot" id="ps2-slot" style="border-color:rgba(42,157,143,.4)">
           <div class="slot-label" style="color:var(--s2)">S2</div>
           <div class="slot-name"   id="ps2-name">–</div>
           <div class="slot-status" id="ps2-status">Wartet</div>
@@ -582,11 +596,11 @@ body {
       <div class="hdr-qnum" id="mg-qnum">– / –</div>
     </div>
     <div class="hdr-scores">
-      <div class="hdr-sbox" style="border-color:rgba(230,57,70,.3)">
+      <div class="hdr-sbox" style="border-color:rgba(244,162,97,.4)">
         <div class="hdr-sname" id="mg-n1" style="color:var(--s1)">S1</div>
         <div class="hdr-spts"  id="mg-sc1">0</div>
       </div>
-      <div class="hdr-sbox" style="border-color:rgba(37,99,235,.3)">
+      <div class="hdr-sbox" style="border-color:rgba(42,157,143,.4)">
         <div class="hdr-sname" id="mg-n2" style="color:var(--s2)">S2</div>
         <div class="hdr-spts"  id="mg-sc2">0</div>
       </div>
@@ -613,7 +627,7 @@ body {
     </div>
     <!-- Speed panel -->
     <div id="mg-speed-panel" class="speed-panel" style="display:none">
-      <div class="label" style="color:rgba(37,99,235,.7);margin-bottom:4px">Antwortzeiten</div>
+      <div class="label" style="color:rgba(42,157,143,.9);margin-bottom:4px">Antwortzeiten</div>
       <div id="mg-speed-content"></div>
       <div class="judge-row" id="mg-speed-judge" style="display:none">
         <button class="judge-btn judge-c" id="spd-s1-btn" onclick="Q.giveSpeedBonus('s1')">Bonus S1</button>
@@ -628,7 +642,7 @@ body {
     </div>
     <!-- Fact box -->
     <div class="fact-box" id="mg-fact-box" style="display:none">
-      <div class="label" style="color:rgba(245,158,11,.6);margin-bottom:6px">Hintergrund</div>
+      <div class="label" style="color:rgba(233,196,106,.7);margin-bottom:6px">Hintergrund</div>
       <div class="fact-text" id="mg-fact-text"></div>
     </div>
     <!-- Actions -->
@@ -678,7 +692,7 @@ body {
     <div id="pg-ans-submitted" class="ans-submitted" style="display:none"></div>
     <div id="pg-wait" style="display:none;text-align:center;padding:9px 0;color:var(--text2);font-size:var(--fs)">Gespeichert – warte...</div>
     <div id="pg-joker-wrap" style="display:none">
-      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(245,158,11,.1);border:1.5px solid rgba(245,158,11,.3);color:var(--gold)">50:50 Joker</button>
+      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(233,196,106,.12);border:1.5px solid rgba(233,196,106,.35);color:var(--c3)">50:50 Joker</button>
     </div>
   </div>
 </div>
@@ -691,7 +705,7 @@ body {
       <div id="res-title" style="font-size:var(--fs-lg);font-weight:900;margin-bottom:4px">–</div>
       <div id="res-sub"   class="muted" style="margin-bottom:18px">–</div>
       <div class="res-scores" id="res-scores"></div>
-      <div id="res-speed" class="speed-result" style="display:none;margin-top:12px"></div>
+      <div id="res-speed" style="display:none;margin-top:12px;background:rgba(42,157,143,.1);border:1px solid rgba(42,157,143,.3);border-radius:var(--r);padding:14px 16px"></div>
       <div class="hist-wrap" id="res-hist" style="margin-top:14px"></div>
     </div>
     <button class="btn btn-ghost btn-full" onclick="Q.fullReset()">Neues Spiel</button>
@@ -723,22 +737,22 @@ const sNow = () => Date.now() + offset;
 
 // ── CATEGORY COLORS ───────────────────────────────────────────────────────
 const CC = {
-  "Tierwelt":"#f59e0b","Menschlicher Körper":"#ef4444","Pflanzenwelt":"#10b981",
-  "Geographie":"#0d9488","Weltall":"#7c3aed","Physik":"#06b6d4","Fun Facts":"#ec4899",
-  "Wissenschaft":"#10b981","Biologie":"#10b981","Technik & Geschichte":"#ef4444",
-  "Essen & Wissenschaft":"#f97316","Architektur & Physik":"#64748b","Geschichte":"#dc2626",
-  "Psychologie":"#8b5cf6","Geologie":"#6b7280","Musik & Gehirn":"#06b6d4",
-  "Chemie":"#ea580c","Moderne Geschichte":"#2563eb","Weltkriege":"#dc2626",
-  "Antike Kulturen":"#d97706","Europa":"#059669","Deutschland":"#2563eb",
-  "Technologie":"#1d4ed8","Sprache":"#3b82f6","Allgemeinwissen":"#2563eb",
-  "WM Geschichte":"#10b981","Legenden":"#f59e0b","Rekorde":"#ef4444",
-  "Europapokal":"#7c3aed","Geschichte & Regelwerk":"#64748b","Sprache & Kultur":"#1d4ed8",
-  "Kommunikation":"#3b82f6","Energie & Licht":"#f59e0b","Druck & Medien":"#7c3aed",
-  "Mobilität":"#10b981","Haushalt":"#f97316","Medizin":"#ef4444",
-  "Alltagsgegenstände":"#64748b","Industrie":"#6b7280","Pokédex":"#ef4444",
-  "Typen":"#7c3aed","Entwicklungen":"#10b981","Spielwelt":"#1d4ed8",
-  "Legendäre Pokémon":"#f59e0b","Attacken":"#dc2626","Trivia":"#64748b",
-  "Astronomie":"#7c3aed","Mathematik":"#2563eb","Politik & Geographie":"#0d9488",
+  "Tierwelt":"#E9C46A","Menschlicher Körper":"#E76F51","Pflanzenwelt":"#2A9D8F",
+  "Geographie":"#2A9D8F","Weltall":"#264653","Physik":"#2A9D8F","Fun Facts":"#E76F51",
+  "Wissenschaft":"#2A9D8F","Biologie":"#2A9D8F","Technik & Geschichte":"#E76F51",
+  "Essen & Wissenschaft":"#F4A261","Architektur & Physik":"#E9C46A","Geschichte":"#E76F51",
+  "Psychologie":"#E9C46A","Geologie":"#E9C46A","Musik & Gehirn":"#2A9D8F",
+  "Chemie":"#F4A261","Moderne Geschichte":"#2A9D8F","Weltkriege":"#E76F51",
+  "Antike Kulturen":"#E9C46A","Europa":"#2A9D8F","Deutschland":"#2A9D8F",
+  "Technologie":"#2A9D8F","Sprache":"#2A9D8F","Allgemeinwissen":"#2A9D8F",
+  "WM Geschichte":"#2A9D8F","Legenden":"#E9C46A","Rekorde":"#E76F51",
+  "Europapokal":"#2A9D8F","Geschichte & Regelwerk":"#E9C46A","Sprache & Kultur":"#2A9D8F",
+  "Kommunikation":"#2A9D8F","Energie & Licht":"#E9C46A","Druck & Medien":"#E9C46A",
+  "Mobilität":"#2A9D8F","Haushalt":"#F4A261","Medizin":"#E76F51",
+  "Alltagsgegenstände":"#F4A261","Industrie":"#F4A261","Pokédex":"#E76F51",
+  "Typen":"#2A9D8F","Entwicklungen":"#2A9D8F","Spielwelt":"#2A9D8F",
+  "Legendäre Pokémon":"#E9C46A","Attacken":"#E76F51","Trivia":"#E9C46A",
+  "Astronomie":"#264653","Mathematik":"#2A9D8F","Politik & Geographie":"#2A9D8F",
 };
 
 // ── BUILTIN PACK ──────────────────────────────────────────────────────────
@@ -795,8 +809,8 @@ function showScreen(id) {
 function slots(prefix, n, s, r) {
   el(prefix+'s1-name').textContent = n.s1; el(prefix+'s2-name').textContent = n.s2;
   el(prefix+'s1-status').textContent = s.s1; el(prefix+'s2-status').textContent = s.s2;
-  el(prefix+'s1-slot').style.borderColor = r.s1 ? 'var(--green)' : 'rgba(230,57,70,.35)';
-  el(prefix+'s2-slot').style.borderColor = r.s2 ? 'var(--green)' : 'rgba(37,99,235,.35)';
+  el(prefix+'s1-slot').style.borderColor = r.s1 ? 'var(--c2)' : 'rgba(231,111,81,.35)';
+  el(prefix+'s2-slot').style.borderColor = r.s2 ? 'var(--c2)' : 'rgba(42,157,143,.35)';
   el(prefix+'s1-slot').classList.toggle('joined', n.s1 !== '–');
   el(prefix+'s2-slot').classList.toggle('joined', n.s2 !== '–');
 }
@@ -815,7 +829,7 @@ function tickTimer() {
   if (!gs.timerRunning || !gs.timerStart || !gs.timerSec) return;
   const rem = Math.max(0, gs.timerSec - (sNow() - gs.timerStart) / 1000);
   const pct = rem / gs.timerSec * 100;
-  const color = rem <= 5 ? 'var(--red)' : rem <= 10 ? 'var(--orange)' : 'var(--green)';
+  const color = rem <= 5 ? 'var(--c5)' : rem <= 10 ? 'var(--c4)' : 'var(--c2)';
   const cls   = rem <= 5 ? 'urgent' : rem <= 10 ? 'warn' : '';
   const txt   = Math.ceil(rem) + 's';
   ['mg', 'pg'].forEach(p => {
@@ -836,7 +850,7 @@ function showTimerStatic(sec, pct) {
   ['mg','pg'].forEach(p => {
     const n = el(p+'-tnum'), bar = el(p+'-tbar'); if(!n) return;
     n.textContent = Math.ceil(sec)+'s'; n.className = 't-num';
-    bar.style.width = pct+'%'; bar.style.background = 'var(--green)';
+    bar.style.width = pct+'%'; bar.style.background = 'var(--c2)';
   });
 }
 
@@ -845,10 +859,10 @@ function showScoreReveal(correct, score, total) {
   clearTimeout(scoreRevealTimer);
   const o = el('pg-score-reveal');
   el('pgr-result').textContent  = correct ? 'Richtig' : 'Falsch';
-  el('pgr-result').style.color  = correct ? 'var(--green)' : 'var(--red)';
+  el('pgr-result').style.color  = correct ? 'var(--c2)' : 'var(--c5)';
   el('pgr-label').textContent   = correct ? 'Gut gemacht!' : 'Leider daneben';
   el('pgr-pts').textContent     = `${score} von ${total} Punkten`;
-  el('pgr-pts').style.color     = correct ? 'var(--green)' : 'var(--text2)';
+  el('pgr-pts').style.color     = correct ? 'var(--c2)' : 'var(--text2)';
   o.style.display = '';
   scoreRevealTimer = setTimeout(() => { o.style.display = 'none'; }, 3500);
 }
@@ -1189,7 +1203,7 @@ function renderMod() {
   timerUI('mg');
 
   // Question
-  const cc = CC[q.cat]||'#3b82f6';
+  const cc = CC[q.cat]||'#2A9D8F';
   const c  = el('mg-cat'); c.textContent = q.cat; c.style.cssText = `background:${cc}1a;border:1px solid ${cc}44;color:${cc}`;
   el('mg-qtxt').textContent = q.q;
 
@@ -1247,8 +1261,8 @@ function renderMod() {
     const pad = el('mg-player-ans'); pad.innerHTML = '';
     [[gs.s1Answer,n1,'s1',gs.s1Judged],[gs.s2Answer,n2,'s2',gs.s2Judged]].forEach(([ans,nm,player,judged])=>{
       const wrap = document.createElement('div');
-      const bc = judged==='correct'?'var(--green)':judged==='wrong'?'var(--red)':'var(--card-b)';
-      const bg = judged==='correct'?'rgba(16,185,129,.1)':judged==='wrong'?'rgba(239,68,68,.08)':'var(--bg3)';
+      const bc = judged==='correct'?'var(--c2)':judged==='wrong'?'var(--c5)':'var(--card-b)';
+      const bg = judged==='correct'?'rgba(42,157,143,.1)':judged==='wrong'?'rgba(231,111,81,.08)':'var(--bg3)';
       wrap.style.cssText = `border:1.5px solid ${bc};border-radius:var(--r);padding:11px 14px;background:${bg};transition:all .2s`;
       const canJudge = ans != null;
       const ansText = canJudge
@@ -1335,7 +1349,7 @@ function renderPlayer() {
 
   // Role tag
   const rt=el('pg-role-tag');
-  rt.textContent=myN; rt.style.background=myC==='var(--s1)'?'rgba(230,57,70,.2)':'rgba(37,99,235,.2)';
+  rt.textContent=myN; rt.style.background=myC==='var(--s1)'?'rgba(231,111,81,.2)':'rgba(42,157,143,.2)';
   rt.style.color=myC; rt.style.border=`1px solid ${myC}`;
 
   el('pg-name').textContent=myN; el('pg-name').style.color=myC;
@@ -1346,7 +1360,7 @@ function renderPlayer() {
   el('pg-prog').style.width=((gs.currentQ||0)/total*100)+'%';
 
   const pgCat=el('pg-cat');
-  if(pgCat){const cc=CC[q.cat]||'#3b82f6';pgCat.textContent=q.cat;pgCat.style.color=cc;}
+  if(pgCat){const cc=CC[q.cat]||'#2A9D8F';pgCat.textContent=q.cat;pgCat.style.color=cc;}
 
   // Score color on reveal
   const curQ=gs.currentQ||0;
@@ -1355,7 +1369,7 @@ function renderPlayer() {
     const isOTq=q.type==='estimate'||q.type==='open';
     const correct=isOTq?(myJudged==='correct'):(myAns===q.r);
     showScoreReveal(correct, mySc, total);
-    el('pg-score').style.color=correct?'var(--green)':'var(--red)';
+    el('pg-score').style.color=correct?'var(--c2)':'var(--c5)';
   } else if (ph!=='revealed') { el('pg-score').style.color='var(--text)'; }
 
   timerUI('pg');
@@ -1419,17 +1433,17 @@ function renderPlayer() {
     if (ph==='revealed') {
       sub.style.display='';
       const correct=myJudged==='correct';
-      sub.style.borderColor=correct?'var(--green)':'var(--red)';
-      sub.style.background=correct?'rgba(16,185,129,.1)':'rgba(239,68,68,.08)';
+      sub.style.borderColor=correct?'var(--c2)':'var(--c5)';
+      sub.style.background=correct?'rgba(42,157,143,.1)':'rgba(231,111,81,.08)';
       let html=`<div style="font-size:var(--fs);color:var(--text3);margin-bottom:6px">Ergebnis</div>`;
-      html+=`<div style="margin-bottom:4px"><span style="color:var(--text2);font-size:var(--fs)">Deine Antwort: </span><span style="font-weight:700;color:${correct?'var(--green)':'var(--red)'}">${myAns!=null?myAns:'–'}</span></div>`;
+      html+=`<div style="margin-bottom:4px"><span style="color:var(--text2);font-size:var(--fs)">Deine Antwort: </span><span style="font-weight:700;color:${correct?'var(--c2)':'var(--c5)'}">${myAns!=null?myAns:'–'}</span></div>`;
       if (othAns!=null) html+=`<div style="margin-bottom:4px"><span style="color:var(--text2);font-size:var(--fs)">${othN}: </span><span style="font-weight:600">${othAns}</span></div>`;
-      if (q.answer!=null) html+=`<div style="margin-bottom:6px"><span style="color:var(--text2);font-size:var(--fs)">Richtige Antwort: </span><span style="font-weight:800;color:var(--green)">${q.answer}</span></div>`;
-      html+=`<div style="font-size:var(--fs-lg);font-weight:900;color:${correct?'var(--green)':'var(--red)'}">${correct?'Richtig':'Falsch'}</div>`;
+      if (q.answer!=null) html+=`<div style="margin-bottom:6px"><span style="color:var(--text2);font-size:var(--fs)">Richtige Antwort: </span><span style="font-weight:800;color:var(--c2)">${q.answer}</span></div>`;
+      html+=`<div style="font-size:var(--fs-lg);font-weight:900;color:${correct?'var(--c2)':'var(--c5)'}">${correct?'Richtig':'Falsch'}</div>`;
       sub.innerHTML=html; sub.style.color='var(--text)';
     } else if (myAns!=null) {
       sub.style.display='';
-      sub.style.borderColor='var(--blue)';sub.style.background='var(--blue-dim)';sub.style.color='var(--blue)';
+      sub.style.borderColor='var(--c2)';sub.style.background='rgba(42,157,143,.15)';sub.style.color='var(--c2)';
       sub.textContent=`Antwort: ${myAns} ✓`;
     } else if (ph==='answering') {
       el('pg-input-wrap').style.display='flex';
@@ -1439,7 +1453,7 @@ function renderPlayer() {
       if(!inp.dataset.inited){inp.value='';inp.dataset.inited='1';}
       el('pg-ans-confirm').disabled=!inp.value.trim();
     } else {
-      sub.style.display='';sub.style.borderColor='var(--blue)';sub.style.background='var(--blue-dim)';sub.style.color='var(--blue)';
+      sub.style.display='';sub.style.borderColor='var(--c2)';sub.style.background='rgba(42,157,143,.15)';sub.style.color='var(--c2)';
       sub.textContent=myAns!=null?`Antwort: ${myAns}`:'Keine Antwort eingegeben';
     }
   }
@@ -1462,13 +1476,13 @@ function renderResults() {
   el('res-title').textContent=w==='tie'?'Unentschieden!':`${w==='s1'?n1:n2} gewinnt`;
   el('res-sub').textContent=`${total} Fragen · ${pack.name}`;
   el('res-scores').innerHTML=`
-    <div class="res-box" style="border-color:${w==='s1'?'var(--s1)':'rgba(230,57,70,.2)'}">
+    <div class="res-box" style="border-color:${w==='s1'?'var(--s1)':'rgba(231,111,81,.2)'}">
       ${w==='s1'?`<div class="winner-tag">Sieger</div>`:''}
       <div style="color:var(--s1);font-weight:700;margin-bottom:6px;font-size:var(--fs)">S1 · ${n1}</div>
       <div class="big" style="color:var(--text)">${s1}</div>
       <div style="color:var(--text2);font-size:var(--fs);margin-top:3px">von ${total} · ${Math.round(s1/total*100)}%</div>
     </div>
-    <div class="res-box" style="border-color:${w==='s2'?'var(--s2)':'rgba(37,99,235,.2)'}">
+    <div class="res-box" style="border-color:${w==='s2'?'var(--s2)':'rgba(42,157,143,.2)'}">
       ${w==='s2'?`<div class="winner-tag" style="background:var(--s2)">Sieger</div>`:''}
       <div style="color:var(--s2);font-weight:700;margin-bottom:6px;font-size:var(--fs)">S2 · ${n2}</div>
       <div class="big" style="color:var(--text)">${s2}</div>
@@ -1482,7 +1496,7 @@ function renderResults() {
     rs.style.display='';
     const fmt=ms=>ms?(ms/1000).toFixed(1)+'s':'–';
     const speedW=t1>0&&t2>0?(t1<t2?n1:t2<t1?n2:'Gleich'):t1>0?n1:n2;
-    rs.innerHTML=`<div class="label" style="color:rgba(37,99,235,.7);margin-bottom:8px">Gesamtantwortzeiten</div>`
+    rs.innerHTML=`<div class="label" style="color:rgba(42,157,143,.9);margin-bottom:8px">Gesamtantwortzeiten</div>`
       +`<div class="speed-row"><span class="speed-label">${n1}</span><span class="speed-val">${fmt(t1)}</span></div>`
       +`<div class="speed-row"><span class="speed-label">${n2}</span><span class="speed-val">${fmt(t2)}</span></div>`
       +(gs.speedBonus&&gs.speedBonus!=='none'?`<div class="speed-row" style="margin-top:4px"><span class="speed-label">Bonuspunkt</span><span class="speed-winner">${gs.speedBonus==='s1'?n1:n2}</span></div>`:'');
@@ -1500,8 +1514,8 @@ function renderResults() {
     const a=hist[i]||{};
     const d=document.createElement('div');d.className='hist-dot';
     const all=a.s1===true&&a.s2===true, none=a.s1===false&&a.s2===false;
-    d.style.borderColor=all?'var(--green)':none?'var(--red)':'var(--orange)';
-    d.style.background=all?'rgba(16,185,129,.12)':none?'rgba(239,68,68,.09)':'rgba(249,115,22,.09)';
+    d.style.borderColor=all?'var(--c2)':none?'var(--c5)':'var(--c4)';
+    d.style.background=all?'rgba(42,157,143,.12)':none?'rgba(231,111,81,.09)':'rgba(244,162,97,.09)';
     const s1i=a.s1===true?`<span style="color:var(--s1);font-size:.75rem;font-weight:800">✓</span>`:`<span style="color:var(--text3);font-size:.75rem">✗</span>`;
     const s2i=a.s2===true?`<span style="color:var(--s2);font-size:.75rem;font-weight:800">✓</span>`:`<span style="color:var(--text3);font-size:.75rem">✗</span>`;
     d.innerHTML=`<span style="color:var(--text3);font-size:.62rem;font-weight:700">${i+1}</span><div style="display:flex;gap:3px">${s1i}${s2i}</div>`;
