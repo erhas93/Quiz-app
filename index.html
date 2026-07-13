@@ -114,10 +114,20 @@ body {
 }
 .g-body {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  padding: 12px 14px 24px;
+  padding: 12px 14px 0;
   display: flex; flex-direction: column; gap: 9px;
   width: 100%; min-height: 0;
   background: var(--bg);
+}
+.g-body-inner { flex: 1; display: flex; flex-direction: column; gap: 9px; padding-bottom: 8px; }
+.g-actions {
+  position: sticky; bottom: 0; left: 0; right: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--card-b);
+  padding: 10px 0 14px;
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  flex-shrink: 0;
+  z-index: 10;
 }
 
 /* ── HEADER ROWS ─────────────────────────────────────────────────────────── */
@@ -428,6 +438,28 @@ body {
 .rb-s1  { background: linear-gradient(135deg, #f4a261, #d4813e); color: #132028; }
 .rb-s2  { background: linear-gradient(135deg, #2a9d8f, #1f7a6e); color: #fff; }
 
+/* ── CATEGORY PHASE ─────────────────────────────────────────────────────── */
+.cat-reveal {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; padding: 20px; text-align: center;
+}
+.cat-reveal-badge {
+  padding: 12px 28px; border-radius: var(--r-lg);
+  font-size: var(--fs-lg); font-weight: 900;
+  letter-spacing: .03em;
+}
+.cat-reveal-label {
+  font-size: var(--fs); color: var(--text2); font-weight: 500;
+}
+.double-joker-panel {
+  background: rgba(233,196,106,.1); border: 1.5px solid rgba(233,196,106,.35);
+  border-radius: var(--r); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  width: 100%;
+}
+.double-joker-panel.used { opacity: .35; }
+
 /* ── WAIT SCREEN ─────────────────────────────────────────────────────────── */
 .wait-screen {
   height: 100vh; display: flex; flex-direction: column;
@@ -475,7 +507,7 @@ body {
 <body>
 
 <button id="theme-btn" onclick="Q.toggleTheme()">Hell</button>
-<div id="vtag">v3.2.0</div>
+<div id="vtag">v3.3.0</div>
 
 <!-- Score reveal overlay -->
 <div id="pg-score-reveal">
@@ -615,44 +647,54 @@ body {
       </div>
     </div>
   </div>
-  <div class="g-body">
-    <div class="q-box">
-      <span id="mg-cat" class="q-cat"></span>
-      <div id="mg-qtxt" class="q-text">Lade...</div>
+  <!-- Category reveal (between questions) -->
+  <div id="mg-cat-screen" style="display:none;flex:1;flex-direction:column;background:var(--bg)">
+    <div class="cat-reveal">
+      <div class="cat-reveal-label">Nächste Kategorie</div>
+      <div id="mg-cat-badge" class="cat-reveal-badge">–</div>
+      <div id="mg-cat-qnum" style="font-size:var(--fs);color:var(--text2);margin-top:4px"></div>
     </div>
-    <div class="answers" id="mg-answers"></div>
-    <!-- Open/estimate panel -->
-    <div id="mg-open-panel" style="display:none;flex-direction:column;gap:8px">
-      <div id="mg-est-hint" class="est-hint" style="display:none"></div>
-      <div id="mg-player-ans" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div class="g-actions">
+      <button class="btn btn-primary" onclick="Q.showQuestion()">Frage einblenden →</button>
     </div>
-    <!-- Speed panel -->
-    <div id="mg-speed-panel" class="speed-panel" style="display:none">
-      <div class="label" style="color:rgba(42,157,143,.9);margin-bottom:4px">Antwortzeiten</div>
-      <div id="mg-speed-content"></div>
-      <div class="judge-row" id="mg-speed-judge" style="display:none">
-        <button class="judge-btn judge-c" id="spd-s1-btn" onclick="Q.giveSpeedBonus('s1')">Bonus S1</button>
-        <button class="judge-btn judge-c" id="spd-s2-btn" onclick="Q.giveSpeedBonus('s2')">Bonus S2</button>
-        <button class="judge-btn judge-w" onclick="Q.giveSpeedBonus(null)">Keiner</button>
+  </div>
+
+  <!-- Main question body -->
+  <div id="mg-main-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;min-height:0;background:var(--bg)">
+    <div style="flex:1;display:flex;flex-direction:column;gap:9px;padding:12px 14px 0">
+      <div class="q-box">
+        <span id="mg-cat" class="q-cat"></span>
+        <div id="mg-qtxt" class="q-text">Lade...</div>
+      </div>
+      <div class="answers" id="mg-answers"></div>
+      <div id="mg-open-panel" style="display:none;flex-direction:column;gap:8px">
+        <div id="mg-est-hint" class="est-hint" style="display:none"></div>
+        <div id="mg-player-ans" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div id="mg-speed-panel" class="speed-panel" style="display:none">
+        <div class="label" style="color:rgba(42,157,143,.8);margin-bottom:4px">Antwortzeiten</div>
+        <div id="mg-speed-content"></div>
+        <div class="judge-row" id="mg-speed-judge" style="display:none">
+          <button class="judge-btn judge-c" id="spd-s1-btn" onclick="Q.giveSpeedBonus('s1')">Bonus S1</button>
+          <button class="judge-btn judge-c" id="spd-s2-btn" onclick="Q.giveSpeedBonus('s2')">Bonus S2</button>
+          <button class="judge-btn judge-w" onclick="Q.giveSpeedBonus(null)">Keiner</button>
+        </div>
+      </div>
+      <div class="joker-row">
+        <div class="label" style="width:100%;margin-bottom:2px;color:var(--text3);font-size:.8rem">50:50 JOKER</div>
+        <button class="jbtn" id="j1-btn" onclick="Q.giveJoker('s1')">S1: <span id="j1-name">–</span></button>
+        <button class="jbtn" id="j2-btn" onclick="Q.giveJoker('s2')">S2: <span id="j2-name">–</span></button>
+      </div>
+      <div class="fact-box" id="mg-fact-box" style="display:none">
+        <div class="label" style="color:rgba(233,196,106,.7);margin-bottom:6px">Hintergrund</div>
+        <div class="fact-text" id="mg-fact-text"></div>
       </div>
     </div>
-    <!-- Joker -->
-    <div class="joker-row">
-      <button class="jbtn" id="j1-btn" onclick="Q.giveJoker('s1')">Joker S1: <span id="j1-name">–</span></button>
-      <button class="jbtn" id="j2-btn" onclick="Q.giveJoker('s2')">Joker S2: <span id="j2-name">–</span></button>
-    </div>
-    <!-- Fact box -->
-    <div class="fact-box" id="mg-fact-box" style="display:none">
-      <div class="label" style="color:rgba(233,196,106,.7);margin-bottom:6px">Hintergrund</div>
-      <div class="fact-text" id="mg-fact-text"></div>
-    </div>
-    <!-- Actions -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <div class="g-actions">
       <button class="btn btn-ghost" id="mg-action-btn" onclick="Q.action()">Antworten zeigen</button>
       <button class="btn btn-danger btn-sm" onclick="Q.fullReset()" style="margin-left:auto">Reset</button>
     </div>
   </div>
-</div>
 
 <!-- ── PLAYER GAME ────────────────────────────────────────────────────────── -->
 <div id="player-game-screen" class="screen">
@@ -683,7 +725,31 @@ body {
       </div>
     </div>
   </div>
-  <div class="g-body">
+  <!-- Player category phase -->
+  <div id="pg-cat-screen" style="display:none;flex:1;flex-direction:column;background:var(--bg)">
+    <div class="cat-reveal">
+      <div class="cat-reveal-label">Nächste Kategorie</div>
+      <div id="pg-cat-badge" class="cat-reveal-badge">–</div>
+    </div>
+    <div style="padding:0 14px 20px">
+      <div id="pg-double-panel" class="double-joker-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div>
+            <div style="font-size:var(--fs);font-weight:800;color:var(--c3)">Doppelt-oder-Nichts</div>
+            <div style="font-size:var(--fs);color:var(--text2);margin-top:3px">Richtig: +2 Punkte · Falsch: -1 Punkt</div>
+          </div>
+          <div id="pg-double-status" style="font-size:var(--fs);font-weight:700;color:var(--text3);flex-shrink:0"></div>
+        </div>
+        <button class="btn btn-full" id="pg-double-btn" onclick="Q.activateDoubleJoker()"
+          style="background:linear-gradient(135deg,var(--c3),var(--c4));color:#132028;font-weight:800">
+          Joker einsetzen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player main game body -->
+  <div id="pg-main-body" style="display:flex;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column;min-height:0;background:var(--bg);padding:12px 14px 20px;gap:9px">
     <div class="status-bar" id="pg-status">Warte...</div>
     <div class="q-box">
       <div id="pg-cat" style="font-size:var(--fs);color:var(--text2);margin-bottom:6px"></div>
@@ -697,10 +763,9 @@ body {
     <div id="pg-ans-submitted" class="ans-submitted" style="display:none"></div>
     <div id="pg-wait" style="display:none;text-align:center;padding:9px 0;color:var(--text2);font-size:var(--fs)">Gespeichert – warte...</div>
     <div id="pg-joker-wrap" style="display:none">
-      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(233,196,106,.12);border:1.5px solid rgba(233,196,106,.35);color:var(--c3)">50:50 Joker</button>
+      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(42,157,143,.1);border:1.5px solid rgba(42,157,143,.3);color:var(--c2)">50:50 Joker einsetzen</button>
     </div>
   </div>
-</div>
 
 <!-- ── RESULTS ────────────────────────────────────────────────────────────── -->
 <div id="results-screen" class="screen">
@@ -1006,14 +1071,24 @@ const Q = {
     const tStart = timerMode === 'auto' ? sNow() : null;
     const qStart = sNow();
     await update(SR, {
-      phase:'answering', currentQ:0, revealed:false,
+      phase:'category', currentQ:0, revealed:false,
       s1Answer:null, s2Answer:null,
       s1JokerUsed:false, s2JokerUsed:false, s1JokerActive:false, s2JokerActive:false, jokerHidden:[],
+      s1DoubleUsed:false, s2DoubleUsed:false, s1DoubleActive:false, s2DoubleActive:false,
       history:[], s1Judged:null, s2Judged:null,
       s1Time:null, s2Time:null, s1TotalTime:0, s2TotalTime:0, speedBonus:null,
-      questionStartTime: qStart,
-      timerMode, timerSec, timerStart:tStart, timerRunning:timerMode==='auto', timerPauseLeft:null,
+      questionStartTime: null,
+      timerMode, timerSec, timerStart:null, timerRunning:false, timerPauseLeft:null,
       lastActivity: sNow(),
+    });
+  },
+
+  // Mod shows question after category reveal
+  async showQuestion() {
+    const tStart = timerMode === 'auto' ? sNow() : null;
+    await update(SR, {
+      phase:'answering', timerStart:tStart, timerRunning:timerMode==='auto',
+      questionStartTime: sNow(), lastActivity: sNow(),
     });
   },
 
@@ -1044,16 +1119,15 @@ const Q = {
     if (nextQ >= total) {
       await update(SR, { phase:'finished', history: hist, lastActivity: sNow() });
     } else {
-      const tStart = gs.timerMode === 'auto' ? sNow() : null;
-      const qStart = sNow();
       await update(SR, {
-        currentQ: nextQ, revealed:false, phase:'answering',
+        currentQ: nextQ, revealed:false, phase:'category',
         s1Answer:null, s2Answer:null,
         s1JokerActive:false, s2JokerActive:false, jokerHidden:[],
+        s1DoubleActive:false, s2DoubleActive:false,
         s1Judged:null, s2Judged:null,
         s1Time:null, s2Time:null, speedBonus:null,
-        questionStartTime: qStart,
-        timerStart:tStart, timerRunning:gs.timerMode==='auto', timerPauseLeft:null,
+        questionStartTime: null,
+        timerStart:null, timerRunning:false, timerPauseLeft:null,
         history: hist, lastActivity: sNow(),
       });
     }
@@ -1071,6 +1145,15 @@ const Q = {
   async timerReset() {
     stopRaf();
     await update(SR, { timerRunning:false, timerStart:null, timerPauseLeft:null, lastActivity: sNow() });
+  },
+
+  // Player activates double-or-nothing joker during category phase
+  async activateDoubleJoker() {
+    if (gs.phase !== 'category') return;
+    const usedKey   = role==='s1' ? 's1DoubleUsed'   : 's2DoubleUsed';
+    const activeKey = role==='s1' ? 's1DoubleActive' : 's2DoubleActive';
+    if (gs[usedKey]) return;
+    await update(SR, { [usedKey]:true, [activeKey]:true, lastActivity: sNow() });
   },
 
   async giveJoker(player) {
@@ -1141,11 +1224,16 @@ async function answer(idx) {
   if (gs.phase !== 'answering') return;
   const q  = getPack().questions[gs.currentQ||0];
   if (q.type === 'estimate' || q.type === 'open') return;
-  const af = role === 's1' ? 's1Answer' : 's2Answer';
-  const sf = role === 's1' ? 's1Score'  : 's2Score';
-  const tf = role === 's1' ? 's1Time'   : 's2Time';
-  const u  = { [af]: idx, lastActivity: sNow() };
-  if (idx === q.r) u[sf] = (gs[sf]||0) + 1;
+  const af  = role === 's1' ? 's1Answer' : 's2Answer';
+  const sf  = role === 's1' ? 's1Score'  : 's2Score';
+  const tf  = role === 's1' ? 's1Time'   : 's2Time';
+  const dbl = role === 's1' ? gs.s1DoubleActive : gs.s2DoubleActive;
+  const u   = { [af]: idx, lastActivity: sNow() };
+  if (idx === q.r) {
+    u[sf] = (gs[sf]||0) + (dbl ? 2 : 1);  // double joker = +2
+  } else if (dbl) {
+    u[sf] = Math.max(0, (gs[sf]||0) - 1);  // double joker wrong = -1
+  }
   const elapsed = gs.questionStartTime ? sNow() - gs.questionStartTime : null;
   if (elapsed !== null) u[tf] = elapsed;
   await update(SR, u);
@@ -1194,6 +1282,31 @@ function renderMod() {
   }
   if (gs.phase === 'finished') { showScreen('results-screen'); renderResults(); return; }
   showScreen('mod-game-screen');
+  const ph = gs.phase;
+
+  // Category reveal phase
+  const catScreen = el('mg-cat-screen');
+  const mainBody  = el('mg-main-body');
+  if (ph === 'category') {
+    catScreen.style.display = 'flex';
+    mainBody.style.display  = 'none';
+    const pack2 = getPack(), total2 = pack2.questions.length;
+    const q2    = pack2.questions[gs.currentQ||0];
+    const cc2   = CC[q2.cat]||'#2A9D8F';
+    const badge = el('mg-cat-badge');
+    badge.textContent  = q2.cat;
+    badge.style.background = cc2+'22';
+    badge.style.border = `2px solid ${cc2}`;
+    badge.style.color  = cc2;
+    el('mg-cat-qnum').textContent = `Frage ${(gs.currentQ||0)+1} von ${total2}`;
+    el('mg-n1').textContent = gs.s1Name||'S1'; el('mg-n2').textContent = gs.s2Name||'S2';
+    el('mg-sc1').textContent = gs.s1Score||0; el('mg-sc2').textContent = gs.s2Score||0;
+    el('mg-prog').style.width = ((gs.currentQ||0)/total2*100)+'%';
+    el('mg-qnum').textContent = `${(gs.currentQ||0)+1} / ${total2}`;
+    return;
+  }
+  catScreen.style.display = 'none';
+  mainBody.style.display  = 'flex';
 
   const pack = getPack(), total = pack.questions.length, q = pack.questions[gs.currentQ||0];
   const n1 = gs.s1Name||'S1', n2 = gs.s2Name||'S2';
@@ -1240,7 +1353,7 @@ function renderMod() {
   }
 
   // Open panel
-  const showingPanel = isOT && (ph==='answering'||ph==='locked'||ph==='shown'||ph==='revealed');
+  const showingPanel = isOT && (ph3==='answering'||ph3==='locked'||ph3==='shown'||ph3==='revealed');
   const op = el('mg-open-panel');
   op.style.display = showingPanel ? 'flex' : 'none';
   if (showingPanel) {
@@ -1287,7 +1400,7 @@ function renderMod() {
   // Speed panel (after shown/revealed for MC questions)
   const sp = el('mg-speed-panel');
   const s1t = gs.s1Time, s2t = gs.s2Time;
-  const showSpeed = !isOT && (ph==='shown'||ph==='revealed') && (s1t!=null||s2t!=null);
+  const showSpeed = !isOT && (ph3==='shown'||ph3==='revealed') && (s1t!=null||s2t!=null);
   sp.style.display = showSpeed ? '' : 'none';
   if (showSpeed) {
     const fmt = ms => ms != null ? (ms/1000).toFixed(2)+'s' : '–';
@@ -1299,7 +1412,7 @@ function renderMod() {
       +`<div class="speed-row"><span class="speed-label">${n2}</span><span class="speed-val">${fmt(s2t)}</span></div>`
       +(winner?`<div class="speed-row"><span class="speed-label">Schnellster</span><span class="speed-winner">${winner}</span></div>`:'');
     const sj = el('mg-speed-judge');
-    if (ph === 'revealed') {
+    if (ph3 === 'revealed') {
       sj.style.display = '';
       el('spd-s1-btn').className = 'judge-btn judge-c'+(gs.speedBonus==='s1'?' on':'');
       el('spd-s2-btn').className = 'judge-btn judge-c'+(gs.speedBonus==='s2'?' on':'');
@@ -1308,14 +1421,15 @@ function renderMod() {
 
   // Fact box
   const fb = el('mg-fact-box'), fact = q.fact||null;
-  fb.style.display = (ph==='revealed'&&fact) ? '' : 'none';
-  if (ph==='revealed'&&fact) el('mg-fact-text').textContent = fact;
+  fb.style.display = (ph3==='revealed'&&fact) ? '' : 'none';
+  if (ph3==='revealed'&&fact) el('mg-fact-text').textContent = fact;
 
   // Action button
   const ab = el('mg-action-btn');
-  if (ph==='answering'||ph==='locked') { ab.textContent='Antworten zeigen'; ab.className='btn btn-ghost'; }
-  else if (ph==='shown')    { ab.textContent='Auflösen';   ab.className='btn btn-gold'; }
-  else if (ph==='revealed') { ab.textContent=(gs.currentQ||0)+1>=total?'Ergebnis':'Weiter'; ab.className='btn btn-primary'; }
+  const ph3 = gs.phase;
+  if (ph3==='answering'||ph3==='locked') { ab.textContent='Antworten zeigen'; ab.className='btn btn-ghost'; }
+  else if (ph3==='shown')    { ab.textContent='Auflösen';   ab.className='btn btn-gold'; }
+  else if (ph3==='revealed') { ab.textContent=(gs.currentQ||0)+1>=total?'Ergebnis':'Weiter'; ab.className='btn btn-primary'; }
 }
 
 // ── RENDER PLAYER ─────────────────────────────────────────────────────────
@@ -1340,6 +1454,51 @@ function renderPlayer() {
   }
 
   showScreen('player-game-screen');
+  const ph2 = gs.phase;
+  const pgCatScreen = el('pg-cat-screen');
+  const pgMainBody  = el('pg-main-body');
+
+  // Category reveal phase for player
+  if (ph2 === 'category') {
+    pgCatScreen.style.display = 'flex';
+    pgMainBody.style.display  = 'none';
+    const pack3 = getPack(), q3 = pack3.questions[gs.currentQ||0];
+    const cc3 = CC[q3.cat]||'#2A9D8F';
+    const pgBadge = el('pg-cat-badge');
+    pgBadge.textContent = q3.cat;
+    pgBadge.style.background = cc3+'22';
+    pgBadge.style.border = `2px solid ${cc3}`;
+    pgBadge.style.color  = cc3;
+    // Double joker panel
+    const myDblUsed    = role==='s1' ? !!gs.s1DoubleUsed    : !!gs.s2DoubleUsed;
+    const myDblActive  = role==='s1' ? !!gs.s1DoubleActive  : !!gs.s2DoubleActive;
+    const dblPanel = el('pg-double-panel');
+    const dblBtn   = el('pg-double-btn');
+    const dblSt    = el('pg-double-status');
+    if (myDblUsed) {
+      dblPanel.classList.add('used');
+      dblBtn.disabled = true;
+      dblSt.textContent = myDblActive ? 'Aktiv!' : 'Bereits gespielt';
+      dblSt.style.color = myDblActive ? 'var(--c3)' : 'var(--text3)';
+    } else {
+      dblPanel.classList.remove('used');
+      dblBtn.disabled = false;
+      dblSt.textContent = '';
+    }
+    // Update header
+    const n1=gs.s1Name||'S1',n2=gs.s2Name||'S2';
+    const myN4=role==='s1'?n1:n2, mySc4=role==='s1'?(gs.s1Score||0):(gs.s2Score||0);
+    const othN4=role==='s1'?n2:n1, othSc4=role==='s1'?(gs.s2Score||0):(gs.s1Score||0);
+    const pack4=getPack(),total4=pack4.questions.length;
+    el('pg-name').textContent=myN4; el('pg-other-name').textContent=othN4;
+    el('pg-score').textContent=mySc4; el('pg-other-score').textContent=othSc4;
+    el('pg-qnum').textContent=`${(gs.currentQ||0)+1} / ${total4}`;
+    el('pg-prog').style.width=((gs.currentQ||0)/total4*100)+'%';
+    return;
+  }
+  pgCatScreen.style.display = 'none';
+  pgMainBody.style.display  = 'flex';
+
   const pack=getPack(), total=pack.questions.length, q=pack.questions[gs.currentQ||0];
   const myAns=role==='s1'?gs.s1Answer:gs.s2Answer;
   const mySc=role==='s1'?(gs.s1Score||0):(gs.s2Score||0);
@@ -1350,7 +1509,7 @@ function renderPlayer() {
   const othAns=role==='s1'?gs.s2Answer:gs.s1Answer;
   const jActive=role==='s1'?!!gs.s1JokerActive:!!gs.s2JokerActive;
   const myJudged=role==='s1'?gs.s1Judged:gs.s2Judged;
-  const ph=gs.phase;
+  const ph=ph2; // use ph2 from category check above
 
   // Question text + category
   el('pg-qtxt').textContent = q.q;
@@ -1539,6 +1698,19 @@ function subscribeMod() {
     gs = snap.val(); renderMod(); resetInactivity();
   });
 }
+
+// Keep connection alive when tab is hidden/shown
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && role) {
+    // Re-read current state immediately on tab focus
+    get(SR).then(snap => {
+      if (!snap.exists()) return;
+      gs = snap.val();
+      if (role === 'moderator') renderMod();
+      else renderPlayer();
+    });
+  }
+});
 
 // Init
 setTimeout(() => { el('t-sec-wrap').style.display = 'none'; }, 0);
