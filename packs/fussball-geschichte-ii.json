@@ -1,0 +1,189 @@
+{
+  "name": "Fußball Geschichte II",
+  "emoji": "⚽",
+  "questions": [
+    {
+      "q": "Wer war der Torschützenkönig (Golden Boot / Goldener Schuh) der WM 2018 in Russland?",
+      "a": [
+        "Lionel Messi (Argentinien)",
+        "Harry Kane (England)",
+        "Romelu Lukaku (Belgien)",
+        "Kylian Mbappé (Frankreich)"
+      ],
+      "r": 1,
+      "cat": "WM Geschichte",
+      "type": "mc",
+      "fact": "Harry Kane erzielte 6 Tore und gewann den Goldenen Schuh vor Antoine Griezmann und Romelu Lukaku (je 3). England schied im Halbfinale gegen Kroatien aus. Kane traf davon dreimal per Elfmeter – was heftig diskutiert wurde."
+    },
+    {
+      "q": "Welcher Verein gewann als erster die UEFA Champions League mit einer ungeschlagenen Gruppenphase und K.O.-Runde?",
+      "a": [
+        "AC Milan (1994)",
+        "Ajax Amsterdam (1995)",
+        "Manchester United (1999)",
+        "FC Bayern München (2020)"
+      ],
+      "r": 3,
+      "cat": "Europapokal",
+      "type": "mc",
+      "fact": "Bayern München gewann die Champions League 2020 im Finalturnier in Lissabon mit 11 Siegen aus 11 Spielen – als erstes Team ohne ein einziges Unentschieden oder eine Niederlage. Trainer war Hansi Flick, der erst im November 2019 übernommen hatte."
+    },
+    {
+      "q": "In welchem Jahr fand die erste UEFA Europameisterschaft (European Championship) statt?",
+      "answer": 1960,
+      "cat": "Geschichte & Regelwerk",
+      "type": "estimate",
+      "fact": "Die erste EM fand 1960 in Frankreich statt – mit nur 4 Teams im Finalturnier. Die Sowjetunion gewann das Finale 2:1 gegen Jugoslawien. Deutschland und England boykottierten das Turnier damals. Westdeutschland nahm erst ab 1972 teil."
+    },
+    {
+      "q": "Welcher Spieler hält den Rekord für die meisten Tore in einer einzigen Champions-League-Saison (17 Tore, 2013/14)?",
+      "a": [
+        "Lionel Messi (FC Barcelona)",
+        "Cristiano Ronaldo (Real Madrid)",
+        "Robert Lewandowski (FC Bayern)",
+        "Ruud van Nistelrooy (Manchester United)"
+      ],
+      "r": 1,
+      "cat": "Rekorde",
+      "type": "mc",
+      "fact": "Cristiano Ronaldo traf in der Saison 2013/14 sage und schreibe 17 Mal in der Champions League – ein Rekord der bis heute steht. Real Madrid gewann das Turnier in jenem Jahr durch einen 4:1-Sieg gegen Atletico Madrid im Finale."
+    },
+    {
+      "q": "Was war das höchste Ergebnis in der Geschichte der FIFA Weltmeisterschaften?",
+      "a": [
+        "Deutschland 8:0 Saudi-Arabien (2002)",
+        "Ungarn 10:1 El Salvador (1982)",
+        "Jugoslawien 9:0 Zaire (1974)",
+        "Ungarn 10:1 El Salvador und Deutschland 8:0 Saudi-Arabien"
+      ],
+      "r": 1,
+      "cat": "Rekorde",
+      "type": "mc",
+      "fact": "Ungarn besiegte El Salvador bei der WM 1982 in Spanien mit 10:1 – das höchste Ergebnis der WM-Geschichte. Sandor Kocsis erzielte dabei vier Tore. El Salvador kassierte in der gesamten Gruppenphase 13 Gegentore."
+    },
+    {
+      "q": "Welcher Nationaltrainer führte Griechenland zum überraschenden EM-Titel 2004 in Portugal?",
+      "a": [
+        "Angelos Anastasiadis",
+        "Fernando Santos",
+        "Otto Rehhagel (Deutschland)",
+        "Takis Lemonis"
+      ],
+      "r": 2,
+      "cat": "WM Geschichte",
+      "type": "mc",
+      "fact": "Otto Rehhagel, der 'König Otto', gewann mit Griechenland die EM 2004 – eines der größten Turnierüberraschungen der Geschichte. Griechenland besiegte im Finale den Gastgeber Portugal 1:0. Rehhagel hatte den Posten 2001 übernommen und die Griechen komplett umgeformt."
+    },
+    {
+      "q": "Wie heißt das Stadion, in dem Real Madrid seine Heimspiele austrägt?",
+      "a": [
+        "Camp Nou",
+        "Bernabéu (Estadio Santiago Bernabéu)",
+        "Metropolitano (Wanda Metropolitano)",
+        "Mestalla"
+      ],
+      "r": 1,
+      "cat": "Spielwelt",
+      "type": "mc",
+      "fact": "Das Estadio Santiago Bernabéu fasst ca. 81.000 Zuschauer und ist seit 1947 Heimstadion von Real Madrid. Es wurde nach dem langjährigen Vereinspräsidenten Santiago Bernabéu benannt, der Real zu einem der größten Klubs der Welt formte."
+    },
+    {
+      "q": "Wie viele WM-Titel hat die argentinische Nationalmannschaft insgesamt gewonnen (Stand 2023)?",
+      "answer": 3,
+      "cat": "WM Geschichte",
+      "type": "estimate",
+      "fact": "Argentinien gewann die WM 1978 (Heimturnier), 1986 (mit Maradonas 'Hand Gottes') und 2022 in Katar, wo Lionel Messi nach dem Elfmeterschießen gegen Frankreich seinen einzigen WM-Titel holte. Das Finale gilt als eines der besten in der WM-Geschichte."
+    },
+    {
+      "q": "Welcher Klub hat die meisten UEFA Champions League / Europapokal der Landesmeister Titel gewonnen?",
+      "a": [
+        "FC Barcelona (14 Titel)",
+        "AC Milan (12 Titel)",
+        "Real Madrid CF (15 Titel)",
+        "FC Bayern München (10 Titel)"
+      ],
+      "r": 2,
+      "cat": "Europapokal",
+      "type": "mc",
+      "fact": "Real Madrid hat 15 Champions-League-Titel – mehr als doppelt so viele wie der Zweitplatzierte AC Milan (7). Allein zwischen 2016 und 2018 gewann Real dreimal in Folge. Carlo Ancelotti ist der einzige Trainer mit vier Champions-League-Titeln."
+    },
+    {
+      "q": "Wie nennt man die Taktik, bei der eine Mannschaft den Ball absichtlich in den eigenen Reihen hält ohne zu attackieren?",
+      "a": [
+        "Pressing",
+        "Tiki-Taka",
+        "Catenaccio",
+        "Gegenpressen"
+      ],
+      "r": 1,
+      "cat": "Geschichte & Regelwerk",
+      "type": "mc",
+      "fact": "Tiki-Taka wurde durch Pep Guardiolas FC Barcelona (2008–2012) weltberühmt. Johan Cruyff legte den Grundstein dafür mit dem 'totalen Fußball' der 1970er. Spanien gewann mit diesem Stil WM 2010 und EM 2008 und 2012."
+    },
+    {
+      "q": "Wer erzielte das legendäre 'Tor des Jahrhunderts' bei der WM 1986 gegen England?",
+      "a": [
+        "Carlos Valderrama",
+        "Diego Maradona",
+        "Romário",
+        "Gabriel Batistuta"
+      ],
+      "r": 1,
+      "cat": "Legenden",
+      "type": "mc",
+      "fact": "Maradona dribbelte im Viertelfinale 1986 in Mexico City von der eigenen Hälfte aus an fünf englischen Spielern vorbei – 10,8 Sekunden, 60 Meter. FIFA-Fans wählten es 2002 zum Tor des Jahrhunderts. Im selben Spiel erzielte er auch das berüchtigte 'Hand Gottes'-Tor."
+    },
+    {
+      "q": "Welche Nation wurde bei der WM 2010 in Südafrika Weltmeister?",
+      "a": [
+        "Brasilien",
+        "Deutschland",
+        "Spanien",
+        "Niederlande"
+      ],
+      "r": 2,
+      "cat": "WM Geschichte",
+      "type": "mc",
+      "fact": "Spanien besiegte die Niederlande 1:0 durch ein Tor von Andrés Iniesta in der Verlängerung. Es war Spaniens erster WM-Titel. Das Finale in Johannesburg gilt als eines der brutalsten – Schiedsrichter Howard Webb zeigte 14 Gelbe und eine Rote Karte."
+    },
+    {
+      "q": "Welcher Verein gewann als erster das Triple (Meisterschaft, Pokal, Champions League) in einer Saison?",
+      "a": [
+        "Ajax Amsterdam (1971/72)",
+        "FC Barcelona (2008/09)",
+        "Manchester United (1998/99)",
+        "Juventus Turin (1984/85)"
+      ],
+      "r": 2,
+      "cat": "Rekorde",
+      "type": "mc",
+      "fact": "Manchester United gewann 1999 unter Sir Alex Ferguson Meisterschaft, FA Cup und Champions League. Das CL-Finale gegen Bayern München gewannen sie durch zwei Tore in der Nachspielzeit – Sheringham (90.+1) und Solskjær (90.+3). Bayern hatte 89 Minuten lang geführt."
+    },
+    {
+      "q": "In welcher Stadt wurde der Weltfußballverband FIFA (Fédération Internationale de Football Association) 1904 gegründet?",
+      "a": [
+        "London",
+        "Zürich",
+        "Paris",
+        "Amsterdam"
+      ],
+      "r": 2,
+      "cat": "Geschichte & Regelwerk",
+      "type": "mc",
+      "fact": "Die FIFA wurde am 21. Mai 1904 in Paris von Vertretern aus Frankreich, Belgien, Dänemark, den Niederlanden, Spanien, Schweden und der Schweiz gegründet. England war zunächst kein Gründungsmitglied – trat aber noch im selben Jahr bei."
+    },
+    {
+      "q": "Welcher deutsche Bundesliga-Verein hat die meisten Deutschen Meisterschaften gewonnen?",
+      "a": [
+        "Borussia Dortmund",
+        "Borussia Mönchengladbach",
+        "FC Bayern München",
+        "Hamburger SV"
+      ],
+      "r": 2,
+      "cat": "Legenden",
+      "type": "mc",
+      "fact": "Der FC Bayern München hat 32 Deutsche Meisterschaften gewonnen (Stand 2023), darunter 11 in Folge von 2013 bis 2023. Borussia Dortmund folgt mit 8 Titeln. Der Hamburger SV ist der einzige Verein, der seit Gründung der Bundesliga 1963 ununterbrochen erstklassig spielte – bis zum Abstieg 2018."
+    }
+  ]
+}
