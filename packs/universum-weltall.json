@@ -1,0 +1,189 @@
+{
+  "name": "Universum & Weltall",
+  "emoji": "🔭",
+  "questions": [
+    {
+      "q": "Wie alt ist das Universum nach aktuellem wissenschaftlichem Stand ungefähr (in Milliarden Jahren)?",
+      "answer": 14,
+      "cat": "Astronomie",
+      "type": "estimate",
+      "fact": "Das Universum ist ca. 13,8 Milliarden Jahre alt – bestimmt durch die kosmische Hintergrundstrahlung und die Expansion des Universums. Die Erde selbst ist ca. 4,5 Milliarden Jahre alt – das Universum ist also dreimal so alt wie unsere Erde."
+    },
+    {
+      "q": "Welcher Planet unseres Sonnensystems hat den kürzesten Tag (rotiert am schnellsten um seine eigene Achse)?",
+      "a": [
+        "Neptun",
+        "Saturn",
+        "Jupiter",
+        "Uranus"
+      ],
+      "r": 2,
+      "cat": "Sonnensystem",
+      "type": "mc",
+      "fact": "Jupiter rotiert in nur ca. 9 Stunden und 56 Minuten – trotz seines enormen Durchmessers von 142.984 km. Diese schnelle Rotation führt zu einer merklichen Abflachung an den Polen und erzeugt die charakteristischen Wolkenbänder und den Großen Roten Fleck."
+    },
+    {
+      "q": "Was ist ein Pulsar?",
+      "a": [
+        "Ein explodierender Stern (Supernova)",
+        "Ein rotierender Neutronenstern der regelmäßige Strahlungsimpulse aussendet",
+        "Ein Schwarzes Loch mit Jet-Strahlung",
+        "Ein Doppelsternsystem mit variierender Helligkeit"
+      ],
+      "r": 1,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Pulsare rotieren bis zu 716 Mal pro Sekunde und senden dabei Radiowellen aus wie ein kosmischer Leuchtturm. Als Jocelyn Bell Burnell 1967 den ersten Pulsar entdeckte, nannten die Forscher das Signal zunächst 'LGM-1' (Little Green Men) – wegen der unglaublichen Regelmäßigkeit."
+    },
+    {
+      "q": "Welches Raumfahrzeug hat als erstes die Grenze des Sonnensystems offiziell verlassen?",
+      "a": [
+        "Pioneer 10",
+        "New Horizons",
+        "Voyager 2",
+        "Voyager 1"
+      ],
+      "r": 3,
+      "cat": "Raumfahrt",
+      "type": "mc",
+      "fact": "Voyager 1 überschritt 2012 die Heliopause und betrat den interstellaren Raum – als erstes von Menschen gebautes Objekt. Es wurde 1977 gestartet und sendet noch heute Daten. Die Signale brauchen über 22 Stunden um die Erde zu erreichen."
+    },
+    {
+      "q": "Wie nennt man den Punkt auf einer Ellipsenbahn, an dem ein Himmelskörper der Sonne am nächsten ist?",
+      "a": [
+        "Aphelion (Aphel)",
+        "Perigäum",
+        "Perihel (Perihelion)",
+        "Ekliptik"
+      ],
+      "r": 2,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Das Perihel der Erde liegt im Januar (ca. 147 Mio. km) – überraschend für Bewohner der Nordhalbkugel, die im Januar Winter haben. Das Aphel (größte Entfernung) liegt im Juli bei ca. 152 Mio. km. Die Jahreszeiten entstehen durch die Erdachsenneigung, nicht durch die Entfernung zur Sonne."
+    },
+    {
+      "q": "Welches Teleskop entdeckte 1992 erstmals direkte Belege für Galaxien in der Frühphase des Universums und revolutionierte die Kosmologie?",
+      "a": [
+        "Keck-Observatorium (Hawaii)",
+        "Hubble-Weltraumteleskop (HST)",
+        "Spitzer-Weltraumteleskop",
+        "Very Large Array (VLA)"
+      ],
+      "r": 1,
+      "cat": "Raumfahrt",
+      "type": "mc",
+      "fact": "Das Hubble Space Telescope wurde 1990 gestartet – zunächst mit einem Fehler im Hauptspiegel. 1993 reparierten Astronauten es im Weltraum. Die berühmten 'Hubble Deep Fields' zeigten Tausende von Galaxien in einem Himmelsausschnitt der Größe eines Sandkorns auf Armeslänge."
+    },
+    {
+      "q": "Welches Phänomen entsteht, wenn ein massenreicher Stern am Ende seines Lebens kollabiert und dabei eine gigantische Explosion aussendet?",
+      "a": [
+        "Neutronensternverschmelzung (Kilonova)",
+        "Supernova",
+        "Gammastrahlenausbruch (GRB)",
+        "Novae"
+      ],
+      "r": 1,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Eine Supernova kann für kurze Zeit heller als eine ganze Galaxie strahlen – Milliarden von Sternen. Die Supernova 1987A in der Großen Magellanschen Wolke war die erste, die mit bloßem Auge seit 400 Jahren sichtbar war. Supernovae produzieren die schweren Elemente – alles Gold auf der Erde entstand in solchen Explosionen."
+    },
+    {
+      "q": "Wie viele Monde hat der Planet Saturn (Stand 2023, nach offizieller Bestätigung)?",
+      "answer": 146,
+      "cat": "Sonnensystem",
+      "type": "estimate",
+      "fact": "2023 wurden 62 neue Saturnmonde bestätigt – damit überholte Saturn Jupiter als mondreichsten Planeten. Die meisten sind winzige Brocken unter 5 km Durchmesser. Titan ist mit Abstand der größte: er hat eine dichte Atmosphäre und Seen aus flüssigem Methan."
+    },
+    {
+      "q": "Was versteht man unter der 'Chandrasekhar-Grenze' in der Astrophysik?",
+      "a": [
+        "Die maximale Geschwindigkeit eines Neutronensterns",
+        "Die Maximalmasse eines weißen Zwergs bevor er kollabiert (ca. 1,4 Sonnenmassen)",
+        "Die Mindestmasse für die Entstehung eines schwarzen Lochs",
+        "Der Ereignishorizont eines mittelschweren schwarzen Lochs"
+      ],
+      "r": 1,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Subrahmanyan Chandrasekhar berechnete 1930 diese Grenze auf dem Schiff von Indien nach England – mit 19 Jahren. Überschreitet ein weißer Zwerg 1,4 Sonnenmassen, kollabiert er zur Supernova Typ Ia. Diese Supernovae sind als 'Standardkerzen' fundamental für die Entfernungsmessung im Universum."
+    },
+    {
+      "q": "Welcher Planet besitzt einen Sturm namens 'Großer Roter Fleck' (Great Red Spot), der seit mindestens 350 Jahren andauert?",
+      "a": [
+        "Saturn",
+        "Neptun",
+        "Jupiter",
+        "Uranus"
+      ],
+      "r": 2,
+      "cat": "Sonnensystem",
+      "type": "mc",
+      "fact": "Der Große Rote Fleck ist ein Antizyklonsturm, der größer als die Erde ist – obwohl er seit dem 19. Jahrhundert schrumpft. Astronomen beobachten ihn seit Galileo. Der Sturm auf Neptun ('Großer Dunkler Fleck') verschwand 1994 wieder – was Jupiters Persistenz noch bemerkenswerter macht."
+    },
+    {
+      "q": "Welches ist die der Erde nächstgelegene Galaxie (keine Zwerggalaxie)?",
+      "a": [
+        "Dreiecksgalaxie (Triangulum, M33)",
+        "Kleine Magellansche Wolke (SMC)",
+        "Andromedagalaxie (M31)",
+        "Große Magellansche Wolke (LMC)"
+      ],
+      "r": 2,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Die Andromedagalaxie ist ca. 2,5 Millionen Lichtjahre entfernt und nähert sich der Milchstraße mit ca. 110 km/s. In etwa 4,5 Milliarden Jahren werden beide Galaxien kollidieren und zu einer Ellipsengalaxie verschmelzen. Andromeda ist mit bloßem Auge sichtbar – das weiteste Objekt das Menschen ohne Hilfsmittel sehen können."
+    },
+    {
+      "q": "Welche Raumsonde landete als erste erfolgreich auf dem Mars und sendete Bilder zurück?",
+      "a": [
+        "Mars Global Surveyor (NASA, 1997)",
+        "Viking 1 (NASA, 1976)",
+        "Mars 3 (UdSSR, 1971)",
+        "Mariner 9 (NASA, 1971)"
+      ],
+      "r": 2,
+      "cat": "Raumfahrt",
+      "type": "mc",
+      "fact": "Mars 3 der Sowjetunion landete zwar 1971 als erste Sonde weich auf dem Mars, brach aber nach 20 Sekunden den Kontakt ab. Viking 1 (1976) war die erste Sonde die erfolgreich und langfristig Bilder und Daten lieferte. Sie suchte auch nach Lebenszeichen – mit uneindeutigen Ergebnissen."
+    },
+    {
+      "q": "Was ist der 'Ereignishorizont' (Event Horizon) eines schwarzen Lochs?",
+      "a": [
+        "Die Scheibe aus Gas und Staub um das schwarze Loch",
+        "Die Grenze, jenseits derer selbst Licht nicht entkommen kann",
+        "Der Bereich maximaler Gravitationsverzerrung um das schwarze Loch",
+        "Der Punkt an dem Materie zur Singularität komprimiert wird"
+      ],
+      "r": 1,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Am Ereignishorizont beträgt die Fluchtgeschwindigkeit exakt Lichtgeschwindigkeit. Da nichts schneller als Licht ist, kann nichts entkommen. 2019 wurde erstmals ein Bild eines schwarzen Lochs aufgenommen – M87* in 55 Millionen Lichtjahren Entfernung, vom Event Horizon Telescope."
+    },
+    {
+      "q": "Wie nennt man die kosmische Hintergrundstrahlung (Cosmic Microwave Background), die als 'Echo des Urknalls' gilt?",
+      "a": [
+        "Röntgenhintergrundstrahlung",
+        "Gammastrahlen-Hintergrund",
+        "Mikrowellen-Hintergrundstrahlung (CMB)",
+        "Infrarot-Hintergrundstrahlung"
+      ],
+      "r": 2,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Die CMB wurde 1964 zufällig von Penzias und Wilson entdeckt – sie hielten das Rauschen zunächst für Taubendreck auf ihrer Antenne. Die Strahlung stammt aus ca. 380.000 Jahren nach dem Urknall, als das Universum abkühlte und Atome sich bilden konnten. Sie beträgt heute ca. -270°C."
+    },
+    {
+      "q": "Was besagt das 'Fermi-Paradoxon' in der Astrobiologie?",
+      "a": [
+        "Die Unmöglichkeit von schneller als Licht Reisen",
+        "Der Widerspruch zwischen der hohen Wahrscheinlichkeit außerirdischen Lebens und dem Ausbleiben jeglichen Kontakts",
+        "Die Theorie dass das Universum in Blasen-Multiversen unterteilt ist",
+        "Die Berechnung der Anzahl kommunikationsfähiger Zivilisationen (Drake-Gleichung)"
+      ],
+      "r": 1,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Enrico Fermi fragte 1950: 'Wo sind sie alle?' Angesichts von 400 Milliarden Sternen in der Milchstraße und Milliarden ähnlicher Galaxien erscheint es statistisch unmöglich, dass wir allein sind. Mögliche Erklärungen: Die Große Filter-Hypothese, dass intelligentes Leben sich selbst auslöscht, oder die Zoo-Hypothese."
+    }
+  ]
+}
