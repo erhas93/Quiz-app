@@ -5,497 +5,218 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Quiz App</title>
 <style>
-/* ── DESIGN TOKENS ───────────────────────────────────────────────────────── */
 :root {
-  /* ── PALETTE (Farooq Design) ───────────────────── */
-  --c1: #264653;   /* Dunkelblau-Grün – Hintergrund   */
-  --c2: #2A9D8F;   /* Türkis – S2, primäre Akzente    */
-  --c3: #E9C46A;   /* Gold – Highlights, Timer, Joker  */
-  --c4: #F4A261;   /* Orange – S1, Warnungen           */
-  --c5: #E76F51;   /* Koralle – Fehler, Rot            */
-
-  /* ── SEMANTIC ALIASES ──────────────────────────── */
-  --s1:    var(--c4);          /* Spieler 1 orange     */
-  --s2:    var(--c2);          /* Spieler 2 türkis     */
-  --gold:  var(--c3);
-  --green: var(--c2);          /* Richtig = türkis     */
-  --red:   var(--c5);          /* Falsch  = koralle    */
-  --orange:var(--c4);
-
-  /* ── COMPAT ALIASES ───────────────────────────── */
-  --blue:      var(--c2);
-  --blue-dark: #1f7a6e;
-  --blue-dim:  rgba(42,157,143,0.15);
-  --blue-b:    rgba(42,157,143,0.35);
-
-  /* ── BACKGROUNDS (3 layers from c1) ────────────── */
-  --bg:  #1a3340;   /* darkest  */
-  --bg2: #1e3d4a;   /* mid      */
-  --bg3: #264653;   /* = c1, lightest layer */
-
-  /* ── CARDS ──────────────────────────────────────── */
-  --card:   rgba(255,255,255,0.06);
-  --card-b: rgba(255,255,255,0.1);
-  --card2:  rgba(255,255,255,0.1);
-
-  /* ── TEXT ───────────────────────────────────────── */
-  --text:  #f0f4f4;
-  --text2: #7aabb0;
-  --text3: #4a7a80;
-
-  /* ── LAYOUT ─────────────────────────────────────── */
-  --r:         14px;
-  --r-sm:      10px;
-  --r-lg:      20px;
-  --t:         .18s ease;
-  --shadow:    0 4px 16px rgba(0,0,0,0.4);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --hdr-h:     20vh;
-
-  /* ── TYPOGRAPHY (2 sizes only) ──────────────────── */
-  --fs:    1rem;
-  --fs-lg: 1.2rem;
+  --c1:#264653; --c2:#2A9D8F; --c3:#E9C46A; --c4:#F4A261; --c5:#E76F51;
+  --s1:var(--c4); --s2:var(--c2); --gold:var(--c3); --green:var(--c2); --red:var(--c5); --orange:var(--c4);
+  --bg:#1a3340; --bg2:#1e3d4a; --bg3:#264653;
+  --card:rgba(255,255,255,0.06); --card-b:rgba(255,255,255,0.1);
+  --text:#f0f4f4; --text2:#7aabb0; --text3:#4a7a80;
+  --r:14px; --r-sm:10px; --r-lg:20px; --t:.18s ease;
+  --shadow:0 4px 16px rgba(0,0,0,0.4); --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+  --hdr-h:22vh; --fs:1rem; --fs-lg:1.2rem;
 }
-
 [data-theme="light"] {
-  --bg:    #e8f0ef;
-  --bg2:   #d4e8e5;
-  --bg3:   #c0ddd8;
-  --card:  rgba(255,255,255,0.82);
-  --card-b:rgba(42,157,143,0.2);
-  --card2: rgba(255,255,255,0.95);
-  --text:  #132028;
-  --text2: #2a6b65;
-  --text3: #5a9a94;
-  --shadow:    0 4px 16px rgba(0,0,0,0.1);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
+  --bg:#e8f0ef; --bg2:#d4e8e5; --bg3:#c0ddd8;
+  --card:rgba(255,255,255,0.82); --card-b:rgba(42,157,143,0.2);
+  --text:#132028; --text2:#2a6b65; --text3:#5a9a94;
+  --shadow:0 4px 16px rgba(0,0,0,0.1); --shadow-sm:0 2px 8px rgba(0,0,0,0.07);
 }
-
-/* ── RESET ───────────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; font-size: 16px; }
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg); color: var(--text);
-  display: flex; flex-direction: column; align-items: center;
-  height: 100vh; overflow: hidden;
-  transition: background var(--t), color var(--t);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;height:100dvh;overflow:hidden}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);
+  display:flex;flex-direction:column;align-items:center;height:100%;height:100dvh;overflow:hidden;
+  transition:background var(--t),color var(--t)}
+.screen{display:none;width:100%;max-width:480px}
+.screen.active{display:flex;flex-direction:column}
+#role-screen.active,#lobby-mod-screen.active,#lobby-player-screen.active,#results-screen.active{
+  height:100%;overflow-y:auto;padding:24px 16px max(60px,env(safe-area-inset-bottom,60px));gap:14px;justify-content:center;align-items:center}
+#mod-game-screen.active,#player-game-screen.active{height:100%;overflow:hidden}
+/* ── GAME LAYOUT ── */
+.g-hdr{
+  height:var(--hdr-h);min-height:var(--hdr-h);max-height:var(--hdr-h);
+  background:var(--bg2);border-bottom:2px solid var(--card-b);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:10px 14px 8px;flex-shrink:0;flex-grow:0;width:100%;
 }
-
-/* ── SCREENS ─────────────────────────────────────────────────────────────── */
-.screen { display: none; width: 100%; max-width: 480px; }
-.screen.active { display: flex; flex-direction: column; }
-
-#role-screen.active,
-#lobby-mod-screen.active,
-#lobby-player-screen.active,
-#results-screen.active {
-  height: 100vh; overflow-y: auto;
-  padding: 24px 16px; gap: 14px;
-  justify-content: center; align-items: center;
+.g-body{
+  flex:1 1 0;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;display:flex;flex-direction:column;
+  gap:9px;padding:12px 14px max(80px, env(safe-area-inset-bottom, 80px));background:var(--bg);
 }
-
-#mod-game-screen.active,
-#player-game-screen.active {
-  height: 100vh; overflow: hidden; flex-direction: column;
+.g-actions{
+  background:var(--bg);border-top:1px solid var(--card-b);
+  padding:10px 14px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  flex-shrink:0;position:sticky;bottom:0;z-index:10;
 }
-
-/* ── GAME LAYOUT ─────────────────────────────────────────────────────────── */
-.g-hdr {
-  height: var(--hdr-h);
-  min-height: var(--hdr-h);
-  max-height: var(--hdr-h);
-  background: var(--bg2);
-  border-bottom: 2px solid var(--card-b);
-  display: flex; flex-direction: column;
-  justify-content: space-between;
-  padding: 10px 14px 8px;
-  flex-shrink: 0; width: 100%;
-}
-.g-body {
-  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  padding: 12px 14px 24px;
-  display: flex; flex-direction: column; gap: 9px;
-  width: 100%; min-height: 0;
-  background: var(--bg);
-}
-
-/* ── HEADER ROWS ─────────────────────────────────────────────────────────── */
-.hdr-r1 {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-right: 52px; /* space for theme button */
-}
-.hdr-badge {
-  font-size: var(--fs); font-weight: 800; letter-spacing: .04em;
-  color: #fff;
-  background: var(--c2);
-  border-radius: var(--r-sm); padding: 4px 12px;
-}
-.hdr-badge.mod { background: linear-gradient(135deg, var(--gold), #c9973a); color: #132028; }
-.hdr-qnum { font-size: var(--fs); font-weight: 600; color: var(--text2); }
-
-.hdr-scores { display: flex; gap: 10px; }
-.hdr-sbox {
-  flex: 1; background: var(--bg3); border-radius: var(--r-sm);
-  padding: 6px 12px;
-  display: flex; align-items: center; justify-content: space-between;
-  border: 1px solid var(--card-b);
-}
-.hdr-sname {
-  font-size: var(--fs); font-weight: 700;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;
-}
-.hdr-spts {
-  font-size: var(--fs-lg); font-weight: 900; flex-shrink: 0;
-}
-
-.hdr-r3 { display: flex; flex-direction: column; gap: 6px; }
-.prog-wrap { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
-.prog-fill { height: 100%; background: var(--c2); border-radius: 99px; transition: width .4s; }
-
-/* Timer */
-.hdr-timer { display: none; align-items: center; gap: 10px; }
-.hdr-timer.on { display: flex; }
-.t-num {
-  font-size: var(--fs-lg); font-weight: 900; min-width: 52px;
-  text-align: center; font-variant-numeric: tabular-nums;
-  color: var(--text); transition: color .3s;
-}
-.t-num.warn   { color: var(--orange); }
-.t-num.urgent { color: var(--c5); animation: pulse .5s infinite alternate; }
-@keyframes pulse { from { opacity: 1; } to { opacity: .35; } }
-.t-track { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
-.t-fill  { height: 100%; border-radius: 99px; transition: width .25s linear, background .5s; background: var(--c2); }
-.t-btns  { display: flex; gap: 6px; flex-shrink: 0; }
-
-/* ── CARDS ───────────────────────────────────────────────────────────────── */
-.card {
-  background: var(--bg2); border: 1px solid var(--card-b);
-  border-radius: var(--r-lg); padding: 18px;
-  box-shadow: var(--shadow-sm);
-}
-.card-inner {
-  background: var(--bg3); border: 1px solid var(--card-b);
-  border-radius: var(--r); padding: 14px;
-}
-
-/* ── QUESTION BOX ────────────────────────────────────────────────────────── */
-.q-box {
-  background: var(--bg2); border: 1px solid var(--card-b);
-  border-left: 3px solid var(--c2);
-  border-radius: var(--r-lg); padding: 16px 18px;
-  box-shadow: var(--shadow-sm);
-}
-.q-cat {
-  display: inline-block; border-radius: var(--r-sm);
-  padding: 3px 10px; font-size: var(--fs); font-weight: 600;
-  margin-bottom: 9px;
-}
-.q-text { font-size: var(--fs-lg); font-weight: 700; line-height: 1.5; color: var(--text); }
-
-/* ── ANSWERS ─────────────────────────────────────────────────────────────── */
-.answers { display: flex; flex-direction: column; gap: 8px; }
-.ans {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 16px; border-radius: var(--r);
-  border: 1.5px solid var(--card-b); background: var(--bg2);
-  color: var(--text); font-size: var(--fs); font-weight: 500;
-  cursor: pointer; transition: all .15s; user-select: none;
-  box-shadow: var(--shadow-sm);
-}
-.ans:hover:not(.disabled) {
-  border-color: var(--c2); background: rgba(42,157,143,.12);
-  transform: translateY(-1px); box-shadow: var(--shadow);
-}
-.ans.correct { background: rgba(42,157,143,.18); border-color: var(--c2); color: var(--c2); }
-.ans.wrong   { background: rgba(231,111,81,.14); border-color: var(--c5); color: var(--c5);  }
-.ans.pending { background: rgba(42,157,143,.15); border-color: var(--c2); color: var(--c2); }
-.ans.faded   { opacity: .3; }
-.ans.hidden  { opacity: .08; pointer-events: none; }
-.ans.disabled { cursor: default; }
-.ans.disabled:not(.correct):not(.wrong):not(.pending):hover { transform: none; box-shadow: var(--shadow-sm); }
-.ans-l {
-  width: 30px; height: 30px; border-radius: var(--r-sm); flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: var(--fs); font-weight: 800;
-  background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.1);
-  color: var(--text2);
-}
-.ans.correct .ans-l { background: rgba(42,157,143,.22); border-color: var(--c2); color: var(--c2); }
-.ans.wrong   .ans-l { background: rgba(231,111,81,.2);  border-color: var(--c5); color: var(--c5);  }
-.ans.pending .ans-l { background: rgba(42,157,143,.15); border-color: var(--c2); color: var(--c2); }
-.ans-markers { margin-left: auto; display: flex; gap: 4px; flex-shrink: 0; }
-.mkr {
-  padding: 2px 7px; border-radius: 5px;
-  font-size: .75rem; font-weight: 800; border: 1.5px solid;
-}
-.mkr1 { background: rgba(244,162,97,.2); border-color: var(--c4); color: var(--c4); }
-.mkr2 { background: rgba(42,157,143,.2); border-color: var(--c2); color: var(--c2); }
-
-/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
-.btn {
-  padding: 12px 20px; border: none; border-radius: var(--r);
-  font-size: var(--fs); font-weight: 700; cursor: pointer;
-  transition: opacity var(--t), transform .1s;
-  display: inline-flex; align-items: center; gap: 7px;
-  box-shadow: var(--shadow-sm);
-}
-.btn:active  { transform: scale(.97); }
-.btn:hover   { opacity: .87; }
-.btn:disabled { opacity: .3; cursor: default; transform: none; }
-.btn-primary { background: var(--c2); color: #fff; }
-.btn-ghost   { background: var(--bg3); border: 1px solid var(--card-b); color: var(--text2); }
-.btn-danger  { background: rgba(231,111,81,.14); border: 1px solid rgba(231,111,81,.3); color: var(--c5); }
-.btn-gold    { background: linear-gradient(135deg, #e9c46a, #d4a843); color: #132028; }
-.btn-green   { background: rgba(42,157,143,.15); border: 1px solid rgba(42,157,143,.35); color: var(--c2); }
-.btn-full    { width: 100%; justify-content: center; }
-.btn-sm      { padding: 7px 12px; font-size: .82rem; }
-
-/* ── STATUS BAR ──────────────────────────────────────────────────────────── */
-.status-bar {
-  text-align: center; padding: 9px 16px; border-radius: var(--r);
-  background: var(--bg2); border: 1px solid var(--card-b);
-  font-size: var(--fs); color: var(--text2); font-weight: 500;
-}
-
-/* ── MOD PANELS ──────────────────────────────────────────────────────────── */
-.fact-box {
-  background: rgba(233,196,106,.08); border: 1px solid rgba(233,196,106,.3);
-  border-radius: var(--r); padding: 14px 16px;
-}
-.fact-text { color: var(--text2); font-size: var(--fs); line-height: 1.65; }
-.est-hint {
-  padding: 12px 14px; border-radius: var(--r);
-  background: rgba(233,196,106,.08); border: 1px solid rgba(233,196,106,.28);
-  font-size: var(--fs); color: var(--text2); line-height: 1.75;
-}
-.est-hint strong { color: var(--c3); }
-.judge-row { display: flex; gap: 8px; margin-top: 10px; }
-.judge-btn {
-  flex: 1; padding: 10px; border: 1.5px solid; border-radius: var(--r);
-  font-size: var(--fs); font-weight: 700; cursor: pointer; transition: opacity var(--t), background var(--t);
-}
-.judge-btn:hover { opacity: .85; }
-.judge-c       { background: rgba(42,157,143,.14); border-color: var(--c2); color: var(--c2); }
-.judge-w       { background: rgba(231,111,81,.14); border-color: var(--c5); color: var(--c5);  }
-.judge-c.on    { background: var(--c2); color: #fff; border-color: var(--c2); }
-.judge-w.on    { background: var(--c5); color: #fff; border-color: var(--c5); }
-
-/* ── INPUT ANSWER ────────────────────────────────────────────────────────── */
-.ans-input-wrap { display: flex; flex-direction: column; gap: 10px; }
-.ans-input {
-  width: 100%; padding: 14px 18px; border-radius: var(--r);
-  border: 1.5px solid var(--card-b); background: var(--bg2);
-  color: var(--text); font-size: var(--fs-lg); font-weight: 700;
-  text-align: center; outline: none; transition: border-color var(--t);
-  box-shadow: var(--shadow-sm);
-}
-.ans-input:focus { border-color: var(--c2); }
-.ans-input::placeholder { color: var(--text3); font-weight: 400; font-size: var(--fs); }
-.ans-confirm {
-  width: 100%; padding: 13px; border: none; border-radius: var(--r);
-  font-size: var(--fs); font-weight: 700; cursor: pointer;
-  background: var(--c2); color: #fff;
-  box-shadow: var(--shadow-sm); transition: opacity var(--t);
-}
-.ans-confirm:hover    { opacity: .87; }
-.ans-confirm:disabled { opacity: .3; cursor: default; }
-.ans-submitted {
-  padding: 14px; border-radius: var(--r);
-  border: 1.5px solid var(--c2); background: rgba(42,157,143,.15);
-  color: var(--c2); font-size: var(--fs); font-weight: 600;
-}
-
-/* ── JOKER ───────────────────────────────────────────────────────────────── */
-.joker-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.jbtn {
-  padding: 7px 14px; border-radius: var(--r-sm);
-  border: 1.5px solid rgba(233,196,106,.35);
-  background: rgba(233,196,106,.09); color: var(--c3);
-  font-size: var(--fs); font-weight: 700; cursor: pointer; transition: all .15s;
-}
-.jbtn:hover:not(:disabled) { background: rgba(233,196,106,.15); border-color: var(--c3); }
-.jbtn:disabled { opacity: .2; cursor: default; }
-
-/* ── SPEED BONUS (mod) ───────────────────────────────────────────────────── */
-.speed-panel {
-  background: rgba(42,157,143,.08); border: 1px solid var(--blue-b);
-  border-radius: var(--r); padding: 12px 14px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.speed-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.speed-label { font-size: var(--fs); color: var(--text2); font-weight: 500; }
-.speed-val   { font-size: var(--fs); font-weight: 800; color: var(--c2); }
-.speed-winner{ font-size: var(--fs); font-weight: 700; color: var(--c3); }
-
-/* ── LOBBY ───────────────────────────────────────────────────────────────── */
-.lobby-slots { display: flex; gap: 10px; }
-.slot {
-  flex: 1; border-radius: var(--r-lg); padding: 16px 12px; text-align: center;
-  border: 2px dashed var(--card-b); background: var(--bg2); transition: all var(--t);
-}
-.slot.joined { border-style: solid; }
-.slot-label  { font-size: var(--fs); font-weight: 800; margin-bottom: 4px; }
-.slot-name   { font-size: var(--fs); font-weight: 600; color: var(--text); }
-.slot-status { font-size: var(--fs); color: var(--text2); margin-top: 2px; }
-.name-inp {
-  width: 100%; padding: 12px 14px; border-radius: var(--r);
-  border: 1.5px solid var(--card-b); background: var(--bg3);
-  color: var(--text); font-size: var(--fs); font-weight: 600;
-  outline: none; transition: border-color var(--t);
-}
-.name-inp:focus { border-color: var(--c2); }
-.name-inp::placeholder { color: var(--text3); }
-.ready-btn {
-  width: 100%; padding: 12px; border: 1.5px solid var(--card-b);
-  border-radius: var(--r); font-size: var(--fs); font-weight: 700;
-  cursor: pointer; background: var(--bg3); color: var(--text2); transition: all .2s;
-}
-.ready-btn.on { background: rgba(42,157,143,.15); border-color: var(--c2); color: var(--c2); }
-
-/* ── PACK GRID ───────────────────────────────────────────────────────────── */
-.pack-grid { display: flex; flex-direction: column; gap: 7px; }
-.pack {
-  display: flex; align-items: center; gap: 10px; padding: 11px 14px;
-  border-radius: var(--r); border: 1.5px solid var(--card-b);
-  background: var(--bg3); cursor: pointer; transition: all .15s;
-}
-.pack:hover  { border-color: var(--c2); }
-.pack.on     { border-color: var(--c2); background: rgba(42,157,143,.12); }
-.pack-dot    { width: 8px; height: 8px; border-radius: 50%; background: var(--c2); opacity: 0; transition: opacity .2s; }
-.pack.on .pack-dot { opacity: 1; }
-
-/* ── TIMER SETUP ─────────────────────────────────────────────────────────── */
-.t-modes { display: flex; gap: 6px; margin-bottom: 10px; }
-.t-mode  {
-  flex: 1; padding: 8px; border-radius: var(--r-sm);
-  border: 1.5px solid var(--card-b); background: var(--bg3);
-  color: var(--text2); font-size: var(--fs); font-weight: 600;
-  cursor: pointer; text-align: center; transition: all .15s;
-}
-.t-mode.on { border-color: var(--c2); background: rgba(42,157,143,.12); color: var(--c2); }
-.t-opts { display: flex; flex-wrap: wrap; gap: 5px; }
-.t-opt  {
-  padding: 6px 12px; border-radius: 99px;
-  border: 1.5px solid var(--card-b); background: var(--bg3);
-  color: var(--text2); font-size: var(--fs); font-weight: 600; cursor: pointer; transition: all .15s;
-}
-.t-opt:hover { border-color: var(--c3); }
-.t-opt.on    { border-color: var(--gold); background: rgba(233,196,106,.1); color: var(--c3); }
-.t-custom    { display: flex; align-items: center; gap: 9px; margin-top: 9px; }
-.t-custom input {
-  width: 74px; padding: 7px 10px; border-radius: var(--r-sm);
-  border: 1.5px solid var(--card-b); background: var(--bg3);
-  color: var(--text); font-size: var(--fs); font-weight: 700; text-align: center; outline: none;
-}
-.t-custom input:focus { border-color: var(--c3); }
-
-/* ── RESULTS ─────────────────────────────────────────────────────────────── */
-.res-scores { display: flex; gap: 10px; }
-.res-box {
-  flex: 1; border-radius: var(--r-lg); padding: 18px 14px;
-  text-align: center; position: relative; background: var(--bg3); border: 1px solid var(--card-b);
-}
-.res-box .big { font-size: 2.8rem; font-weight: 900; line-height: 1; }
-.winner-tag {
-  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
-  padding: 2px 10px; border-radius: 5px; font-size: var(--fs);
-  font-weight: 700; white-space: nowrap; color: #fff; background: var(--c2);
-}
-.hist-wrap { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
-.hist-dot  {
-  width: 36px; border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 2px; padding: 4px 2px;
-  background: var(--bg3); border: 1px solid var(--card-b);
-}
-.speed-result {
-  background: rgba(42,157,143,.1); border: 1px solid rgba(42,157,143,.3);
-  border-radius: var(--r); padding: 14px 16px; margin-top: 4px;
-}
-
-/* ── ROLE SCREEN ─────────────────────────────────────────────────────────── */
-#role-screen { text-align: center; }
-.rb {
-  display: block; width: 100%; padding: 14px 20px; margin-bottom: 10px;
-  border: none; border-radius: var(--r-lg); font-size: var(--fs-lg);
-  font-weight: 700; cursor: pointer; transition: opacity var(--t), transform .1s;
-  box-shadow: var(--shadow);
-}
-.rb:active { transform: scale(.98); }
-.rb:hover  { opacity: .88; }
-.rb-mod { background: linear-gradient(135deg, #e9c46a, #d4a843); color: #132028; }
-.rb-s1  { background: linear-gradient(135deg, #f4a261, #d4813e); color: #132028; }
-.rb-s2  { background: linear-gradient(135deg, #2a9d8f, #1f7a6e); color: #fff; }
-
-/* ── WAIT SCREEN ─────────────────────────────────────────────────────────── */
-.wait-screen {
-  height: 100vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 24px; text-align: center; gap: 16px;
-  background: var(--bg);
-}
-.wait-screen h2 { font-size: var(--fs-lg); font-weight: 800; }
-.wait-screen p  { font-size: var(--fs); color: var(--text2); }
-
-/* ── SCORE OVERLAY ───────────────────────────────────────────────────────── */
-#pg-score-reveal {
-  display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-  background: var(--bg3); border-bottom: 2px solid rgba(42,157,143,.3);
-  padding: 16px 20px 14px; text-align: center;
-  box-shadow: 0 8px 32px rgba(0,0,0,.6);
-  animation: slideDown .3s ease;
-}
-@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.pgr-result { font-size: var(--fs-lg); font-weight: 900; margin-bottom: 3px; }
-.pgr-label  { font-size: var(--fs); color: var(--text2); }
-.pgr-pts    { font-size: var(--fs); font-weight: 700; margin-top: 5px; }
-
-/* ── UTIL ────────────────────────────────────────────────────────────────── */
-.label { font-size: var(--fs); font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .05em; }
-.muted { color: var(--text2); font-size: var(--fs); }
-.spin  { width: 28px; height: 28px; border: 2.5px solid var(--card-b); border-top-color: var(--c2); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.divider { height: 1px; background: var(--card-b); }
-
-/* ── CONTROLS ────────────────────────────────────────────────────────────── */
-#theme-btn {
-  position: fixed; top: 10px; right: 10px; z-index: 400;
-  background: var(--bg3); border: 1px solid var(--card-b);
-  border-radius: var(--r-sm); padding: 5px 10px;
-  font-size: .8rem; cursor: pointer; color: var(--text2);
-  box-shadow: var(--shadow-sm);
-}
-#vtag {
-  position: fixed; bottom: 8px; right: 10px; z-index: 400;
-  font-size: .66rem; color: var(--text3); font-weight: 600;
-}
+/* ── HEADER ROWS ── */
+.hdr-r1{display:flex;align-items:center;justify-content:space-between;padding-right:52px}
+.hdr-badge{font-size:var(--fs);font-weight:800;color:#fff;background:var(--c2);border-radius:var(--r-sm);padding:4px 12px}
+.hdr-badge.mod{background:linear-gradient(135deg,var(--c3),#c9973a);color:#132028}
+.hdr-qnum{font-size:var(--fs);font-weight:600;color:var(--text2)}
+.hdr-scores{display:flex;gap:10px}
+.hdr-sbox{flex:1;background:var(--bg3);border-radius:var(--r-sm);padding:6px 12px;
+  display:flex;align-items:center;justify-content:space-between;border:1px solid var(--card-b)}
+.hdr-sname{font-size:var(--fs);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:65%}
+.hdr-spts{font-size:var(--fs-lg);font-weight:900;flex-shrink:0}
+.hdr-r3{display:flex;flex-direction:column;gap:5px}
+.prog-wrap{height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:var(--c2);border-radius:99px;transition:width .4s}
+.hdr-timer{display:none;align-items:center;gap:10px}
+.hdr-timer.on{display:flex}
+.t-num{font-size:var(--fs-lg);font-weight:900;min-width:52px;text-align:center;font-variant-numeric:tabular-nums;color:var(--text);transition:color .3s}
+.t-num.warn{color:var(--orange)}.t-num.urgent{color:var(--red);animation:pulse .5s infinite alternate}
+@keyframes pulse{from{opacity:1}to{opacity:.35}}
+.t-track{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden}
+.t-fill{height:100%;border-radius:99px;transition:width .25s linear,background .5s;background:var(--green)}
+.t-btns{display:flex;gap:6px;flex-shrink:0}
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--card-b);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow-sm)}
+.q-box{background:var(--bg2);border:1px solid var(--card-b);border-left:3px solid var(--c2);border-radius:var(--r-lg);padding:16px 18px;box-shadow:var(--shadow-sm)}
+.q-cat{display:inline-block;border-radius:var(--r-sm);padding:3px 10px;font-size:var(--fs);font-weight:600;margin-bottom:9px}
+.q-text{font-size:var(--fs-lg);font-weight:700;line-height:1.5;color:var(--text)}
+/* ── ANSWERS ── */
+.answers{display:flex;flex-direction:column;gap:8px}
+.ans{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:var(--r);
+  border:1.5px solid var(--card-b);background:var(--bg2);color:var(--text);
+  font-size:var(--fs);font-weight:500;cursor:pointer;transition:all .15s;user-select:none;box-shadow:var(--shadow-sm)}
+.ans:hover:not(.disabled){border-color:var(--c2);background:rgba(42,157,143,.12);transform:translateY(-1px);box-shadow:var(--shadow)}
+.ans.correct{background:rgba(42,157,143,.15);border-color:var(--c2);color:var(--c2)}
+.ans.wrong{background:rgba(231,111,81,.12);border-color:var(--c5);color:var(--c5)}
+.ans.pending{background:rgba(42,157,143,.12);border-color:var(--c2);color:var(--c2)}
+.ans.faded{opacity:.3}.ans.hidden{opacity:.08;pointer-events:none}.ans.disabled{cursor:default}
+.ans.disabled:not(.correct):not(.wrong):not(.pending):hover{transform:none;box-shadow:var(--shadow-sm)}
+.ans-l{width:30px;height:30px;border-radius:var(--r-sm);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:var(--fs);font-weight:800;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);color:var(--text2)}
+.ans.correct .ans-l{background:rgba(42,157,143,.2);border-color:var(--c2);color:var(--c2)}
+.ans.wrong .ans-l{background:rgba(231,111,81,.18);border-color:var(--c5);color:var(--c5)}
+.ans.pending .ans-l{background:rgba(42,157,143,.15);border-color:var(--c2);color:var(--c2)}
+.ans-markers{margin-left:auto;display:flex;gap:4px;flex-shrink:0}
+.mkr{padding:2px 7px;border-radius:5px;font-size:.75rem;font-weight:800;border:1.5px solid}
+.mkr1{background:rgba(244,162,97,.2);border-color:var(--c4);color:var(--c4)}
+.mkr2{background:rgba(42,157,143,.2);border-color:var(--c2);color:var(--c2)}
+/* ── BUTTONS ── */
+.btn{padding:12px 20px;border:none;border-radius:var(--r);font-size:var(--fs);font-weight:700;cursor:pointer;
+  transition:opacity var(--t),transform .1s;display:inline-flex;align-items:center;gap:7px;box-shadow:var(--shadow-sm)}
+.btn:active{transform:scale(.97)}.btn:hover{opacity:.87}.btn:disabled{opacity:.3;cursor:default;transform:none}
+.btn-primary{background:var(--c2);color:#fff}
+.btn-ghost{background:var(--bg3);border:1px solid var(--card-b);color:var(--text2)}
+.btn-danger{background:rgba(231,111,81,.14);border:1px solid rgba(231,111,81,.3);color:var(--c5)}
+.btn-gold{background:linear-gradient(135deg,var(--c3),#c9973a);color:#132028}
+.btn-green{background:rgba(42,157,143,.15);border:1px solid rgba(42,157,143,.3);color:var(--c2)}
+.btn-full{width:100%;justify-content:center}.btn-sm{padding:7px 12px;font-size:.82rem}
+/* ── STATUS ── */
+.status-bar{text-align:center;padding:9px 16px;border-radius:var(--r);background:var(--bg2);border:1px solid var(--card-b);font-size:var(--fs);color:var(--text2);font-weight:500}
+/* ── PANELS ── */
+.fact-box{background:rgba(233,196,106,.08);border:1px solid rgba(233,196,106,.3);border-radius:var(--r);padding:14px 16px}
+.fact-text{color:var(--text2);font-size:var(--fs);line-height:1.65}
+.est-hint{padding:12px 14px;border-radius:var(--r);background:rgba(233,196,106,.08);border:1px solid rgba(233,196,106,.28);font-size:var(--fs);color:var(--text2);line-height:1.75}
+.est-hint strong{color:var(--c3)}
+.judge-row{display:flex;gap:8px;margin-top:10px}
+.judge-btn{flex:1;padding:10px;border:1.5px solid;border-radius:var(--r);font-size:var(--fs);font-weight:700;cursor:pointer;transition:opacity var(--t),background var(--t)}
+.judge-btn:hover{opacity:.85}
+.judge-c{background:rgba(42,157,143,.15);border-color:var(--c2);color:var(--c2)}
+.judge-w{background:rgba(231,111,81,.12);border-color:var(--c5);color:var(--c5)}
+.judge-c.on{background:var(--c2);color:#fff;border-color:var(--c2)}
+.judge-w.on{background:var(--c5);color:#fff;border-color:var(--c5)}
+.speed-panel{background:rgba(42,157,143,.08);border:1px solid rgba(42,157,143,.3);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.speed-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.speed-val{font-size:var(--fs);font-weight:800;color:var(--c2)}
+.speed-winner{font-size:var(--fs);font-weight:700;color:var(--c3)}
+/* ── INPUT ANSWER ── */
+.ans-input-wrap{display:flex;flex-direction:column;gap:10px}
+.ans-input{width:100%;padding:14px 18px;border-radius:var(--r);border:1.5px solid var(--card-b);background:var(--bg2);color:var(--text);font-size:var(--fs-lg);font-weight:700;text-align:center;outline:none;transition:border-color var(--t);box-shadow:var(--shadow-sm)}
+.ans-input:focus{border-color:var(--c2)}
+.ans-input::placeholder{color:var(--text3);font-weight:400;font-size:var(--fs)}
+.ans-confirm{width:100%;padding:13px;border:none;border-radius:var(--r);font-size:var(--fs);font-weight:700;cursor:pointer;background:var(--c2);color:#fff;box-shadow:var(--shadow-sm);transition:opacity var(--t)}
+.ans-confirm:hover{opacity:.87}.ans-confirm:disabled{opacity:.3;cursor:default}
+.ans-submitted{padding:14px;border-radius:var(--r);border:1.5px solid var(--c2);background:rgba(42,157,143,.15);color:var(--c2);font-size:var(--fs);font-weight:600}
+/* ── JOKER ── */
+.joker-row{display:flex;gap:8px;flex-wrap:wrap}
+.jbtn{padding:7px 14px;border-radius:var(--r-sm);border:1.5px solid rgba(233,196,106,.35);background:rgba(233,196,106,.09);color:var(--c3);font-size:var(--fs);font-weight:700;cursor:pointer;transition:all .15s}
+.jbtn:hover:not(:disabled){background:rgba(233,196,106,.18);border-color:var(--c3)}
+.jbtn:disabled{opacity:.2;cursor:default}
+/* ── LOBBY ── */
+.lobby-slots{display:flex;gap:10px}
+.slot{flex:1;border-radius:var(--r-lg);padding:14px 10px;text-align:center;border:2px dashed var(--card-b);background:var(--bg2);transition:all var(--t)}
+.slot.joined{border-style:solid}
+.slot-label{font-size:var(--fs);font-weight:800;margin-bottom:4px}
+.slot-name{font-size:var(--fs);font-weight:600;color:var(--text)}
+.slot-status{font-size:var(--fs);color:var(--text2);margin-top:2px}
+.name-inp{width:100%;padding:12px 14px;border-radius:var(--r);border:1.5px solid var(--card-b);background:var(--bg3);color:var(--text);font-size:var(--fs);font-weight:600;outline:none;transition:border-color var(--t)}
+.name-inp:focus{border-color:var(--c2)}.name-inp::placeholder{color:var(--text3)}
+.ready-btn{width:100%;padding:12px;border:1.5px solid var(--card-b);border-radius:var(--r);font-size:var(--fs);font-weight:700;cursor:pointer;background:var(--bg3);color:var(--text2);transition:all .2s}
+.ready-btn.on{background:rgba(42,157,143,.15);border-color:var(--c2);color:var(--c2)}
+/* ── PACK ── */
+.pack-grid{display:flex;flex-direction:column;gap:7px}
+.pack{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--card-b);background:var(--bg3);cursor:pointer;transition:all .15s}
+.pack:hover{border-color:var(--c2)}.pack.on{border-color:var(--c2);background:rgba(42,157,143,.12)}
+.pack-dot{width:8px;height:8px;border-radius:50%;background:var(--c2);opacity:0;transition:opacity .2s}
+.pack.on .pack-dot{opacity:1}
+/* ── TIMER SETUP ── */
+.t-modes{display:flex;gap:6px;margin-bottom:10px}
+.t-mode{flex:1;padding:8px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--bg3);color:var(--text2);font-size:var(--fs);font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.t-mode.on{border-color:var(--c2);background:rgba(42,157,143,.15);color:var(--c2)}
+.t-opts{display:flex;flex-wrap:wrap;gap:5px}
+.t-opt{padding:6px 12px;border-radius:99px;border:1.5px solid var(--card-b);background:var(--bg3);color:var(--text2);font-size:var(--fs);font-weight:600;cursor:pointer;transition:all .15s}
+.t-opt:hover{border-color:var(--c3)}.t-opt.on{border-color:var(--c3);background:rgba(233,196,106,.1);color:var(--c3)}
+.t-custom{display:flex;align-items:center;gap:9px;margin-top:9px}
+.t-custom input{width:74px;padding:7px 10px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--bg3);color:var(--text);font-size:var(--fs);font-weight:700;text-align:center;outline:none}
+.t-custom input:focus{border-color:var(--c3)}
+/* ── RESULTS ── */
+.res-scores{display:flex;gap:10px}
+.res-box{flex:1;border-radius:var(--r-lg);padding:18px 14px;text-align:center;position:relative;background:var(--bg3);border:1px solid var(--card-b)}
+.res-box .big{font-size:2.8rem;font-weight:900;line-height:1}
+.winner-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);padding:2px 10px;border-radius:5px;font-size:var(--fs);font-weight:700;white-space:nowrap;color:#132028;background:var(--c3)}
+.hist-dot{width:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;padding:4px 2px;background:var(--bg3);border:1px solid var(--card-b)}
+/* ── ROLE ── */
+#role-screen{text-align:center}
+.rb{display:block;width:100%;padding:14px 20px;margin-bottom:10px;border:none;border-radius:var(--r-lg);font-size:var(--fs-lg);font-weight:700;cursor:pointer;transition:opacity var(--t),transform .1s;box-shadow:var(--shadow)}
+.rb:active{transform:scale(.98)}.rb:hover{opacity:.88}
+.rb-mod{background:linear-gradient(135deg,var(--c3),#c9973a);color:#132028}
+.rb-s1{background:linear-gradient(135deg,var(--c4),#d4813e);color:#132028}
+.rb-s2{background:linear-gradient(135deg,var(--c2),#1f7a6e);color:#fff}
+/* ── WAIT ── */
+.wait-screen{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:16px;background:var(--bg)}
+.wait-screen h2{font-size:var(--fs-lg);font-weight:800}
+.wait-screen p{font-size:var(--fs);color:var(--text2)}
+/* ── SCORE OVERLAY ── */
+#pg-score-reveal{display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:var(--bg2);border-bottom:2px solid var(--card-b);padding:16px 20px 14px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:slideDown .3s ease}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.pgr-result{font-size:var(--fs-lg);font-weight:900;margin-bottom:3px}
+.pgr-label{font-size:var(--fs);color:var(--text2)}
+.pgr-pts{font-size:var(--fs);font-weight:700;margin-top:5px}
+/* ── UTIL ── */
+.label{font-size:var(--fs);font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.muted{color:var(--text2);font-size:var(--fs)}
+.spin{width:28px;height:28px;border:2.5px solid var(--card-b);border-top-color:var(--c2);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+#theme-btn{position:fixed;top:10px;left:10px;z-index:400;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:5px 10px;font-size:.8rem;cursor:pointer;color:var(--text2);box-shadow:var(--shadow-sm)}
+#vtag{position:fixed;bottom:14px;left:14px;z-index:400;font-size:.66rem;color:var(--text3);font-weight:600}
 </style>
 </head>
 <body>
-
 <button id="theme-btn" onclick="Q.toggleTheme()">Hell</button>
-<div id="vtag">v3.2.0</div>
+<div id="vtag">v3.3.0</div>
+<button id="fs-btn" onclick="Q.toggleFullscreen()" style="position:fixed;bottom:14px;right:14px;z-index:400;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:6px 10px;font-size:.8rem;cursor:pointer;color:var(--text2)">⛶ Vollbild</button>
+<button id="fs-btn" onclick="Q.toggleFullscreen()" title="Vollbild" style="position:fixed;bottom:14px;right:14px;z-index:400;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:6px 10px;font-size:.8rem;cursor:pointer;color:var(--text2)">⛶ Vollbild</button>
 
-<!-- Score reveal overlay -->
 <div id="pg-score-reveal">
   <div class="pgr-result" id="pgr-result">–</div>
   <div class="pgr-label"  id="pgr-label">–</div>
   <div class="pgr-pts"    id="pgr-pts">–</div>
 </div>
 
-<!-- ── ROLE ──────────────────────────────────────────────────────────────── -->
+<!-- ROLE -->
 <div id="role-screen" class="screen active">
-  <div style="width:100%;max-width:340px">
+  <div style="width:100%;max-width:320px">
     <h1 style="font-size:var(--fs-lg);font-weight:900;margin-bottom:4px;text-align:center">Quiz App</h1>
-    <p class="muted" style="margin-bottom:24px;text-align:center">Wähle deine Rolle</p>
+    <p class="muted" style="margin-bottom:22px;text-align:center">Wähle deine Rolle</p>
     <button class="rb rb-mod" onclick="Q.join('moderator')">Moderator</button>
     <button class="rb rb-s1"  onclick="Q.join('s1')">Spieler 1</button>
     <button class="rb rb-s2"  onclick="Q.join('s2')">Spieler 2</button>
   </div>
 </div>
 
-<!-- ── WAIT (players waiting for moderator) ───────────────────────────────── -->
+<!-- WAIT -->
 <div id="wait-screen" class="screen">
   <div class="wait-screen">
     <div class="spin" style="width:40px;height:40px"></div>
@@ -505,39 +226,36 @@ body {
   </div>
 </div>
 
-<!-- ── LOBBY MOD ─────────────────────────────────────────────────────────── -->
+<!-- LOBBY MOD -->
 <div id="lobby-mod-screen" class="screen">
   <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px">
     <h1 style="font-size:var(--fs-lg);font-weight:900">Moderator · Lobby</h1>
-
     <div class="card">
       <div class="label" style="margin-bottom:10px">Spieler</div>
       <div class="lobby-slots" style="margin-bottom:10px">
         <div class="slot" id="ms1-slot" style="border-color:rgba(244,162,97,.4)">
-          <div class="slot-label" style="color:var(--s1)">S1</div>
-          <div class="slot-name"   id="ms1-name">–</div>
+          <div class="slot-label" style="color:var(--c4)">S1</div>
+          <div class="slot-name" id="ms1-name">–</div>
           <div class="slot-status" id="ms1-status">Wartet</div>
         </div>
         <div class="slot" id="ms2-slot" style="border-color:rgba(42,157,143,.4)">
-          <div class="slot-label" style="color:var(--s2)">S2</div>
-          <div class="slot-name"   id="ms2-name">–</div>
+          <div class="slot-label" style="color:var(--c2)">S2</div>
+          <div class="slot-name" id="ms2-name">–</div>
           <div class="slot-status" id="ms2-status">Wartet</div>
         </div>
       </div>
-      <div id="mod-ready-hint" class="muted" style="text-align:center;font-size:var(--fs)"></div>
+      <div id="mod-ready-hint" class="muted" style="text-align:center"></div>
     </div>
-
     <div class="card">
       <div class="label" style="margin-bottom:10px">Fragenpaket</div>
       <div class="pack-grid" id="pack-grid"><div class="spin" style="margin:10px auto"></div></div>
     </div>
-
     <div class="card">
       <div class="label" style="margin-bottom:10px">Timer</div>
       <div class="t-modes">
-        <div class="t-mode on"  data-m="none"   onclick="Q.setTimerMode('none')">Kein Timer</div>
-        <div class="t-mode"     data-m="auto"   onclick="Q.setTimerMode('auto')">Auto</div>
-        <div class="t-mode"     data-m="manual" onclick="Q.setTimerMode('manual')">Manuell</div>
+        <div class="t-mode on" data-m="none"   onclick="Q.setTimerMode('none')">Kein Timer</div>
+        <div class="t-mode"    data-m="auto"   onclick="Q.setTimerMode('auto')">Auto</div>
+        <div class="t-mode"    data-m="manual" onclick="Q.setTimerMode('manual')">Manuell</div>
       </div>
       <div id="t-sec-wrap" style="display:none">
         <div class="t-opts">
@@ -554,15 +272,12 @@ body {
         </div>
       </div>
     </div>
-
-    <button class="btn btn-primary btn-full" id="start-btn" onclick="Q.start()" style="padding:14px;font-size:var(--fs-lg)">
-      Quiz starten
-    </button>
+    <button class="btn btn-primary btn-full" id="start-btn" onclick="Q.start()" style="padding:14px;font-size:var(--fs-lg)">Quiz starten</button>
     <button class="btn btn-danger btn-sm btn-full" onclick="Q.fullReset()">Reset</button>
   </div>
 </div>
 
-<!-- ── LOBBY PLAYER ───────────────────────────────────────────────────────── -->
+<!-- LOBBY PLAYER -->
 <div id="lobby-player-screen" class="screen">
   <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px">
     <div class="card" style="text-align:center">
@@ -574,13 +289,13 @@ body {
       <div class="label" style="margin-bottom:10px">Lobby</div>
       <div class="lobby-slots" style="margin-bottom:10px">
         <div class="slot" id="ps1-slot" style="border-color:rgba(244,162,97,.4)">
-          <div class="slot-label" style="color:var(--s1)">S1</div>
-          <div class="slot-name"   id="ps1-name">–</div>
+          <div class="slot-label" style="color:var(--c4)">S1</div>
+          <div class="slot-name" id="ps1-name">–</div>
           <div class="slot-status" id="ps1-status">Wartet</div>
         </div>
         <div class="slot" id="ps2-slot" style="border-color:rgba(42,157,143,.4)">
-          <div class="slot-label" style="color:var(--s2)">S2</div>
-          <div class="slot-name"   id="ps2-name">–</div>
+          <div class="slot-label" style="color:var(--c2)">S2</div>
+          <div class="slot-name" id="ps2-name">–</div>
           <div class="slot-status" id="ps2-status">Wartet</div>
         </div>
       </div>
@@ -589,7 +304,7 @@ body {
   </div>
 </div>
 
-<!-- ── MOD GAME ───────────────────────────────────────────────────────────── -->
+<!-- MOD GAME -->
 <div id="mod-game-screen" class="screen">
   <div class="g-hdr">
     <div class="hdr-r1">
@@ -597,12 +312,12 @@ body {
       <div class="hdr-qnum" id="mg-qnum">– / –</div>
     </div>
     <div class="hdr-scores">
-      <div class="hdr-sbox" style="border-color:rgba(244,162,97,.4)">
-        <div class="hdr-sname" id="mg-n1" style="color:var(--s1)">S1</div>
+      <div class="hdr-sbox" style="border-color:rgba(244,162,97,.35)">
+        <div class="hdr-sname" id="mg-n1" style="color:var(--c4)">S1</div>
         <div class="hdr-spts"  id="mg-sc1">0</div>
       </div>
-      <div class="hdr-sbox" style="border-color:rgba(42,157,143,.4)">
-        <div class="hdr-sname" id="mg-n2" style="color:var(--s2)">S2</div>
+      <div class="hdr-sbox" style="border-color:rgba(42,157,143,.35)">
+        <div class="hdr-sname" id="mg-n2" style="color:var(--c2)">S2</div>
         <div class="hdr-spts"  id="mg-sc2">0</div>
       </div>
     </div>
@@ -621,12 +336,10 @@ body {
       <div id="mg-qtxt" class="q-text">Lade...</div>
     </div>
     <div class="answers" id="mg-answers"></div>
-    <!-- Open/estimate panel -->
     <div id="mg-open-panel" style="display:none;flex-direction:column;gap:8px">
       <div id="mg-est-hint" class="est-hint" style="display:none"></div>
       <div id="mg-player-ans" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
-    <!-- Speed panel -->
     <div id="mg-speed-panel" class="speed-panel" style="display:none">
       <div class="label" style="color:rgba(42,157,143,.9);margin-bottom:4px">Antwortzeiten</div>
       <div id="mg-speed-content"></div>
@@ -636,33 +349,29 @@ body {
         <button class="judge-btn judge-w" onclick="Q.giveSpeedBonus(null)">Keiner</button>
       </div>
     </div>
-    <!-- Joker -->
     <div class="joker-row">
-      <button class="jbtn" id="j1-btn" onclick="Q.giveJoker('s1')">Joker S1: <span id="j1-name">–</span></button>
-      <button class="jbtn" id="j2-btn" onclick="Q.giveJoker('s2')">Joker S2: <span id="j2-name">–</span></button>
+      <div class="label" style="width:100%;margin-bottom:2px;font-size:.8rem">50:50 JOKER</div>
+      <button class="jbtn" id="j1-btn" onclick="Q.giveJoker('s1')">S1: <span id="j1-name">–</span></button>
+      <button class="jbtn" id="j2-btn" onclick="Q.giveJoker('s2')">S2: <span id="j2-name">–</span></button>
     </div>
-    <!-- Fact box -->
     <div class="fact-box" id="mg-fact-box" style="display:none">
       <div class="label" style="color:rgba(233,196,106,.7);margin-bottom:6px">Hintergrund</div>
       <div class="fact-text" id="mg-fact-text"></div>
     </div>
-    <!-- Actions -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <button class="btn btn-ghost" id="mg-action-btn" onclick="Q.action()">Antworten zeigen</button>
-      <button class="btn btn-danger btn-sm" onclick="Q.fullReset()" style="margin-left:auto">Reset</button>
-    </div>
+  </div>
+  <div class="g-actions">
+    <button class="btn btn-ghost" id="mg-action-btn" onclick="Q.action()">Antworten zeigen</button>
+    <button class="btn btn-danger btn-sm" onclick="Q.fullReset()" style="margin-left:auto">Reset</button>
   </div>
 </div>
 
-<!-- ── PLAYER GAME ────────────────────────────────────────────────────────── -->
+<!-- PLAYER GAME -->
 <div id="player-game-screen" class="screen">
   <div class="g-hdr">
-    <!-- Row 1: name + score + qnum -->
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-      <div id="pg-role-tag" style="font-size:var(--fs);font-weight:800;padding:3px 10px;border-radius:var(--r-sm)">–</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:52px">
+      <div id="pg-role-tag" style="font-size:var(--fs);font-weight:800;padding:4px 12px;border-radius:var(--r-sm)">–</div>
       <div id="pg-qnum" style="font-size:var(--fs);color:var(--text2);font-weight:600">– / –</div>
     </div>
-    <!-- Row 2: my score vs opponent score compact -->
     <div style="display:flex;align-items:center;gap:8px">
       <div class="hdr-sbox" style="flex:1">
         <div class="hdr-sname" id="pg-name">–</div>
@@ -674,7 +383,6 @@ body {
         <div class="hdr-spts"  id="pg-other-score">0</div>
       </div>
     </div>
-    <!-- Row 3: progress + timer -->
     <div class="hdr-r3">
       <div class="prog-wrap"><div class="prog-fill" id="pg-prog" style="width:0%"></div></div>
       <div class="hdr-timer" id="pg-timer">
@@ -697,12 +405,12 @@ body {
     <div id="pg-ans-submitted" class="ans-submitted" style="display:none"></div>
     <div id="pg-wait" style="display:none;text-align:center;padding:9px 0;color:var(--text2);font-size:var(--fs)">Gespeichert – warte...</div>
     <div id="pg-joker-wrap" style="display:none">
-      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(233,196,106,.12);border:1.5px solid rgba(233,196,106,.35);color:var(--c3)">50:50 Joker</button>
+      <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(42,157,143,.1);border:1.5px solid rgba(42,157,143,.3);color:var(--c2)">50:50 Joker einsetzen</button>
     </div>
   </div>
 </div>
 
-<!-- ── RESULTS ────────────────────────────────────────────────────────────── -->
+<!-- RESULTS -->
 <div id="results-screen" class="screen">
   <div style="width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px">
     <div class="card" style="text-align:center">
@@ -711,7 +419,7 @@ body {
       <div id="res-sub"   class="muted" style="margin-bottom:18px">–</div>
       <div class="res-scores" id="res-scores"></div>
       <div id="res-speed" style="display:none;margin-top:12px;background:rgba(42,157,143,.1);border:1px solid rgba(42,157,143,.3);border-radius:var(--r);padding:14px 16px"></div>
-      <div class="hist-wrap" id="res-hist" style="margin-top:14px"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:14px" id="res-hist"></div>
     </div>
     <button class="btn btn-ghost btn-full" onclick="Q.fullReset()">Neues Spiel</button>
   </div>
@@ -719,698 +427,508 @@ body {
 
 
 <script type="module">
+
+
+
+
+
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, update, remove, serverTimestamp }
+import { getDatabase, ref, set, get, onValue, update, remove }
                            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ── FIREBASE ──────────────────────────────────────────────────────────────
-const fbApp = initializeApp({
-  apiKey:"AIzaSyCXDcsJocNsiOFY4QUWp8diFRGiYl-BoK8",
-  authDomain:"quiz-app-82c51.firebaseapp.com",
-  projectId:"quiz-app-82c51",
-  storageBucket:"quiz-app-82c51.firebasestorage.app",
-  messagingSenderId:"490424508080",
-  appId:"1:490424508080:web:f93e1e14ae5c5b16076575",
-  databaseURL:"https://quiz-app-82c51-default-rtdb.firebaseio.com"
-});
-const db  = getDatabase(fbApp);
-const SR  = ref(db, 'quizState');
-const OR  = ref(db, '.info/serverTimeOffset');
-let offset = 0;
-onValue(OR, s => { offset = s.val() || 0; });
-const sNow = () => Date.now() + offset;
+const fbApp=initializeApp({apiKey:"AIzaSyCXDcsJocNsiOFY4QUWp8diFRGiYl-BoK8",authDomain:"quiz-app-82c51.firebaseapp.com",projectId:"quiz-app-82c51",storageBucket:"quiz-app-82c51.firebasestorage.app",messagingSenderId:"490424508080",appId:"1:490424508080:web:f93e1e14ae5c5b16076575",databaseURL:"https://quiz-app-82c51-default-rtdb.firebaseio.com"});
+const db=getDatabase(fbApp),SR=ref(db,'quizState'),OR=ref(db,'.info/serverTimeOffset');
+let offset=0;onValue(OR,s=>{offset=s.val()||0;});
+const serverNow=()=>Date.now()+offset;
 
-// ── CATEGORY COLORS ───────────────────────────────────────────────────────
-const CC = {
-  "Tierwelt":"#E9C46A","Menschlicher Körper":"#E76F51","Pflanzenwelt":"#2A9D8F",
-  "Geographie":"#2A9D8F","Weltall":"#264653","Physik":"#2A9D8F","Fun Facts":"#E76F51",
-  "Wissenschaft":"#2A9D8F","Biologie":"#2A9D8F","Technik & Geschichte":"#E76F51",
-  "Essen & Wissenschaft":"#F4A261","Architektur & Physik":"#E9C46A","Geschichte":"#E76F51",
-  "Psychologie":"#E9C46A","Geologie":"#E9C46A","Musik & Gehirn":"#2A9D8F",
-  "Chemie":"#F4A261","Moderne Geschichte":"#2A9D8F","Weltkriege":"#E76F51",
-  "Antike Kulturen":"#E9C46A","Europa":"#2A9D8F","Deutschland":"#2A9D8F",
-  "Technologie":"#2A9D8F","Sprache":"#2A9D8F","Allgemeinwissen":"#2A9D8F",
-  "WM Geschichte":"#2A9D8F","Legenden":"#E9C46A","Rekorde":"#E76F51",
-  "Europapokal":"#2A9D8F","Geschichte & Regelwerk":"#E9C46A","Sprache & Kultur":"#2A9D8F",
-  "Kommunikation":"#2A9D8F","Energie & Licht":"#E9C46A","Druck & Medien":"#E9C46A",
-  "Mobilität":"#2A9D8F","Haushalt":"#F4A261","Medizin":"#E76F51",
-  "Alltagsgegenstände":"#F4A261","Industrie":"#F4A261","Pokédex":"#E76F51",
-  "Typen":"#2A9D8F","Entwicklungen":"#2A9D8F","Spielwelt":"#2A9D8F",
-  "Legendäre Pokémon":"#E9C46A","Attacken":"#E76F51","Trivia":"#E9C46A",
-  "Astronomie":"#264653","Mathematik":"#2A9D8F","Politik & Geographie":"#2A9D8F",
-};
+const CC={"Tierwelt":"#f39c12","Menschlicher Körper":"#e74c3c","Pflanzenwelt":"#27ae60","Geographie":"#16a085","Weltall":"#8e44ad","Physik":"#1abc9c","Fun Facts":"#e91e8c","Wissenschaft":"#27ae60","Biologie":"#27ae60","Technik & Geschichte":"#e74c3c","Essen & Wissenschaft":"#e67e22","Architektur & Physik":"#95a5a6","Geschichte":"#c0392b","Psychologie":"#9b59b6","Geologie":"#7f8c8d","Musik & Gehirn":"#1abc9c","Chemie":"#d35400","Moderne Geschichte":"#4f86c6","Weltkriege":"#c0392b","Antike Kulturen":"#d4a82f","Europa":"#4aab7e","Deutschland":"#4f86c6","Technologie":"#2980b9","Sprache":"#3498db","Allgemeinwissen":"#4f86c6","WM Geschichte":"#27ae60","Legenden":"#f39c12","Rekorde":"#e74c3c","Europapokal":"#8e44ad","Geschichte & Regelwerk":"#95a5a6","Sprache & Kultur":"#2980b9","Kommunikation":"#3498db","Energie & Licht":"#f39c12","Druck & Medien":"#8e44ad","Mobilität":"#27ae60","Haushalt":"#e67e22","Medizin":"#e74c3c","Alltagsgegenstände":"#95a5a6","Industrie":"#7f8c8d","Pokédex":"#e74c3c","Typen":"#8e44ad","Entwicklungen":"#27ae60","Spielwelt":"#2980b9","Legendäre Pokémon":"#f39c12","Attacken":"#c0392b","Trivia":"#95a5a6"};
 
-// ── BUILTIN PACK ──────────────────────────────────────────────────────────
-const BUILTIN = { funfakten: { name:"Fun Facts", emoji:"", questions:[
-  {q:"Der Eiffelturm wächst im Sommer. Um wie viel verändert sich seine Höhe?",a:["Ca. 1 cm","Ca. 5 cm","Ca. 15 cm","Ca. 30 cm"],r:2,cat:"Architektur & Physik",type:"mc",fact:"Stahl dehnt sich bei Hitze aus. In 300 m Höhe summiert sich das zu einem sichtbaren Effekt. Brücken haben deshalb Dehnungsfugen."},
-  {q:"Was bedeutet 'Karoshi' (過労死) auf Japanisch?",a:["Kunst des Verpackens","Tod durch Überarbeitung","Extreme Schüchternheit","Leere nach Erfolg"],r:1,cat:"Psychologie",type:"mc",fact:"Japan erkennt Karoshi offiziell als Todesursache. Die Regierung begrenzte Überstunden auf 100 h/Monat."},
-  {q:"Mit wie vielen Ländern teilt Russland eine Landgrenze?",a:["6","10","14","18"],r:2,cat:"Geographie",type:"mc",fact:"Russland teilt den Rekord mit China. Längste Grenze: Kasachstan (7.600 km), kürzeste: Nordkorea (19 km)."},
+const BUILTIN={funfakten:{name:"Fun Facts",emoji:"",questions:[
+  {q:"Der Eiffelturm wächst im Sommer. Um wie viel verändert sich seine Höhe?",a:["Ca. 1 cm","Ca. 5 cm","Ca. 15 cm","Ca. 30 cm"],r:2,cat:"Architektur & Physik",fact:"Stahl dehnt sich bei Hitze aus – thermische Ausdehnung. In 300 m Höhe addieren sich kleine Veränderungen zu einem sichtbaren Effekt. Brücken und Schienen haben deshalb bewusst eingebaute Dehnungsfugen."},
+  {q:"Wie viel Watt leistet das menschliche Gehirn ungefähr im Wachzustand?",a:["Ca. 1 Watt","Ca. 12–25 Watt","Ca. 100 Watt","Ca. 500 Watt"],r:1,cat:"Menschlicher Körper",fact:"Das Gehirn verbraucht 20% der Körperenergie bei nur 2% des Körpergewichts. Ein moderner KI-Chip benötigt tausende Watt für ähnliche Aufgaben – das Gehirn ist das energieeffizienteste Informationssystem das wir kennen."},
+  {q:"Was bedeutet 'Karoshi' (過労死) auf Japanisch?",a:["Kunst des Verpackens","Tod durch Überarbeitung","Extreme Schüchternheit","Leere nach Erfolg"],r:1,cat:"Psychologie",fact:"Japan erkennt Karoshi offiziell als Todesursache an. Das Phänomen entstand in den 1970ern. Die Regierung begrenzte Überstunden gesetzlich auf 100 Stunden pro Monat – was viele immer noch als viel zu hoch kritisieren."},
+  {q:"Wie tief reicht die Kola-Supertiefbohrung in Russland?",a:["Ca. 1 km","Ca. 5 km","Ca. 12 km","Ca. 40 km"],r:2,cat:"Geologie",fact:"Das Projekt lief 1970–1994 und wurde gestoppt, weil das Gestein bei 180°C zu weich wurde. Boulevardmedien titelten 'Schreie aus der Hölle' – tatsächlich waren es Gesteinsvibrationen."},
+  {q:"Mit wie vielen anderen Ländern teilt Russland eine Landgrenze?",a:["6","10","14","18"],r:2,cat:"Geographie",fact:"Russland teilt den Rekord der meisten Landnachbarn mit China. Die längste Grenze ist mit Kasachstan (7.600 km), die kürzeste mit Nordkorea (19 km). Russland hat mehr Zeitzonen (11) als Grenznachbarn."},
 ]}};
 
-// ── PACKS ─────────────────────────────────────────────────────────────────
-const BASE = location.origin + location.pathname.replace(/\/[^/]*$/, '/');
-let PACKS = {}, packId = 'funfakten';
+const BASE=location.origin+location.pathname.replace(/\/[^/]*$/,'/');
+let PACKS={},packId='funfakten';
 
-async function loadPacks() {
-  try {
-    const ir = await fetch(`${BASE}packs/index.json?_=${Date.now()}`);
-    if (!ir.ok) throw 0;
-    const ids = await ir.json();
-    const res = await Promise.all(ids.map(async id => {
-      try { const r = await fetch(`${BASE}packs/${id}.json?_=${Date.now()}`); if(!r.ok) return null; return [id, await r.json()]; }
-      catch { return null; }
+async function loadPacks(){
+  try{
+    const ir=await fetch(`${BASE}packs/index.json?_=${Date.now()}`);
+    if(!ir.ok)throw 0;
+    const ids=await ir.json();
+    const res=await Promise.all(ids.map(async id=>{
+      try{const r=await fetch(`${BASE}packs/${id}.json?_=${Date.now()}`);if(!r.ok)return null;return[id,await r.json()];}catch{return null;}
     }));
-    res.forEach(r => { if(r) PACKS[r[0]] = r[1]; });
-  } catch {}
-  if (!Object.keys(PACKS).length) PACKS = {...BUILTIN};
-  if (!PACKS[packId]) packId = Object.keys(PACKS)[0];
+    res.forEach(r=>{if(r)PACKS[r[0]]=r[1];});
+  }catch{}
+  if(!Object.keys(PACKS).length)PACKS={...BUILTIN};
+  if(!PACKS[packId])packId=Object.keys(PACKS)[0];
   renderPackGrid();
 }
 
-function getPack() {
-  const id = (gs.packId && (PACKS[gs.packId]||BUILTIN[gs.packId])) ? gs.packId : (packId || Object.keys(PACKS)[0] || 'funfakten');
-  return PACKS[id] || BUILTIN[id] || Object.values(PACKS)[0] || Object.values(BUILTIN)[0];
+function getPack(){
+  const id=(gs.packId&&(PACKS[gs.packId]||BUILTIN[gs.packId]))?gs.packId:(packId||Object.keys(PACKS)[0]||'funfakten');
+  return PACKS[id]||BUILTIN[id]||Object.values(PACKS)[0]||Object.values(BUILTIN)[0];
 }
 
-function renderPackGrid() {
-  const g = el('pack-grid'); g.innerHTML = '';
-  const active = (gs.packId && PACKS[gs.packId]) ? gs.packId : packId;
-  Object.entries(PACKS).forEach(([id, p]) => {
-    const d = document.createElement('div');
-    d.className = 'pack' + (id === active ? ' on' : '');
-    d.innerHTML = `<div class="pack-dot"></div><span style="font-weight:600;font-size:var(--fs);flex:1">${p.name}</span><span style="font-size:var(--fs);color:var(--text2)">${p.questions.length} Fragen</span>`;
-    d.onclick = () => { packId = id; document.querySelectorAll('.pack').forEach(e => e.classList.remove('on')); d.classList.add('on'); update(SR, {packId: id}); };
+function renderPackGrid(){
+  const g=el('pack-grid');g.innerHTML='';
+  const active=(gs.packId&&PACKS[gs.packId])?gs.packId:packId;
+  Object.entries(PACKS).forEach(([id,p])=>{
+    const d=document.createElement('div');
+    d.className='pack'+(id===active?' active':'');
+    d.innerHTML=`<div class="pack-dot"></div><span style="font-weight:600;font-size:.86rem;flex:1">${p.name}</span><span style="font-size:.7rem;color:var(--text3)">${p.questions.length} Fragen</span>`;
+    d.onclick=()=>{packId=id;document.querySelectorAll('.pack').forEach(e=>e.classList.remove('active'));d.classList.add('active');update(SR,{packId:id});};
     g.appendChild(d);
   });
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────
-const el  = id => document.getElementById(id);
-const L   = i  => String.fromCharCode(65+i);
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  el(id).classList.add('active');
-}
-function slots(prefix, n, s, r) {
-  el(prefix+'s1-name').textContent = n.s1; el(prefix+'s2-name').textContent = n.s2;
-  el(prefix+'s1-status').textContent = s.s1; el(prefix+'s2-status').textContent = s.s2;
-  el(prefix+'s1-slot').style.borderColor = r.s1 ? 'var(--c2)' : 'rgba(231,111,81,.35)';
-  el(prefix+'s2-slot').style.borderColor = r.s2 ? 'var(--c2)' : 'rgba(42,157,143,.35)';
-  el(prefix+'s1-slot').classList.toggle('joined', n.s1 !== '–');
-  el(prefix+'s2-slot').classList.toggle('joined', n.s2 !== '–');
-}
+const el=id=>document.getElementById(id);
+const L=i=>String.fromCharCode(65+i);
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));el(id).classList.add('active');}
 
-// ── STATE ─────────────────────────────────────────────────────────────────
-let role = null, myName = '', gs = {}, myReady = false;
-let timerMode = 'none', timerSec = 30, raf = null;
-let scoreRevealTimer = null, lastRevealedQ = -1;
-let heartbeatInterval = null;
-let inactivityTimer = null;
-
-// ── TIMER RAF ─────────────────────────────────────────────────────────────
-function stopRaf() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-
-function tickTimer() {
-  if (!gs.timerRunning || !gs.timerStart || !gs.timerSec) return;
-  const rem = Math.max(0, gs.timerSec - (sNow() - gs.timerStart) / 1000);
-  const pct = rem / gs.timerSec * 100;
-  const color = rem <= 5 ? 'var(--c5)' : rem <= 10 ? 'var(--c4)' : 'var(--c2)';
-  const cls   = rem <= 5 ? 'urgent' : rem <= 10 ? 'warn' : '';
-  const txt   = Math.ceil(rem) + 's';
-  ['mg', 'pg'].forEach(p => {
-    const b = el(p+'-timer'); if (!b || !b.classList.contains('on')) return;
-    const n = el(p+'-tnum'), bar = el(p+'-tbar');
-    n.textContent = txt; n.className = 't-num' + (cls ? ' '+cls : '');
-    bar.style.width = pct+'%'; bar.style.background = color;
-  });
-  if (rem <= 0) {
-    stopRaf();
-    if (role === 'moderator') update(SR, {phase:'locked', timerRunning:false, timerStart:null, timerPauseLeft:null});
-    return;
-  }
-  raf = requestAnimationFrame(tickTimer);
-}
-function startRaf() { stopRaf(); raf = requestAnimationFrame(tickTimer); }
-function showTimerStatic(sec, pct) {
-  ['mg','pg'].forEach(p => {
-    const n = el(p+'-tnum'), bar = el(p+'-tbar'); if(!n) return;
-    n.textContent = Math.ceil(sec)+'s'; n.className = 't-num';
-    bar.style.width = pct+'%'; bar.style.background = 'var(--c2)';
+function setHeaderHeightNoop(){
+  // Measure actual header height and set --header-h
+  ['mod-game-hdr','pl-game-hdr'].forEach(hid=>{
+    const h=el(hid);if(!h)return;
+    const height=h.offsetHeight;
+    document.documentElement.style.setProperty('--header-h',height+'px');
   });
 }
 
-// ── SCORE REVEAL ──────────────────────────────────────────────────────────
-function showScoreReveal(correct, score, total) {
+function slots(prefix,n,s,r){
+  el(prefix+'s1-name').textContent=n.s1;el(prefix+'s2-name').textContent=n.s2;
+  el(prefix+'s1-status').textContent=s.s1;el(prefix+'s2-status').textContent=s.s2;
+  el(prefix+'s1-slot').style.borderColor=r.s1?'var(--green)':'rgba(230,57,70,.3)';
+  el(prefix+'s2-slot').style.borderColor=r.s2?'var(--green)':'rgba(29,127,232,.28)';
+  el(prefix+'s1-slot').classList.toggle('joined',n.s1!=='–');
+  el(prefix+'s2-slot').classList.toggle('joined',n.s2!=='–');
+}
+
+let role=null,name='',gs={},myReady=false,timerMode='none',timerSec=30,raf=null;
+let scoreRevealTimer=null,lastRevealedQ=-1;
+
+function stopRaf(){if(raf){cancelAnimationFrame(raf);raf=null;}}
+function tickTimer(){
+  if(!gs.timerRunning||!gs.timerStart||!gs.timerSec)return;
+  const elapsed=(serverNow()-gs.timerStart)/1000;
+  const rem=Math.max(0,gs.timerSec-elapsed);
+  const pct=rem/gs.timerSec*100;
+  const color=rem<=5?'var(--red)':rem<=10?'var(--orange)':'var(--green)';
+  const cls=rem<=5?'urgent':rem<=10?'warn':'';
+  ['mg','pg'].forEach(p=>{
+    const block=el(p+'-timer');if(!block||!block.classList.contains('visible'))return;
+    const num=el(p+'-tnum'),bar=el(p+'-tbar');
+    num.textContent=Math.ceil(rem)+'s';num.className='t-num'+(cls?' '+cls:'');
+    bar.style.width=pct+'%';bar.style.background=color;
+  });
+  if(rem<=0){stopRaf();if(role==='moderator')update(SR,{phase:'locked',timerRunning:false,timerStart:null,timerPauseLeft:null});return;}
+  raf=requestAnimationFrame(tickTimer);
+}
+function startRaf(){stopRaf();raf=requestAnimationFrame(tickTimer);}
+function resetInputField(){
+  const inp=el('pg-ans-input');if(!inp)return;
+  if(document.activeElement===inp)return; // don't reset while typing
+  inp.value='';inp.dataset.inited='';
+  el('pg-ans-confirm').disabled=true;
+}
+function showTimerStatic(sec,pct){
+  ['mg','pg'].forEach(p=>{
+    const num=el(p+'-tnum'),bar=el(p+'-tbar');if(!num)return;
+    num.textContent=Math.ceil(sec)+'s';num.className='t-num';
+    bar.style.width=pct+'%';bar.style.background='var(--green)';
+  });
+}
+
+function showScoreReveal(correct,score,total){
   clearTimeout(scoreRevealTimer);
-  const o = el('pg-score-reveal');
-  el('pgr-result').textContent  = correct ? 'Richtig' : 'Falsch';
-  el('pgr-result').style.color  = correct ? 'var(--c2)' : 'var(--c5)';
-  el('pgr-label').textContent   = correct ? 'Gut gemacht!' : 'Leider daneben';
-  el('pgr-pts').textContent     = `${score} von ${total} Punkten`;
-  el('pgr-pts').style.color     = correct ? 'var(--c2)' : 'var(--text2)';
-  o.style.display = '';
-  scoreRevealTimer = setTimeout(() => { o.style.display = 'none'; }, 3500);
+  const o=el('pg-score-reveal');
+  el('pgr-result').textContent=correct?'Richtig':'Falsch';
+  el('pgr-result').style.color=correct?'var(--green)':'var(--red)';
+  el('pgr-label').textContent=correct?'Gut gemacht!':'Leider daneben';
+  el('pgr-pts').textContent=`${score} von ${total} Punkten`;
+  el('pgr-pts').style.color=correct?'var(--green)':'var(--text2)';
+  o.style.display='';
+  scoreRevealTimer=setTimeout(()=>{o.style.display='none';},3500);
 }
 
-// ── HEARTBEAT ─────────────────────────────────────────────────────────────
-function startHeartbeat() {
-  stopHeartbeat();
-  const field = role === 's1' ? 's1Heartbeat' : role === 's2' ? 's2Heartbeat' : 'modHeartbeat';
-  heartbeatInterval = setInterval(() => { if(gs.phase && gs.phase !== 'finished') update(SR, {[field]: sNow()}); }, 10000);
-  update(SR, {[field]: sNow()});
-}
-function stopHeartbeat() { if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; } }
-
-// ── INACTIVITY TIMEOUT ────────────────────────────────────────────────────
-function resetInactivity() {
-  if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(async () => {
-    if (role === 'moderator') { await remove(SR); showScreen('role-screen'); }
-  }, 30 * 60 * 1000);
-}
-
-// ── Q OBJECT ──────────────────────────────────────────────────────────────
-const Q = {
-
-  toggleTheme() {
-    const d = document.documentElement, light = d.getAttribute('data-theme') === 'light';
-    d.setAttribute('data-theme', light ? 'dark' : 'light');
-    el('theme-btn').textContent = light ? 'Hell' : 'Dunkel';
+const Q={
+  toggleTheme(){
+    const d=document.documentElement,light=d.getAttribute('data-theme')==='light';
+    d.setAttribute('data-theme',light?'dark':'light');
+    el('theme-btn').innerHTML=light?'&#9790; Dunkel':'&#9788; Hell';
   },
-
-  setTimerMode(m) {
-    timerMode = m;
-    document.querySelectorAll('.t-mode').forEach(e => e.classList.toggle('on', e.dataset.m === m));
-    el('t-sec-wrap').style.display = m === 'none' ? 'none' : '';
+  setTimerMode(m){
+    timerMode=m;
+    document.querySelectorAll('.t-mode').forEach(e=>e.classList.toggle('active',e.dataset.m===m));
+    el('t-sec-wrap').style.display=m==='none'?'none':'';
   },
-  setPreset(s) {
-    if (s === 0) { el('t-custom').style.display = ''; document.querySelectorAll('.t-opt').forEach(e => e.classList.toggle('on', e.dataset.s === '0')); }
-    else { timerSec = s; el('t-custom').style.display = 'none'; document.querySelectorAll('.t-opt').forEach(e => e.classList.toggle('on', parseInt(e.dataset.s) === s)); }
+  setPreset(s){
+    if(s===0){el('t-custom').style.display='';document.querySelectorAll('.t-opt').forEach(e=>e.classList.toggle('active',e.dataset.s==='0'));}
+    else{timerSec=s;el('t-custom').style.display='none';document.querySelectorAll('.t-opt').forEach(e=>e.classList.toggle('active',parseInt(e.dataset.s)===s));}
   },
-  setCustom() { const v = parseInt(el('t-custom-val').value); if (v >= 5 && v <= 300) timerSec = v; },
+  setCustom(){const v=parseInt(el('t-custom-val').value);if(v>=5&&v<=300)timerSec=v;},
 
-  backToRole() { stopHeartbeat(); showScreen('role-screen'); },
-
-  // ── JOIN ─────────────────────────────────────────────────────────────────
-  async join(r) {
-    role = r; myName = r === 's1' ? 'Spieler 1' : r === 's2' ? 'Spieler 2' : 'Moderator'; myReady = false;
-
-    if (r === 'moderator') {
-      // SECURITY: Moderator always creates fresh state
-      await set(SR, {
-        phase:'lobby', currentQ:0, revealed:false,
-        s1Answer:null, s2Answer:null, s1Score:0, s2Score:0,
-        s1Name:'–', s2Name:'–', s1Ready:false, s2Ready:false,
-        timerMode:'none', timerSec:30, timerStart:null, timerRunning:false, timerPauseLeft:null,
-        packId: packId,
-        s1JokerUsed:false, s2JokerUsed:false, s1JokerActive:false, s2JokerActive:false, jokerHidden:[],
-        history:[], s1Judged:null, s2Judged:null,
-        s1Time:null, s2Time:null, s1TotalTime:0, s2TotalTime:0, speedBonus:null,
-        questionStartTime:null,
-        modHeartbeat: sNow(), lastActivity: sNow(),
-      });
-      showScreen('lobby-mod-screen');
-      loadPacks();
-      startHeartbeat();
-      resetInactivity();
-    } else {
-      // SECURITY: Check if moderator is present and game is in lobby
-      const snap = await get(SR);
-      if (!snap.exists() || !snap.val().phase) {
-        // No moderator yet
-        el('wait-msg').textContent = 'Kein Moderator gefunden. Bitte warte bis der Moderator das Spiel öffnet.';
-        showScreen('wait-screen');
-        // Poll until moderator appears
-        const unsub = onValue(SR, snap2 => {
-          if (!snap2.exists()) return;
-          const st = snap2.val();
-          if (st.phase === 'lobby') {
-            unsub();
-            Q._joinAsPlayer(r);
-          }
-        });
-        return;
-      }
-      const st = snap.val();
-      // SECURITY: Reject if game already running
-      if (st.phase !== 'lobby') {
-        el('wait-msg').textContent = 'Das Spiel läuft bereits. Bitte warte auf die nächste Runde.';
-        showScreen('wait-screen');
-        return;
-      }
-      // SECURITY: Reject if slot already taken by someone else
-      const nameField = r === 's1' ? 's1Name' : 's2Name';
-      const existingName = st[nameField];
-      if (existingName && existingName !== '–' && existingName !== myName) {
-        el('wait-msg').textContent = `Platz ${r.toUpperCase()} ist bereits belegt (${existingName}). Wähle Spieler ${r === 's1' ? '2' : '1'}.`;
-        showScreen('wait-screen');
-        return;
-      }
-      await Q._joinAsPlayer(r);
+  async join(r){
+    role=r;name=r==='s1'?'Spieler 1':r==='s2'?'Spieler 2':'Moderator';myReady=false;
+    if(r==='moderator'){
+      await set(SR,{phase:'lobby',currentQ:0,revealed:false,s1Answer:null,s2Answer:null,s1Score:0,s2Score:0,s1Name:'–',s2Name:'–',s1Ready:false,s2Ready:false,timerMode:'none',timerSec:30,timerStart:null,timerRunning:false,timerPauseLeft:null,packId:packId,s1JokerUsed:false,s2JokerUsed:false,s1JokerActive:false,s2JokerActive:false,jokerHidden:[],history:[]});
+      showScreen('lobby-mod-screen');loadPacks();
+    }else{
+      await update(SR,{[r==='s1'?'s1Name':'s2Name']:name,[r==='s1'?'s1Ready':'s2Ready']:false});
+      el('pl-role-label').textContent=r==='s1'?'SPIELER 1':'SPIELER 2';
+      el('pl-name').value=name;
+      el('ready-btn').className='ready-btn';el('ready-btn').textContent='Bereit';
+      showScreen('lobby-player-screen');
+      await loadPacks();
     }
+    onValue(SR,snap=>{if(!snap.exists())return;gs=snap.val();if(role==='moderator')renderMod();else renderPlayer();});
   },
 
-  async _joinAsPlayer(r) {
-    role = r;
-    const nameField  = r === 's1' ? 's1Name'  : 's2Name';
-    const readyField = r === 's1' ? 's1Ready' : 's2Ready';
-    const hbField    = r === 's1' ? 's1Heartbeat' : 's2Heartbeat';
-    await update(SR, { [nameField]: myName, [readyField]: false, [hbField]: sNow(), lastActivity: sNow() });
-    el('pl-role-label').textContent = r === 's1' ? 'SPIELER 1' : 'SPIELER 2';
-    el('pl-name').value = myName;
-    el('ready-btn').className = 'ready-btn';
-    el('ready-btn').textContent = 'Bereit';
-    showScreen('lobby-player-screen');
-    await loadPacks();
-    startHeartbeat();
-    resetInactivity();
-    onValue(SR, snap => { if (!snap.exists()) return; gs = snap.val(); renderPlayer(); });
+  _nt:null,
+  nameInput(){
+    const v=el('pl-name').value.trim()||name;name=v;
+    clearTimeout(Q._nt);Q._nt=setTimeout(()=>update(SR,{[role==='s1'?'s1Name':'s2Name']:v}),400);
   },
 
-  _nt: null,
-  nameInput() {
-    const v = el('pl-name').value.trim() || myName; myName = v;
-    clearTimeout(Q._nt);
-    Q._nt = setTimeout(() => update(SR, { [role==='s1'?'s1Name':'s2Name']: v, lastActivity: sNow() }), 400);
+  async toggleReady(){
+    myReady=!myReady;
+    const btn=el('ready-btn');
+    btn.className='ready-btn'+(myReady?' active':'');
+    btn.textContent=myReady?'Bereit ✓':'Bereit';
+    await update(SR,{[role==='s1'?'s1Ready':'s2Ready']:myReady});
   },
 
-  async toggleReady() {
-    myReady = !myReady;
-    const btn = el('ready-btn');
-    btn.className = 'ready-btn' + (myReady ? ' on' : '');
-    btn.textContent = myReady ? 'Bereit ✓' : 'Bereit';
-    await update(SR, { [role==='s1'?'s1Ready':'s2Ready']: myReady, lastActivity: sNow() });
+  async start(){
+    const tStart=timerMode==='auto'?serverNow():null;
+    await update(SR,{phase:'answering',currentQ:0,revealed:false,s1Answer:null,s2Answer:null,s1JokerUsed:false,s2JokerUsed:false,s1JokerActive:false,s2JokerActive:false,jokerHidden:[],history:[],timerMode,timerSec,timerStart:tStart,timerRunning:timerMode==='auto',timerPauseLeft:null,s1Judged:null,s2Judged:null});
   },
 
-  async start() {
-    const tStart = timerMode === 'auto' ? sNow() : null;
-    const qStart = sNow();
-    await update(SR, {
-      phase:'answering', currentQ:0, revealed:false,
-      s1Answer:null, s2Answer:null,
-      s1JokerUsed:false, s2JokerUsed:false, s1JokerActive:false, s2JokerActive:false, jokerHidden:[],
-      history:[], s1Judged:null, s2Judged:null,
-      s1Time:null, s2Time:null, s1TotalTime:0, s2TotalTime:0, speedBonus:null,
-      questionStartTime: qStart,
-      timerMode, timerSec, timerStart:tStart, timerRunning:timerMode==='auto', timerPauseLeft:null,
-      lastActivity: sNow(),
-    });
+  action(){
+    const p=gs.phase;
+    if(p==='answering'||p==='locked')Q.showAnswers();
+    else if(p==='shown')Q.reveal();
+    else if(p==='revealed')Q.next();
   },
-
-  action() {
-    const p = gs.phase;
-    if (p === 'answering' || p === 'locked') Q.showAnswers();
-    else if (p === 'shown') Q.reveal();
-    else if (p === 'revealed') Q.next();
-  },
-
-  async showAnswers() {
-    stopRaf();
-    await update(SR, { phase:'shown', timerRunning:false, timerStart:null, timerPauseLeft:null, lastActivity: sNow() });
-  },
-  async reveal() {
-    await update(SR, { revealed:true, phase:'revealed', s1JokerActive:false, s2JokerActive:false, jokerHidden:[], lastActivity: sNow() });
-  },
-  async next() {
-    const pack = getPack(), total = pack.questions.length;
-    const q    = pack.questions[gs.currentQ||0];
-    const nextQ = (gs.currentQ||0) + 1;
-    const hist  = Array.isArray(gs.history) ? [...gs.history] : [];
-    const isOT  = q.type === 'estimate' || q.type === 'open';
-    hist[gs.currentQ||0] = {
-      s1: isOT ? gs.s1Judged === 'correct' : gs.s1Answer === q.r,
-      s2: isOT ? gs.s2Judged === 'correct' : gs.s2Answer === q.r,
+  async showAnswers(){stopRaf();await update(SR,{phase:'shown',timerRunning:false,timerStart:null,timerPauseLeft:null});},
+  async reveal(){await update(SR,{revealed:true,phase:'revealed',s1JokerActive:false,s2JokerActive:false,jokerHidden:[]});},
+  async next(){
+    const pack=getPack(),total=pack.questions.length,q=pack.questions[gs.currentQ||0];
+    const nextQ=(gs.currentQ||0)+1;
+    const hist=Array.isArray(gs.history)?[...gs.history]:[];
+    // For open/estimate, use judge result; for MC, auto-check
+    const isOT=q.type==='estimate'||q.type==='open';
+    hist[gs.currentQ||0]={
+      s1:isOT?(gs.s1Judged==='correct'):gs.s1Answer===q.r,
+      s2:isOT?(gs.s2Judged==='correct'):gs.s2Answer===q.r,
+      s1t:gs.s1Time||null, s2t:gs.s2Time||null, cat:q.cat,
     };
-    if (nextQ >= total) {
-      await update(SR, { phase:'finished', history: hist, lastActivity: sNow() });
-    } else {
-      const tStart = gs.timerMode === 'auto' ? sNow() : null;
-      const qStart = sNow();
-      await update(SR, {
-        currentQ: nextQ, revealed:false, phase:'answering',
-        s1Answer:null, s2Answer:null,
-        s1JokerActive:false, s2JokerActive:false, jokerHidden:[],
-        s1Judged:null, s2Judged:null,
-        s1Time:null, s2Time:null, speedBonus:null,
-        questionStartTime: qStart,
-        timerStart:tStart, timerRunning:gs.timerMode==='auto', timerPauseLeft:null,
-        history: hist, lastActivity: sNow(),
-      });
+    if(nextQ>=total){await update(SR,{phase:'finished',history:hist});}
+    else{
+      const tStart=gs.timerMode==='auto'?serverNow():null;
+      await update(SR,{currentQ:nextQ,revealed:false,phase:'answering',s1Answer:null,s2Answer:null,s1JokerActive:false,s2JokerActive:false,jokerHidden:[],timerStart:tStart,timerRunning:gs.timerMode==='auto',timerPauseLeft:null,history:hist,s1Judged:null,s2Judged:null});
     }
   },
+  async timerStart(){
+    const left=gs.timerPauseLeft;
+    await update(SR,{timerStart:left!=null?serverNow()-(gs.timerSec-left)*1000:serverNow(),timerRunning:true,timerPauseLeft:null});
+  },
+  async timerPause(){
+    const left=Math.max(0,gs.timerSec-(serverNow()-gs.timerStart)/1000);
+    stopRaf();await update(SR,{timerRunning:false,timerStart:null,timerPauseLeft:left});
+  },
+  async timerReset(){stopRaf();await update(SR,{timerRunning:false,timerStart:null,timerPauseLeft:null});},
+  async giveJoker(player){
+    if(gs.phase!=='answering')return;
+    const uk=player==='s1'?'s1JokerUsed':'s2JokerUsed',ak=player==='s1'?'s1JokerActive':'s2JokerActive';
+    if(gs[uk])return;
+    const q=getPack().questions[gs.currentQ||0];
+    const wrongs=q.a.map((_,i)=>i).filter(i=>i!==q.r);
+    await update(SR,{[uk]:true,[ak]:true,jokerHidden:[wrongs[0],wrongs[1]]});
+  },
+  useJoker(){el('pg-joker-wrap').style.display='none';},
 
-  async timerStart() {
-    const left = gs.timerPauseLeft;
-    await update(SR, { timerStart: left!=null ? sNow()-(gs.timerSec-left)*1000 : sNow(), timerRunning:true, timerPauseLeft:null, lastActivity: sNow() });
-  },
-  async timerPause() {
-    const left = Math.max(0, gs.timerSec - (sNow()-gs.timerStart)/1000);
-    stopRaf();
-    await update(SR, { timerRunning:false, timerStart:null, timerPauseLeft:left, lastActivity: sNow() });
-  },
-  async timerReset() {
-    stopRaf();
-    await update(SR, { timerRunning:false, timerStart:null, timerPauseLeft:null, lastActivity: sNow() });
-  },
-
-  async giveJoker(player) {
-    if (gs.phase !== 'answering') return;
-    const uk = player === 's1' ? 's1JokerUsed' : 's2JokerUsed';
-    const ak = player === 's1' ? 's1JokerActive' : 's2JokerActive';
-    if (gs[uk]) return;
-    const q = getPack().questions[gs.currentQ||0];
-    const wrongs = q.a.map((_,i) => i).filter(i => i !== q.r);
-    await update(SR, { [uk]:true, [ak]:true, jokerHidden:[wrongs[0],wrongs[1]], lastActivity: sNow() });
-  },
-  useJoker() { el('pg-joker-wrap').style.display = 'none'; },
-
-  async judgePlayer(player, correct) {
-    const sf = player === 's1' ? 's1Score' : 's2Score';
-    const jf = player === 's1' ? 's1Judged' : 's2Judged';
-    const prev = player === 's1' ? gs.s1Judged : gs.s2Judged;
-    const u = { [jf]: correct ? 'correct' : 'wrong', lastActivity: sNow() };
-    let score = gs[sf] || 0;
-    if (prev === 'correct' && !correct) score = Math.max(0, score - 1);
-    else if (prev !== 'correct' && correct) score += 1;
-    u[sf] = score;
-    await update(SR, u);
+  // ── OPEN / ESTIMATE ANSWER INPUT ─────────────────────────────────────────
+  onAnsInput(){
+    const v=el('pg-ans-input').value.trim();
+    el('pg-ans-confirm').disabled=v.length===0;
   },
 
-  async giveSpeedBonus(player) {
-    if (!player) { await update(SR, { speedBonus: 'none', lastActivity: sNow() }); return; }
-    const sf = player === 's1' ? 's1Score' : 's2Score';
-    const prev = gs.speedBonus;
-    const u = { speedBonus: player, lastActivity: sNow() };
-    // Revert previous bonus if any
-    if (prev && prev !== 'none' && prev !== player) {
-      const prevSf = prev === 's1' ? 's1Score' : 's2Score';
-      u[prevSf] = Math.max(0, (gs[prevSf]||0) - 1);
-    }
-    if (prev !== player) u[sf] = (gs[sf]||0) + 1;
-    await update(SR, u);
+  async confirmAnswer(){
+    const v=el('pg-ans-input').value.trim();
+    if(!v)return;
+    const af=role==='s1'?'s1Answer':'s2Answer';
+    // Store as string for open, parse float for estimate
+    const q=getPack().questions[gs.currentQ||0];
+    const val=q.type==='estimate'?parseFloat(v.replace(',','.'))||v:v;
+    await update(SR,{[af]:val});
   },
 
-  async fullReset() {
-    if (!confirm('Datenbank zurücksetzen?')) return;
-    stopRaf(); stopHeartbeat(); myReady = false;
-    clearTimeout(scoreRevealTimer);
-    el('pg-score-reveal').style.display = 'none';
-    await remove(SR);
-    showScreen('role-screen');
+  // ── MOD JUDGE (manual correct/wrong for open/estimate) ───────────────────
+  toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();const b=el('fs-btn');if(b)b.textContent='✕ Vollbild';}else{document.exitFullscreen&&document.exitFullscreen();const b=el('fs-btn');if(b)b.textContent='⛶ Vollbild';}},
+  async judgePlayer(player, correct){
+    const scoreField=player==='s1'?'s1Score':'s2Score';
+    const judgeField=player==='s1'?'s1Judged':'s2Judged';
+    const updates={[judgeField]:correct?'correct':'wrong'};
+    if(correct) updates[scoreField]=(gs[scoreField]||0)+1;
+    // If previously judged correct, revert score
+    const prevJudge=player==='s1'?gs.s1Judged:gs.s2Judged;
+    if(prevJudge==='correct'&&!correct) updates[scoreField]=Math.max(0,(gs[scoreField]||0)-1);
+    if(prevJudge==='wrong'&&correct) updates[scoreField]=(gs[scoreField]||0)+1;
+    await update(SR,updates);
   },
-
-  // ── ANSWER INPUT ──────────────────────────────────────────────────────────
-  onAnsInput() {
-    const v = el('pg-ans-input').value.trim();
-    el('pg-ans-confirm').disabled = v.length === 0;
-  },
-  async confirmAnswer() {
-    const v = el('pg-ans-input').value.trim(); if (!v) return;
-    const q = getPack().questions[gs.currentQ||0];
-    const af = role === 's1' ? 's1Answer' : 's2Answer';
-    const tf = role === 's1' ? 's1Time'   : 's2Time';
-    const val = q.type === 'estimate' ? (parseFloat(v.replace(',','.')) || v) : v;
-    const elapsed = gs.questionStartTime ? sNow() - gs.questionStartTime : null;
-    await update(SR, { [af]: val, [tf]: elapsed, lastActivity: sNow() });
+  async fullReset(){
+    if(!confirm('Datenbank zurücksetzen?'))return;
+    stopRaf();myReady=false;clearTimeout(scoreRevealTimer);
+    el('pg-score-reveal').style.display='none';
+    await remove(SR);showScreen('role-screen');
   },
 };
-window.Q = Q;
+window.Q=Q;
 
-// ── SUBMIT MC ANSWER ──────────────────────────────────────────────────────
-async function answer(idx) {
-  if (gs.phase !== 'answering') return;
-  const q  = getPack().questions[gs.currentQ||0];
-  if (q.type === 'estimate' || q.type === 'open') return;
-  const af = role === 's1' ? 's1Answer' : 's2Answer';
-  const sf = role === 's1' ? 's1Score'  : 's2Score';
-  const tf = role === 's1' ? 's1Time'   : 's2Time';
-  const u  = { [af]: idx, lastActivity: sNow() };
-  if (idx === q.r) u[sf] = (gs[sf]||0) + 1;
-  const elapsed = gs.questionStartTime ? sNow() - gs.questionStartTime : null;
-  if (elapsed !== null) u[tf] = elapsed;
-  await update(SR, u);
+async function answer(idx){
+  if(gs.phase!=='answering')return;
+  const q=getPack().questions[gs.currentQ||0];
+  if(q.type==='estimate'||q.type==='open') return; // handled by confirmAnswer
+  const af=role==='s1'?'s1Answer':'s2Answer',sf=role==='s1'?'s1Score':'s2Score';
+  const u={[af]:idx};if(idx===q.r)u[sf]=(gs[sf]||0)+1;
+  await update(SR,u);
 }
 
-// ── RENDER HELPERS ────────────────────────────────────────────────────────
-function timerUI(prefix) {
-  const hasT = gs.timerMode && gs.timerMode !== 'none';
-  const t = el(prefix+'-timer');
-  if (hasT) t.classList.add('on'); else { t.classList.remove('on'); stopRaf(); }
-  if (hasT) {
-    if (prefix === 'mg' && gs.timerMode === 'manual') {
-      const bt = el('mg-tbtns');
-      if (gs.timerRunning)
-        bt.innerHTML = `<button class="btn btn-danger btn-sm" onclick="Q.timerPause()">Pause</button><button class="btn btn-ghost btn-sm" onclick="Q.timerReset()">Reset</button>`;
-      else if (gs.timerPauseLeft != null)
-        bt.innerHTML = `<button class="btn btn-green btn-sm" onclick="Q.timerStart()">Weiter</button><button class="btn btn-ghost btn-sm" onclick="Q.timerReset()">Reset</button>`;
-      else
-        bt.innerHTML = `<button class="btn btn-green btn-sm" onclick="Q.timerStart()">Start</button>`;
-    }
-    if (gs.timerRunning && gs.timerStart) startRaf();
-    else {
-      stopRaf();
-      const disp = gs.timerPauseLeft != null ? gs.timerPauseLeft : gs.timerSec||30;
-      const pct  = gs.timerPauseLeft != null ? (gs.timerPauseLeft/(gs.timerSec||30)*100) : 100;
-      showTimerStatic(disp, pct);
-    }
-  }
-}
-
-// ── RENDER MOD ────────────────────────────────────────────────────────────
-let modListening = false;
-function renderMod() {
-  if (gs.phase === 'lobby') {
+// ── RENDER MOD ───────────────────────────────────────────────────────────
+function renderMod(){
+  if(gs.phase==='lobby'){
     showScreen('lobby-mod-screen');
-    if (Object.keys(PACKS).length) renderPackGrid();
-    const n1=gs.s1Name||'–', n2=gs.s2Name||'–', r1=!!gs.s1Ready, r2=!!gs.s2Ready;
-    slots('m', {s1:n1,s2:n2}, {s1:r1?'Bereit':'Eingeloggt',s2:r2?'Bereit':'Eingeloggt'}, {s1:r1,s2:r2});
-    const cp = getPack();
-    el('mod-ready-hint').innerHTML =
-      (r1&&r2?'Beide bereit':r1?'S1 bereit – warte auf S2':r2?'S2 bereit – warte auf S1':'Spieler müssen Bereit drücken')
-      + `<br><span style="color:var(--text3)">Paket: ${cp.name||'–'}</span>`;
-    const sb = el('start-btn'); sb.disabled = false;
-    sb.textContent = r1&&r2 ? 'Quiz starten' : r1||r2 ? 'Trotzdem starten' : 'Solo starten';
+    if(Object.keys(PACKS).length)renderPackGrid();
+    const n1=gs.s1Name||'–',n2=gs.s2Name||'–',r1=!!gs.s1Ready,r2=!!gs.s2Ready;
+    slots('m',{s1:n1,s2:n2},{s1:r1?'Bereit':'Eingeloggt',s2:r2?'Bereit':'Eingeloggt'},{s1:r1,s2:r2});
+    const cp=getPack();
+    el('mod-ready-hint').innerHTML=(r1&&r2?'Beide bereit':r1?'S1 bereit – warte auf S2':r2?'S2 bereit – warte auf S1':'Spieler müssen Bereit drücken')
+      +`<br><span style="color:var(--text3);font-size:.74rem">Paket: ${cp.name||'–'}</span>`;
+    const sb=el('start-btn');sb.disabled=false;
+    sb.textContent=r1&&r2?'Quiz starten':r1||r2?'Trotzdem starten':'Solo starten';
     return;
   }
-  if (gs.phase === 'finished') { showScreen('results-screen'); renderResults(); return; }
+  if(gs.phase==='finished'){showScreen('results-screen');renderResults();return;}
   showScreen('mod-game-screen');
+  const pack=getPack(),total=pack.questions.length,q=pack.questions[gs.currentQ||0];
+  const n1=gs.s1Name||'S1',n2=gs.s2Name||'S2';
 
-  const pack = getPack(), total = pack.questions.length, q = pack.questions[gs.currentQ||0];
-  const n1 = gs.s1Name||'S1', n2 = gs.s2Name||'S2';
+  el('mg-n1').textContent=n1;el('j1-name').textContent=n1;
+  el('mg-n2').textContent=n2;el('j2-name').textContent=n2;
+  el('mg-sc1').textContent=gs.s1Score||0;el('mg-sc2').textContent=gs.s2Score||0;
+  el('mg-prog').style.width=((gs.currentQ||0)/total*100)+'%';
+  el('mg-qnum').textContent=`Frage ${(gs.currentQ||0)+1} / ${total}`;
 
-  el('mg-n1').textContent = n1; el('j1-name').textContent = n1;
-  el('mg-n2').textContent = n2; el('j2-name').textContent = n2;
-  el('mg-sc1').textContent = gs.s1Score||0;
-  el('mg-sc2').textContent = gs.s2Score||0;
-  el('mg-prog').style.width = ((gs.currentQ||0)/total*100)+'%';
-  el('mg-qnum').textContent = `${(gs.currentQ||0)+1} / ${total}`;
-
-  timerUI('mg');
+  // Timer
+  const hasT=gs.timerMode&&gs.timerMode!=='none';
+  const timerEl=el('mg-timer');
+  if(hasT){timerEl.classList.add('visible');}else{timerEl.classList.remove('visible');stopRaf();}
+  if(hasT){
+    if(gs.timerMode==='manual'){
+      const tbtns=el('mg-tbtns');
+      if(gs.timerRunning)tbtns.innerHTML=`<button class="btn btn-danger btn-sm" onclick="Q.timerPause()">Pause</button><button class="btn btn-ghost btn-sm" onclick="Q.timerReset()">Reset</button>`;
+      else if(gs.timerPauseLeft!=null)tbtns.innerHTML=`<button class="btn btn-green btn-sm" onclick="Q.timerStart()">Weiter</button><button class="btn btn-ghost btn-sm" onclick="Q.timerReset()">Reset</button>`;
+      else tbtns.innerHTML=`<button class="btn btn-green btn-sm" onclick="Q.timerStart()">Start</button>`;
+    }else el('mg-tbtns').innerHTML='';
+    if(gs.timerRunning&&gs.timerStart)startRaf();
+    else{stopRaf();const disp=gs.timerPauseLeft!=null?gs.timerPauseLeft:gs.timerSec||30;showTimerStatic(disp,gs.timerPauseLeft!=null?(gs.timerPauseLeft/(gs.timerSec||30)*100):100);}
+  }
 
   // Question
-  const cc = CC[q.cat]||'#2A9D8F';
-  const c  = el('mg-cat'); c.textContent = q.cat; c.style.cssText = `background:${cc}1a;border:1px solid ${cc}44;color:${cc}`;
-  el('mg-qtxt').textContent = q.q;
+  const cc=CC[q.cat]||'#8899bb';
+  const c=el('mg-cat');c.textContent=q.cat;c.style.cssText=`background:${cc}1a;border:1px solid ${cc}44;color:${cc}`;
+  el('mg-qtxt').textContent=q.q;
 
   // Jokers
-  const ph = gs.phase;
-  el('j1-btn').disabled = !!gs.s1JokerUsed || ph === 'revealed';
-  el('j2-btn').disabled = !!gs.s2JokerUsed || ph === 'revealed';
+  el('j1-btn').disabled=!!gs.s1JokerUsed||gs.phase==='revealed';
+  el('j2-btn').disabled=!!gs.s2JokerUsed||gs.phase==='revealed';
 
-  // Answers
-  const isOT = q.type === 'estimate' || q.type === 'open';
-  const con = el('mg-answers'); con.innerHTML = '';
-  if (isOT) {
-    con.innerHTML = `<div style="padding:10px 14px;border-radius:var(--r);border:1px solid var(--card-b);color:var(--text2);font-size:var(--fs);text-align:center">${q.type === 'estimate' ? 'Schätzfrage' : 'Freitextfrage'}</div>`;
-  } else {
-    q.a.forEach((a, i) => {
-      const d = document.createElement('div'); d.className = 'ans disabled';
-      if (i === q.r) d.classList.add('correct');
-      else if (i === gs.s1Answer || i === gs.s2Answer) d.classList.add('wrong');
-      let mk = '';
-      if (gs.s1Answer === i || gs.s2Answer === i) {
-        mk = '<div class="ans-markers">';
-        if (gs.s1Answer === i) mk += `<div class="mkr mkr1">${n1.slice(0,4)}</div>`;
-        if (gs.s2Answer === i) mk += `<div class="mkr mkr2">${n2.slice(0,4)}</div>`;
-        mk += '</div>';
+  // Answers – mod always sees all incl correct
+  const modCon=el('mg-answers');modCon.innerHTML='';
+  const isOpenQ=q.type==='estimate'||q.type==='open';
+  if(isOpenQ){
+    // For open/estimate: hide placeholder when panel is visible, show otherwise
+    const showingPanel = ph==='shown'||ph==='revealed'||ph==='answering'||ph==='locked';
+    modCon.innerHTML=showingPanel?'':`<div style="padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--card-b);color:var(--text3);font-size:.84rem;text-align:center">${q.type==='estimate'?'Schätzfrage':'Freitextfrage'}</div>`;
+  }else{
+    q.a.forEach((a,i)=>{
+      const d=document.createElement('div');d.className='ans disabled';
+      if(i===q.r)d.classList.add('correct');
+      else if(i===gs.s1Answer||i===gs.s2Answer)d.classList.add('wrong');
+      let mk='';
+      if(gs.s1Answer===i||gs.s2Answer===i){
+        mk='<div class="ans-markers">';
+        if(gs.s1Answer===i)mk+=`<div class="mkr mkr1">${n1.slice(0,3)}</div>`;
+        if(gs.s2Answer===i)mk+=`<div class="mkr mkr2">${n2.slice(0,3)}</div>`;
+        mk+='</div>';
       }
-      d.innerHTML = `<span class="ans-l">${i===q.r?'✓':L(i)}</span><span style="flex:1">${a}</span>${mk}`;
-      con.appendChild(d);
+      d.innerHTML=`<span class="ans-l">${i===q.r?'✓':L(i)}</span><span style="flex:1">${a}</span>${mk}`;
+      modCon.appendChild(d);
     });
   }
 
-  // Open panel
-  const showingPanel = isOT && (ph==='answering'||ph==='locked'||ph==='shown'||ph==='revealed');
-  const op = el('mg-open-panel');
-  op.style.display = showingPanel ? 'flex' : 'none';
-  if (showingPanel) {
-    const hint = el('mg-est-hint');
-    if (q.type === 'estimate' && q.answer != null) {
-      const cor = parseFloat(q.answer);
-      const s1a = gs.s1Answer, s2a = gs.s2Answer;
-      const d1  = s1a!=null ? Math.abs(parseFloat(s1a)-cor) : null;
-      const d2  = s2a!=null ? Math.abs(parseFloat(s2a)-cor) : null;
-      let win = '';
-      if (d1!=null&&d2!=null) win = d1<d2?n1:d2<d1?n2:'Unentschieden';
-      else if (d1!=null) win=n1; else if (d2!=null) win=n2;
-      hint.style.display = '';
-      hint.innerHTML = `<strong>Richtige Antwort: ${cor}</strong><br>`
-        + (s1a!=null?`${n1}: ${s1a} (Diff: ${d1!=null?d1.toFixed(1):'-'})<br>`:`<span style="color:var(--text3)">${n1}: noch keine Antwort<br></span>`)
-        + (s2a!=null?`${n2}: ${s2a} (Diff: ${d2!=null?d2.toFixed(1):'-'})<br>`:`<span style="color:var(--text3)">${n2}: noch keine Antwort<br></span>`)
-        + (win?`<strong>Theoretischer Gewinner: ${win}</strong>`:'');
-    } else if (q.type === 'open') {
-      hint.style.display = '';
-      hint.innerHTML = `<strong>Erwartete Antwort:</strong> ${q.answer||'–'}`;
-    } else { hint.style.display = 'none'; }
+  // Open/estimate panel
+  const isOpenType=q.type==='estimate'||q.type==='open';
+  const openPanel=el('mg-open-panel');
+  const ph=gs.phase;
 
-    const pad = el('mg-player-ans'); pad.innerHTML = '';
-    [[gs.s1Answer,n1,'s1',gs.s1Judged],[gs.s2Answer,n2,'s2',gs.s2Judged]].forEach(([ans,nm,player,judged])=>{
-      const wrap = document.createElement('div');
-      const bc = judged==='correct'?'var(--c2)':judged==='wrong'?'var(--c5)':'var(--card-b)';
-      const bg = judged==='correct'?'rgba(42,157,143,.1)':judged==='wrong'?'rgba(231,111,81,.08)':'var(--bg3)';
-      wrap.style.cssText = `border:1.5px solid ${bc};border-radius:var(--r);padding:11px 14px;background:${bg};transition:all .2s`;
-      const canJudge = ans != null;
-      const ansText = canJudge
-        ? `<span style="color:var(--text);font-size:var(--fs-lg);font-weight:800">${ans}</span>`
-        : `<span style="color:var(--text3);font-style:italic">Noch keine Antwort</span>`;
-      wrap.innerHTML = `
-        <div style="font-size:var(--fs);color:var(--text2);margin-bottom:5px;font-weight:600">${nm}</div>
-        <div style="margin-bottom:${canJudge?'10':'0'}px">${ansText}</div>
+  if(isOpenType&&(ph==='shown'||ph==='revealed'||ph==='answering'||ph==='locked')){
+    openPanel.style.display='';
+    const s1a=gs.s1Answer,s2a=gs.s2Answer;
+    const n1d=gs.s1Name||'S1',n2d=gs.s2Name||'S2';
+
+    // Estimate hint
+    const hint=el('mg-estimate-hint');
+    if(q.type==='estimate'&&q.answer!=null){
+      const correct=parseFloat(q.answer);
+      const d1=s1a!=null?Math.abs(parseFloat(s1a)-correct):null;
+      const d2=s2a!=null?Math.abs(parseFloat(s2a)-correct):null;
+      let winner='';
+      if(d1!=null&&d2!=null){winner=d1<d2?n1d:d2<d1?n2d:'Unentschieden';}
+      else if(d1!=null)winner=n1d;
+      else if(d2!=null)winner=n2d;
+      hint.style.display='';
+      hint.innerHTML=`<strong>Richtige Antwort: ${correct}</strong><br>`
+        +(s1a!=null?`${n1d}: ${s1a} (Differenz: ${d1!=null?d1.toFixed(1):'-'})<br>`:`<span style="color:var(--text3)">${n1d}: noch keine Antwort<br></span>`)
+        +(s2a!=null?`${n2d}: ${s2a} (Differenz: ${d2!=null?d2.toFixed(1):'-'})<br>`:`<span style="color:var(--text3)">${n2d}: noch keine Antwort<br></span>`)
+        +(winner?`<strong>Theoretischer Gewinner: ${winner}</strong>`:'');
+    }else if(q.type==='open'){
+      // For open type, just show correct answer to mod
+      hint.style.display='';
+      hint.innerHTML=`<strong>Erwartete Antwort:</strong> ${q.answer||'–'}`;
+    }else{hint.style.display='none';}
+
+    // Player answer display with judge buttons
+    const pad=el('mg-player-answers-display');pad.innerHTML='';
+    [[s1a,n1d,'s1',gs.s1Judged],[s2a,n2d,'s2',gs.s2Judged]].forEach(([ans,nm,player,judged])=>{
+      const wrap=document.createElement('div');
+      const judgeColor=judged==='correct'?'rgba(39,174,96,.12)':judged==='wrong'?'rgba(231,76,60,.1)':'var(--card)';
+      const judgeBorder=judged==='correct'?'var(--green)':judged==='wrong'?'var(--red)':'var(--card-b)';
+      wrap.style.cssText=`border:1.5px solid ${judgeBorder};border-radius:var(--r-sm);padding:10px 13px;background:${judgeColor};transition:all .2s`;
+      const canJudge=ans!=null;
+      const ansText=canJudge?`<span style="color:var(--text);font-size:1.1rem;font-weight:800">${ans}</span>`:`<span style="color:var(--text3);font-style:italic;font-size:.84rem">Noch keine Antwort</span>`;
+      wrap.innerHTML=`
+        <div style="font-size:.76rem;color:var(--text3);margin-bottom:5px;font-weight:600">${nm}</div>
+        <div style="margin-bottom:${canJudge?'8':'0'}px">${ansText}</div>
         ${canJudge?`<div class="judge-row">
-          <button class="judge-btn judge-c${judged==='correct'?' on':''}" onclick="Q.judgePlayer('${player}',true)">Richtig</button>
-          <button class="judge-btn judge-w${judged==='wrong'?' on':''}" onclick="Q.judgePlayer('${player}',false)">Falsch</button>
+          <button class="judge-btn judge-correct${judged==='correct'?' active':''}" onclick="Q.judgePlayer('${player}',true)">Richtig</button>
+          <button class="judge-btn judge-wrong${judged==='wrong'?' active':''}" onclick="Q.judgePlayer('${player}',false)">Falsch</button>
         </div>`:''}`;
       pad.appendChild(wrap);
     });
-  }
-
-  // Speed panel (after shown/revealed for MC questions)
-  const sp = el('mg-speed-panel');
-  const s1t = gs.s1Time, s2t = gs.s2Time;
-  const showSpeed = !isOT && (ph==='shown'||ph==='revealed') && (s1t!=null||s2t!=null);
-  sp.style.display = showSpeed ? '' : 'none';
-  if (showSpeed) {
-    const fmt = ms => ms != null ? (ms/1000).toFixed(2)+'s' : '–';
-    let winner = '';
-    if (s1t!=null&&s2t!=null) winner = s1t<s2t?n1:s2t<s1t?n2:'Gleich';
-    else if (s1t!=null) winner=n1; else if (s2t!=null) winner=n2;
-    el('mg-speed-content').innerHTML =
-      `<div class="speed-row"><span class="speed-label">${n1}</span><span class="speed-val">${fmt(s1t)}</span></div>`
-      +`<div class="speed-row"><span class="speed-label">${n2}</span><span class="speed-val">${fmt(s2t)}</span></div>`
-      +(winner?`<div class="speed-row"><span class="speed-label">Schnellster</span><span class="speed-winner">${winner}</span></div>`:'');
-    const sj = el('mg-speed-judge');
-    if (ph === 'revealed') {
-      sj.style.display = '';
-      el('spd-s1-btn').className = 'judge-btn judge-c'+(gs.speedBonus==='s1'?' on':'');
-      el('spd-s2-btn').className = 'judge-btn judge-c'+(gs.speedBonus==='s2'?' on':'');
-    } else { sj.style.display = 'none'; }
+  }else{
+    openPanel.style.display='none';
   }
 
   // Fact box
-  const fb = el('mg-fact-box'), fact = q.fact||null;
-  fb.style.display = (ph==='revealed'&&fact) ? '' : 'none';
-  if (ph==='revealed'&&fact) el('mg-fact-text').textContent = fact;
+  const fb=el('mg-fact-box'),fact=q.fact||q.erklaerung||null;
+  fb.style.display=(ph==='revealed'&&fact)?'':'none';
+  if(ph==='revealed'&&fact)el('mg-fact-text').textContent=fact;
 
   // Action button
-  const ab = el('mg-action-btn');
-  if (ph==='answering'||ph==='locked') { ab.textContent='Antworten zeigen'; ab.className='btn btn-ghost'; }
-  else if (ph==='shown')    { ab.textContent='Auflösen';   ab.className='btn btn-gold'; }
-  else if (ph==='revealed') { ab.textContent=(gs.currentQ||0)+1>=total?'Ergebnis':'Weiter'; ab.className='btn btn-primary'; }
+  const ab=el('mg-action-btn');
+  if(ph==='answering'||ph==='locked'){ab.textContent='Antworten zeigen';ab.className='btn btn-ghost';}
+  else if(ph==='shown'){ab.textContent='Auflösen';ab.className='btn btn-gold';}
+  else if(ph==='revealed'){ab.textContent=(gs.currentQ||0)+1>=total?'Ergebnis':'Weiter';ab.className='btn btn-primary';}
 }
 
 // ── RENDER PLAYER ─────────────────────────────────────────────────────────
-function renderPlayer() {
-  if (gs.phase === 'lobby') {
+function renderPlayer(){
+  if(gs.phase==='lobby'){
     showScreen('lobby-player-screen');
     const n1=gs.s1Name||'–',n2=gs.s2Name||'–',r1=!!gs.s1Ready,r2=!!gs.s2Ready;
     slots('p',{s1:n1,s2:n2},{s1:r1?'Bereit':'Eingeloggt',s2:r2?'Bereit':'Eingeloggt'},{s1:r1,s2:r2});
-    const myN2 = role==='s1'?gs.s1Name:gs.s2Name;
-    if (myN2&&myN2!=='–'&&myN2!==myName) { myName=myN2; el('pl-name').value=myN2; }
-    const gsR = role==='s1'?!!gs.s1Ready:!!gs.s2Ready;
-    if (gsR!==myReady) { myReady=gsR; const b=el('ready-btn'); b.className='ready-btn'+(myReady?' on':''); b.textContent=myReady?'Bereit ✓':'Bereit'; }
-    const cp = getPack();
-    el('pl-lobby-hint').innerHTML =
-      (r1&&r2?'Beide bereit':r1||r2?'Warte auf anderen Spieler':'Drücke Bereit wenn du startklar bist')
-      + `<br><span style="color:var(--text3)">Paket: ${cp.name||'–'}</span>`;
+    const myN=role==='s1'?gs.s1Name:gs.s2Name;
+    if(myN&&myN!=='–'&&myN!==name){name=myN;el('pl-name').value=myN;}
+    const gsReady=role==='s1'?!!gs.s1Ready:!!gs.s2Ready;
+    if(gsReady!==myReady){myReady=gsReady;const btn=el('ready-btn');btn.className='ready-btn'+(myReady?' active':'');btn.textContent=myReady?'Bereit ✓':'Bereit';}
+    const cp=getPack();
+    el('pl-lobby-hint').innerHTML=(r1&&r2?'Beide bereit':r1||r2?'Warte auf anderen Spieler':'Drücke Bereit wenn du startklar bist')
+      +`<br><span style="color:var(--text3);font-size:.74rem">Paket: ${cp.name||'–'}</span>`;
     return;
   }
-  if (gs.phase === 'finished') {
-    el('pg-score-reveal').style.display = 'none';
-    showScreen('results-screen'); renderResults(); return;
-  }
-
+  if(gs.phase==='finished'){el('pg-score-reveal').style.display='none';showScreen('results-screen');renderResults();return;}
   showScreen('player-game-screen');
-  const pack=getPack(), total=pack.questions.length, q=pack.questions[gs.currentQ||0];
+  const pack=getPack(),total=pack.questions.length,q=pack.questions[gs.currentQ||0];
   const myAns=role==='s1'?gs.s1Answer:gs.s2Answer;
   const mySc=role==='s1'?(gs.s1Score||0):(gs.s2Score||0);
-  const myN=role==='s1'?(gs.s1Name||'S1'):(gs.s2Name||'S2');
+  const myN=role==='s1'?(gs.s1Name||'Spieler 1'):(gs.s2Name||'Spieler 2');
   const myC=role==='s1'?'var(--s1)':'var(--s2)';
-  const othN=role==='s1'?(gs.s2Name||'S2'):(gs.s1Name||'S1');
-  const othSc=role==='s1'?(gs.s2Score||0):(gs.s1Score||0);
-  const othAns=role==='s1'?gs.s2Answer:gs.s1Answer;
   const jActive=role==='s1'?!!gs.s1JokerActive:!!gs.s2JokerActive;
-  const myJudged=role==='s1'?gs.s1Judged:gs.s2Judged;
   const ph=gs.phase;
 
-  // Question text + category
-  el('pg-qtxt').textContent = q.q;
-  const pgCat=el('pg-cat');
-  if(pgCat){const cc=CC[q.cat]||'#2A9D8F';pgCat.textContent=q.cat;pgCat.style.color=cc;}
-
-  // Role tag
-  const rt=el('pg-role-tag');
-  rt.textContent=myN; rt.style.background=myC==='var(--s1)'?'rgba(231,111,81,.2)':'rgba(42,157,143,.2)';
-  rt.style.color=myC; rt.style.border=`1px solid ${myC}`;
-
-  el('pg-name').textContent=myN; el('pg-name').style.color=myC;
+  // Dot color indicator
+  const dot=el('pl-dot');dot.style.background=myC;dot.style.boxShadow=`0 0 6px ${myC}`;
+  el('pg-name').textContent=myN;el('pg-name').style.color=myC;
   el('pg-score').textContent=mySc;
-  el('pg-other-name').textContent=othN;
-  el('pg-other-score').textContent=othSc;
-  el('pg-qnum').textContent=`${(gs.currentQ||0)+1} / ${total}`;
-  el('pg-prog').style.width=((gs.currentQ||0)/total*100)+'%';
+  el('pg-qnum').textContent=`Frage ${(gs.currentQ||0)+1} / ${total}`;
+  // Opponent score - hidden until reveal
+  const otherSc=role==='s1'?(gs.s2Score||0):(gs.s1Score||0);
+  const otherNm2=role==='s1'?(gs.s2Name||'S2'):(gs.s1Name||'S1');
+  if(el('pg-other-name'))el('pg-other-name').textContent=otherNm2;
+  if(el('pg-other-score')){const ph4=gs.phase;if(ph4==='revealed'||ph4==='finished'){el('pg-other-score').textContent=otherSc;el('pg-other-score').style.opacity='1';}else{el('pg-other-score').textContent='–';el('pg-other-score').style.opacity='.4';}}
+  // Role tag color
+  const rtag=el('pg-role-tag');
+  if(rtag){rtag.textContent=myN;rtag.style.color=myC;rtag.style.background=role==='s1'?'rgba(230,57,70,.12)':'rgba(29,127,232,.12)';rtag.style.borderColor=role==='s1'?'rgba(230,57,70,.3)':'rgba(29,127,232,.3)';}
+  // Category
+  const pgCat=el('pg-cat');if(pgCat){const cc=CC[q.cat]||'#8899bb';pgCat.textContent=q.cat;pgCat.style.color=cc;}
 
-  // Score color on reveal
+  // Progress bar for player too
+    const pprog=el('pg-prog');if(pprog)pprog.style.width=((gs.currentQ||0)/total*100)+'%';
+
+  // Score reveal on 'revealed' phase
   const curQ=gs.currentQ||0;
-  if (ph==='revealed'&&lastRevealedQ!==curQ) {
+  if(ph==='revealed'&&lastRevealedQ!==curQ){
     lastRevealedQ=curQ;
-    const isOTq=q.type==='estimate'||q.type==='open';
-    const correct=isOTq?(myJudged==='correct'):(myAns===q.r);
-    showScoreReveal(correct, mySc, total);
-    el('pg-score').style.color=correct?'var(--c2)':'var(--c5)';
-  } else if (ph!=='revealed') { el('pg-score').style.color='var(--text)'; }
+    showScoreReveal(myAns===q.r,mySc,total);
+    el('pg-score').style.color=myAns===q.r?'var(--green)':'var(--red)';
+  }else if(ph!=='revealed'){el('pg-score').style.color='var(--text)';}
 
-  timerUI('pg');
+  // Timer
+  const hasT=gs.timerMode&&gs.timerMode!=='none';
+  const pgTimerEl=el('pg-timer');
+  if(hasT){pgTimerEl.classList.add('visible');}else{pgTimerEl.classList.remove('visible');stopRaf();}
+  if(hasT&&gs.timerRunning&&gs.timerStart)startRaf();
+  else if(hasT&&!gs.timerRunning){stopRaf();const disp=gs.timerPauseLeft!=null?gs.timerPauseLeft:gs.timerSec||30;showTimerStatic(disp,gs.timerPauseLeft!=null?(gs.timerPauseLeft/(gs.timerSec||30)*100):100);}
+
+  // Reset input on new question
+  if(ph==='answering'&&myAns==null) resetInputField();
 
   // Status
+  const otherAns=role==='s1'?gs.s2Answer:gs.s1Answer;
+  const otherN=role==='s1'?(gs.s2Name||'S2'):(gs.s1Name||'S1');
   let statusTxt='';
-  if (ph==='answering') {
-    if (myAns!=null&&othAns!=null) statusTxt='Beide haben geantwortet';
-    else if (myAns!=null) statusTxt=`${othN} überlegt noch...`;
+  if(ph==='answering'){
+    if(myAns!=null&&otherAns!=null)statusTxt='Beide haben geantwortet';
+    else if(myAns!=null)statusTxt=`${otherN} überlegt noch...`;
     else statusTxt='Wähle deine Antwort';
-  } else if (ph==='locked')   statusTxt='Zeit abgelaufen';
-  else if (ph==='shown')      statusTxt='Moderator zeigt Antworten';
-  else if (ph==='revealed') {
-    const isOTq=q.type==='estimate'||q.type==='open';
-    const correct=isOTq?(myJudged==='correct'):(myAns===q.r);
-    statusTxt=correct?'Richtig beantwortet':'Falsch beantwortet';
-  }
+  }else if(ph==='locked')statusTxt='Zeit abgelaufen';
+  else if(ph==='shown')statusTxt='Moderator zeigt Antworten';
+  else if(ph==='revealed')statusTxt=myAns===q.r?'Richtig beantwortet':'Falsch beantwortet';
   el('pg-status').textContent=statusTxt;
 
-  const isOT=q.type==='estimate'||q.type==='open';
-  el('pg-answers').style.display=isOT?'none':'flex';
+  el('pg-wait').style.display='none';
+  el('pg-qtxt').textContent=q.q;
+
+  const isOpenType=q.type==='estimate'||q.type==='open';
+
+  // ── MULTIPLE CHOICE ──────────────────────────────────────────────────────
+  el('pg-answers').style.display=isOpenType?'none':'flex';
   el('pg-input-wrap').style.display='none';
   el('pg-ans-submitted').style.display='none';
-  el('pg-wait').style.display='none';
-  el('pg-joker-wrap').style.display=(jActive&&myAns==null&&ph==='answering'&&!isOT)?'':'none';
+  el('pg-joker-wrap').style.display=(jActive&&myAns==null&&ph==='answering'&&!isOpenType)?'':'none';
 
-  if (!isOT) {
-    // MC answers
-    el('pg-answers').innerHTML='';
-    const con=el('pg-answers');
+  if(!isOpenType){
+    const con=el('pg-answers');con.innerHTML='';
     const hidden=gs.jokerHidden||[];
     q.a.forEach((a,i)=>{
       const d=document.createElement('div');d.className='ans';
-      const isMe=myAns===i, isHidden=jActive&&hidden.includes(i)&&myAns==null;
+      const isMe=myAns===i;
+      const isHidden=jActive&&hidden.includes(i)&&myAns==null;
       const canClick=ph==='answering'&&myAns==null&&!isHidden;
       if(isHidden){d.classList.add('hidden','disabled');}
       else if(ph==='revealed'){
@@ -1418,138 +936,137 @@ function renderPlayer() {
         else if(isMe)d.classList.add('wrong');
         else d.classList.add('faded');
         d.classList.add('disabled');
-      }else if(ph==='shown'){if(isMe)d.classList.add('pending');d.classList.add('disabled');}
+      }else if(ph==='shown'){if(isMe||i===othAns)d.classList.add('pending');d.classList.add('disabled');}
       else if(isMe){d.classList.add('pending','disabled');}
       else if(!canClick){d.classList.add('disabled');if(!isHidden)d.style.opacity='.42';}
       d.innerHTML=`<span class="ans-l">${ph==='revealed'&&i===q.r?'✓':L(i)}</span><span>${a}</span>`;
       if(canClick)d.addEventListener('click',()=>answer(i));
       con.appendChild(d);
     });
-    // After reveal: show opponent's answer too
-    if (ph==='revealed'&&othAns!=null&&othAns!==myAns) {
-      const items=con.querySelectorAll('.ans');
-      if(items[othAns]){
-        const mk=document.createElement('div');mk.className='ans-markers';
-        const mc=document.createElement('div');mc.className='mkr '+(role==='s1'?'mkr2':'mkr1');
-        mc.textContent=othN.slice(0,4);mk.appendChild(mc);items[othAns].appendChild(mk);
-      }
-    }
-  } else {
-    // Open/estimate
-    const sub=el('pg-ans-submitted');
-    if (ph==='revealed') {
-      sub.style.display='';
-      const correct=myJudged==='correct';
-      sub.style.borderColor=correct?'var(--c2)':'var(--c5)';
-      sub.style.background=correct?'rgba(42,157,143,.1)':'rgba(231,111,81,.08)';
-      let html=`<div style="font-size:var(--fs);color:var(--text3);margin-bottom:6px">Ergebnis</div>`;
-      html+=`<div style="margin-bottom:4px"><span style="color:var(--text2);font-size:var(--fs)">Deine Antwort: </span><span style="font-weight:700;color:${correct?'var(--c2)':'var(--c5)'}">${myAns!=null?myAns:'–'}</span></div>`;
-      if (othAns!=null) html+=`<div style="margin-bottom:4px"><span style="color:var(--text2);font-size:var(--fs)">${othN}: </span><span style="font-weight:600">${othAns}</span></div>`;
-      if (q.answer!=null) html+=`<div style="margin-bottom:6px"><span style="color:var(--text2);font-size:var(--fs)">Richtige Antwort: </span><span style="font-weight:800;color:var(--c2)">${q.answer}</span></div>`;
-      html+=`<div style="font-size:var(--fs-lg);font-weight:900;color:${correct?'var(--c2)':'var(--c5)'}">${correct?'Richtig':'Falsch'}</div>`;
-      sub.innerHTML=html; sub.style.color='var(--text)';
-    } else if (myAns!=null) {
-      sub.style.display='';
-      sub.style.borderColor='var(--c2)';sub.style.background='rgba(42,157,143,.15)';sub.style.color='var(--c2)';
-      sub.textContent=`Antwort: ${myAns} ✓`;
-    } else if (ph==='answering') {
-      el('pg-input-wrap').style.display='flex';
-      const inp=el('pg-ans-input');
-      inp.type=q.type==='estimate'?'number':'text';
-      inp.placeholder=q.type==='estimate'?'Zahl eingeben...':'Antwort eingeben...';
-      if(!inp.dataset.inited){inp.value='';inp.dataset.inited='1';}
-      el('pg-ans-confirm').disabled=!inp.value.trim();
-    } else {
-      sub.style.display='';sub.style.borderColor='var(--c2)';sub.style.background='rgba(42,157,143,.15)';sub.style.color='var(--c2)';
-      sub.textContent=myAns!=null?`Antwort: ${myAns}`:'Keine Antwort eingegeben';
-    }
   }
 
-  // Reset input on new question
-  if (ph==='answering'&&myAns==null) {
-    const inp=el('pg-ans-input');
-    if(inp&&inp.dataset.inited==='1'){inp.value='';inp.dataset.inited='';el('pg-ans-confirm').disabled=true;}
+  // ── OPEN / ESTIMATE ──────────────────────────────────────────────────────
+  if(isOpenType){
+    el('pg-answers').innerHTML='';
+    const myJudged=role==='s1'?gs.s1Judged:gs.s2Judged;
+
+    if(ph==='revealed'||ph==='finished'){
+      // Show full result: own answer, opponent answer, correct answer
+      const correct=myJudged==='correct';
+      const otherAnsVal=role==='s1'?gs.s2Answer:gs.s1Answer;
+      const otherNm=role==='s1'?(gs.s2Name||'S2'):(gs.s1Name||'S1');
+      const sub=el('pg-ans-submitted');
+      sub.style.display='';
+      sub.style.background=correct?'rgba(39,174,96,.1)':'rgba(231,76,60,.08)';
+      sub.style.borderColor=correct?'var(--green)':'var(--red)';
+      sub.style.color='var(--text)';
+      // Build result display
+      let html=`<div style="font-size:.75rem;color:var(--text3);margin-bottom:6px">Ergebnis</div>`;
+      html+=`<div style="margin-bottom:4px"><span style="color:var(--text3);font-size:.78rem">Deine Antwort: </span><span style="font-weight:700;color:${correct?'var(--green)':'var(--red)'}">${myAns!=null?myAns:'–'}</span></div>`;
+      if(otherAnsVal!=null)html+=`<div style="margin-bottom:4px"><span style="color:var(--text3);font-size:.78rem">${otherNm}: </span><span style="font-weight:600">${otherAnsVal}</span></div>`;
+      if(q.answer!=null)html+=`<div style="margin-bottom:6px"><span style="color:var(--text3);font-size:.78rem">Richtige Antwort: </span><span style="font-weight:800;color:var(--green)">${q.answer}</span></div>`;
+      html+=`<div style="font-size:.92rem;font-weight:800;color:${correct?'var(--green)':'var(--red)'}">${correct?'Richtig':'Falsch'}</div>`;
+      sub.innerHTML=html;
+      sub.style.color='var(--text)';
+    } else if(myAns!=null){
+      // Already submitted
+      const sub=el('pg-ans-submitted');
+      sub.style.display='';
+      sub.style.background='rgba(29,127,232,.1)';
+      sub.style.borderColor='var(--s2)';
+      sub.style.color='var(--s2)';
+      sub.textContent=`Antwort: ${myAns} ✓`;
+    } else if(ph==='answering'){
+      // Show input
+      const inp=el('pg-input-wrap');inp.style.display='flex';
+      const input=el('pg-ans-input');
+      input.type=q.type==='estimate'?'number':'text';
+      input.placeholder=q.type==='estimate'?'Zahl eingeben...':'Antwort eingeben...';
+      if(!input.dataset.inited){input.value='';input.dataset.inited='1';}
+      el('pg-ans-confirm').disabled=!input.value.trim();
+    } else {
+      // locked/shown phase, answer submitted
+      const sub=el('pg-ans-submitted');
+      sub.style.display='';sub.style.background='rgba(29,127,232,.1)';
+      sub.style.borderColor='var(--s2)';sub.style.color='var(--s2)';
+      sub.textContent=myAns!=null?`Antwort: ${myAns}`:'Keine Antwort eingegeben';
+    }
   }
 }
 
 // ── RESULTS ───────────────────────────────────────────────────────────────
-function renderResults() {
-  const s1=gs.s1Score||0, s2=gs.s2Score||0;
-  const pack=getPack(), total=pack.questions.length;
-  const n1=gs.s1Name||'S1', n2=gs.s2Name||'S2';
+function renderResults(){
+  const s1=gs.s1Score||0,s2=gs.s2Score||0;
+  const pack=getPack(),total=pack.questions.length;
+  const n1=gs.s1Name||'Spieler 1',n2=gs.s2Name||'Spieler 2';
   const w=s1>s2?'s1':s2>s1?'s2':'tie';
   el('res-emoji').textContent=w==='tie'?'=':w==='s1'?'1':'2';
-  el('res-emoji').style.color=w==='tie'?'var(--text2)':w==='s1'?'var(--s1)':'var(--s2)';
+  el('res-emoji').style.cssText=`font-size:1.8rem;font-weight:900;color:${w==='tie'?'var(--text2)':w==='s1'?'var(--s1)':'var(--s2)'}`;
   el('res-title').textContent=w==='tie'?'Unentschieden!':`${w==='s1'?n1:n2} gewinnt`;
   el('res-sub').textContent=`${total} Fragen · ${pack.name}`;
   el('res-scores').innerHTML=`
-    <div class="res-box" style="border-color:${w==='s1'?'var(--s1)':'rgba(231,111,81,.2)'}">
-      ${w==='s1'?`<div class="winner-tag">Sieger</div>`:''}
-      <div style="color:var(--s1);font-weight:700;margin-bottom:6px;font-size:var(--fs)">S1 · ${n1}</div>
+    <div class="res-box" style="background:rgba(230,57,70,.07);border:2px solid ${w==='s1'?'var(--s1)':'rgba(230,57,70,.18)'}">
+      ${w==='s1'?`<div class="winner-tag" style="background:var(--s1)">Sieger</div>`:''}
+      <div style="color:var(--s1);font-weight:700;margin-bottom:5px;font-size:.86rem">S1 · ${n1}</div>
       <div class="big" style="color:var(--text)">${s1}</div>
-      <div style="color:var(--text2);font-size:var(--fs);margin-top:3px">von ${total} · ${Math.round(s1/total*100)}%</div>
+      <div style="color:var(--text3);font-size:.72rem;margin-top:3px">/ ${total} · ${Math.round(s1/total*100)}%</div>
     </div>
-    <div class="res-box" style="border-color:${w==='s2'?'var(--s2)':'rgba(42,157,143,.2)'}">
+    <div class="res-box" style="background:rgba(29,127,232,.07);border:2px solid ${w==='s2'?'var(--s2)':'rgba(29,127,232,.18)'}">
       ${w==='s2'?`<div class="winner-tag" style="background:var(--s2)">Sieger</div>`:''}
-      <div style="color:var(--s2);font-weight:700;margin-bottom:6px;font-size:var(--fs)">S2 · ${n2}</div>
+      <div style="color:var(--s2);font-weight:700;margin-bottom:5px;font-size:.86rem">S2 · ${n2}</div>
       <div class="big" style="color:var(--text)">${s2}</div>
-      <div style="color:var(--text2);font-size:var(--fs);margin-top:3px">von ${total} · ${Math.round(s2/total*100)}%</div>
+      <div style="color:var(--text3);font-size:.72rem;margin-top:3px">/ ${total} · ${Math.round(s2/total*100)}%</div>
     </div>`;
 
-  // Speed summary
-  const t1=gs.s1TotalTime||0, t2=gs.s2TotalTime||0;
-  const rs=el('res-speed');
-  if (t1>0||t2>0) {
-    rs.style.display='';
-    const fmt=ms=>ms?(ms/1000).toFixed(1)+'s':'–';
-    const speedW=t1>0&&t2>0?(t1<t2?n1:t2<t1?n2:'Gleich'):t1>0?n1:n2;
-    rs.innerHTML=`<div class="label" style="color:rgba(42,157,143,.9);margin-bottom:8px">Gesamtantwortzeiten</div>`
-      +`<div class="speed-row"><span class="speed-label">${n1}</span><span class="speed-val">${fmt(t1)}</span></div>`
-      +`<div class="speed-row"><span class="speed-label">${n2}</span><span class="speed-val">${fmt(t2)}</span></div>`
-      +(gs.speedBonus&&gs.speedBonus!=='none'?`<div class="speed-row" style="margin-top:4px"><span class="speed-label">Bonuspunkt</span><span class="speed-winner">${gs.speedBonus==='s1'?n1:n2}</span></div>`:'');
-  } else { rs.style.display='none'; }
-
-  // History dots
-  const hist=gs.history||[], he=el('res-hist'); he.innerHTML='';
+  // Speed table
+  const hist2=gs.history||[];
+  const rsEl=el('res-speed');
+  if(rsEl){
+    const hasTime=hist2.some(h=>h&&(h.s1t!=null||h.s2t!=null));
+    if(hasTime){
+      rsEl.style.display='';
+      const fmt=ms=>ms!=null?(ms/1000).toFixed(2)+'s':'–';
+      let tbl=`<div style="font-size:var(--fs);font-weight:700;color:rgba(42,157,143,.8);margin-bottom:8px">Antwortzeiten</div>`;
+      tbl+=`<div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr;gap:5px 8px;font-size:var(--fs)">`;
+      tbl+=`<span style="color:var(--text3);font-weight:700">#</span><span style="color:var(--text3)">Kategorie</span><span style="color:var(--c4);font-weight:700">${n1}</span><span style="color:var(--c2);font-weight:700">${n2}</span>`;
+      hist2.forEach((h,i)=>{if(!h)return;const f1=h.s1t&&h.s2t&&h.s1t<h.s2t,f2=h.s1t&&h.s2t&&h.s2t<h.s1t;tbl+=`<span style="color:var(--text3)">${i+1}</span><span style="color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.cat||'–'}</span><span style="font-weight:${f1?800:400};color:${f1?'var(--c4)':'var(--text2)'}">${fmt(h.s1t)}</span><span style="font-weight:${f2?800:400};color:${f2?'var(--c2)':'var(--text2)'}">${fmt(h.s2t)}</span>`;});
+      const s1Tot=hist2.reduce((a,h)=>a+(h&&h.s1t?h.s1t:0),0),s2Tot=hist2.reduce((a,h)=>a+(h&&h.s2t?h.s2t:0),0);
+      if(s1Tot||s2Tot){tbl+=`<span style="font-weight:700;color:var(--text3);border-top:1px solid var(--card-b);padding-top:4px">∑</span><span style="border-top:1px solid var(--card-b);padding-top:4px"></span><span style="font-weight:800;color:var(--c4);border-top:1px solid var(--card-b);padding-top:4px">${fmt(s1Tot)}</span><span style="font-weight:800;color:var(--c2);border-top:1px solid var(--card-b);padding-top:4px">${fmt(s2Tot)}</span>`;}
+      tbl+='</div>';
+      rsEl.innerHTML=tbl;
+    }else{rsEl.style.display='none';}
+  }
+  const hist=gs.history||[],he=el('res-hist');he.innerHTML='';
   const hdr=document.createElement('div');
-  hdr.style.cssText='width:100%;display:flex;justify-content:center;gap:20px;margin-bottom:7px;font-size:var(--fs);color:var(--text2);font-weight:700';
+  hdr.style.cssText='width:100%;display:flex;justify-content:center;gap:20px;margin-bottom:6px;font-size:.7rem;color:var(--text3);font-weight:700';
   hdr.innerHTML=`<span style="color:var(--s1)">S1 · ${n1}</span><span style="color:var(--s2)">S2 · ${n2}</span>`;
   he.appendChild(hdr);
   const row=document.createElement('div');
-  row.style.cssText='display:flex;flex-wrap:wrap;gap:5px;justify-content:center';
+  row.style.cssText='display:flex;flex-wrap:wrap;gap:4px;justify-content:center';
   for(let i=0;i<total;i++){
     const a=hist[i]||{};
     const d=document.createElement('div');d.className='hist-dot';
-    const all=a.s1===true&&a.s2===true, none=a.s1===false&&a.s2===false;
-    d.style.borderColor=all?'var(--c2)':none?'var(--c5)':'var(--c4)';
-    d.style.background=all?'rgba(42,157,143,.12)':none?'rgba(231,111,81,.09)':'rgba(244,162,97,.09)';
-    const s1i=a.s1===true?`<span style="color:var(--s1);font-size:.75rem;font-weight:800">✓</span>`:`<span style="color:var(--text3);font-size:.75rem">✗</span>`;
-    const s2i=a.s2===true?`<span style="color:var(--s2);font-size:.75rem;font-weight:800">✓</span>`:`<span style="color:var(--text3);font-size:.75rem">✗</span>`;
-    d.innerHTML=`<span style="color:var(--text3);font-size:.62rem;font-weight:700">${i+1}</span><div style="display:flex;gap:3px">${s1i}${s2i}</div>`;
+    const all=a.s1===true&&a.s2===true,none=a.s1===false&&a.s2===false;
+    d.style.cssText=`background:${all?'rgba(39,174,96,.13)':none?'rgba(231,76,60,.09)':'rgba(255,165,0,.09)'};border:1px solid ${all?'#27ae60':none?'#e74c3c':'#e67e22'}`;
+    const s1i=a.s1===true?`<span style="color:var(--s1);font-size:.72rem;font-weight:800">✓</span>`:`<span style="color:var(--text3);font-size:.72rem">✗</span>`;
+    const s2i=a.s2===true?`<span style="color:var(--s2);font-size:.72rem;font-weight:800">✓</span>`:`<span style="color:var(--text3);font-size:.72rem">✗</span>`;
+    d.innerHTML=`<span style="color:var(--text3);font-size:.6rem;font-weight:700">${i+1}</span><div style="display:flex;gap:3px">${s1i}${s2i}</div>`;
     row.appendChild(d);
   }
   he.appendChild(row);
+  const leg=document.createElement('div');
+  leg.style.cssText='width:100%;text-align:center;font-size:.68rem;color:var(--text3);margin-top:7px';
+  leg.innerHTML='S1 ✓ / S2 ✓ = richtig &nbsp;·&nbsp; ✗ = falsch';
+  he.appendChild(leg);
 }
 
-// ── SUBSCRIBE ─────────────────────────────────────────────────────────────
-function subscribeMod() {
-  if (modListening) return; modListening = true;
-  onValue(SR, snap => {
-    if (!snap.exists()) return;
-    gs = snap.val(); renderMod(); resetInactivity();
-  });
-}
+setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
 
-// Init
-setTimeout(() => { el('t-sec-wrap').style.display = 'none'; }, 0);
 
-// Attach moderator subscribe after join
-const _origJoin = Q.join.bind(Q);
-Q.join = async (r) => {
-  await _origJoin(r);
-  if (r === 'moderator') subscribeMod();
-};
+
+
+
+
 </script>
-
 </body>
 </html>
