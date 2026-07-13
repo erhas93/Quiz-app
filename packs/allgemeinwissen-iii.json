@@ -1,0 +1,177 @@
+{
+  "name": "Allgemeinwissen III",
+  "emoji": "🌍",
+  "questions": [
+    {
+      "q": "Welches Element hat das chemische Symbol 'Au' und die Ordnungszahl 79?",
+      "a": [
+        "Silber (Argentum, Ag)",
+        "Gold (Aurum, Au)",
+        "Kupfer (Cuprum, Cu)",
+        "Platin (Platinum, Pt)"
+      ],
+      "r": 1,
+      "cat": "Chemie",
+      "type": "mc",
+      "fact": "Au kommt vom lateinischen 'Aurum'. Gold ist eines der wenigen Metalle, das in der Natur gediegen vorkommt. Alle jemals geschürfte Goldmenge der Menschheit würde einen Würfel von nur 21 Metern Kantenlänge füllen."
+    },
+    {
+      "q": "In welchem Jahr wurde die UNO (United Nations / Vereinte Nationen) gegründet?",
+      "answer": 1945,
+      "cat": "Geschichte",
+      "type": "estimate",
+      "fact": "Die UN-Charta wurde am 26. Juni 1945 in San Francisco unterzeichnet und trat am 24. Oktober 1945 in Kraft – der heutige UN-Tag. Gründungsmitglieder waren 51 Staaten. Heute sind es 193."
+    },
+    {
+      "q": "Welches Organ des menschlichen Körpers produziert die Galle?",
+      "a": [
+        "Gallenblase",
+        "Bauchspeicheldrüse",
+        "Leber",
+        "Milz"
+      ],
+      "r": 2,
+      "cat": "Menschlicher Körper",
+      "type": "mc",
+      "fact": "Die Leber produziert täglich ca. 600–1000 ml Galle. Die Gallenblase speichert sie nur und gibt sie bei Bedarf ab. Die Leber ist mit über 500 bekannten Funktionen das vielseitigste Organ des Körpers."
+    },
+    {
+      "q": "Wie heißt die Hauptstadt von Kanada?",
+      "a": [
+        "Toronto",
+        "Vancouver",
+        "Montréal",
+        "Ottawa"
+      ],
+      "r": 3,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Ottawa wurde 1857 von Königin Victoria zur Hauptstadt bestimmt – als Kompromiss zwischen dem englischsprachigen Toronto und dem französischsprachigen Montréal. Toronto ist zwar die größte Stadt Kanadas, aber nie Hauptstadt gewesen."
+    },
+    {
+      "q": "Wie nennt man die Eigenschaft von Wasser, bei 4°C die höchste Dichte zu haben?",
+      "a": [
+        "Kapillareffekt",
+        "Anomalie des Wassers",
+        "Oberflächenspannung",
+        "Kohäsion"
+      ],
+      "r": 1,
+      "cat": "Physik",
+      "type": "mc",
+      "fact": "Diese Anomalie ermöglicht Leben in Seen: Wasser friert von oben, das dichtere 4°C-Wasser sinkt ab und schützt Fische vor dem Einfrieren. Würde Eis sinken wie bei den meisten Stoffen, würden Gewässer von unten vollständig gefrieren."
+    },
+    {
+      "q": "Welches Land hat die längste Küstenlinie der Welt?",
+      "a": [
+        "Russland",
+        "Australien",
+        "Norwegen",
+        "Kanada"
+      ],
+      "r": 3,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Kanadas Küstenlinie beträgt ca. 202.080 km – mehr als 40% des Erdumfangs. Das liegt an den unzähligen Inseln, Fjorden und Buchten. Zum Vergleich: Russland hat ca. 37.650 km Küstenlinie."
+    },
+    {
+      "q": "Wer schrieb das Werk 'Also sprach Zarathustra' (1883–1885)?",
+      "a": [
+        "Arthur Schopenhauer",
+        "Immanuel Kant",
+        "Friedrich Nietzsche",
+        "Georg Wilhelm Friedrich Hegel"
+      ],
+      "r": 2,
+      "cat": "Philosophie",
+      "type": "mc",
+      "fact": "Nietzsche schrieb alle vier Teile in nur wenigen Wochen kreativer Hochspannung. Das Werk enthält das Konzept des 'Übermenschen' und 'Gottes Tod'. Richard Strauss vertonte es 1896 als Tondichtung – bekannt aus dem Film '2001: Odyssee im Weltraum'."
+    },
+    {
+      "q": "Wie viele Bits hat ein Byte?",
+      "answer": 8,
+      "cat": "Technologie",
+      "type": "estimate",
+      "fact": "Ein Byte besteht aus 8 Bits und kann 256 verschiedene Werte (0–255) speichern. Die Festlegung auf 8 Bit war keine mathematische Notwendigkeit – frühe Computer nutzten 6 oder 7 Bit. IBM standardisierte 8 Bit in den 1960ern mit dem System/360."
+    },
+    {
+      "q": "Welches Phänomen beschreibt die scheinbare Ablenkung bewegter Objekte durch die Erdrotation?",
+      "a": [
+        "Bernoulli-Effekt",
+        "Coriolis-Effekt",
+        "Doppler-Effekt",
+        "Magnus-Effekt"
+      ],
+      "r": 1,
+      "cat": "Physik",
+      "type": "mc",
+      "fact": "Der Coriolis-Effekt lenkt Winde auf der Nordhalbkugel nach rechts, auf der Südhalbkugel nach links ab – daher drehen Hurrikane links und Taifune rechts. Der Mythos, dass Badewannenwirbel davon abhängen, ist falsch – die Kraft ist dafür zu gering."
+    },
+    {
+      "q": "In welcher Stadt fand die erste moderne Olympiade 1896 statt?",
+      "a": [
+        "Rom",
+        "London",
+        "Paris",
+        "Athen"
+      ],
+      "r": 3,
+      "cat": "Sport",
+      "type": "mc",
+      "fact": "Athen 1896: 241 Athleten aus 14 Nationen, nur Männer. Es gab keine Goldmedaillen – Sieger bekamen Silber und Olivenzweig. Der Marathon (42,195 km) wurde eingeführt um den Lauf des Boten Pheidippides von Marathon nach Athen zu commemorieren."
+    },
+    {
+      "q": "Wie viele Symphonien komponierte Ludwig van Beethoven?",
+      "answer": 9,
+      "cat": "Musik",
+      "type": "estimate",
+      "fact": "Beethovens 9. Symphonie in d-Moll op. 125 ist sein bekanntestes Werk. Er dirigierte die Uraufführung 1824 – obwohl er zu diesem Zeitpunkt vollständig taub war. Die 'Ode an die Freude' aus dem 4. Satz ist seit 1985 die Europahymne."
+    },
+    {
+      "q": "Was ist der Unterschied zwischen einer Metapher und einem Vergleich? Nenne das entscheidende Merkmal.",
+      "cat": "Sprache",
+      "type": "open",
+      "answer": "Vergleichswort (wie / als)",
+      "fact": "Ein Vergleich nutzt 'wie' oder 'als' (Er ist stark wie ein Bär), eine Metapher nicht (Er ist ein Bär). Die Metapher setzt die Gleichheit direkt, der Vergleich markiert die Ähnlichkeit explizit. Metaphern sind daher bildkräftiger."
+    },
+    {
+      "q": "Welches Land war das erste, das Frauen das allgemeine Wahlrecht gewährte?",
+      "a": [
+        "Schweden",
+        "Finnland",
+        "Neuseeland",
+        "Norwegen"
+      ],
+      "r": 2,
+      "cat": "Geschichte",
+      "type": "mc",
+      "fact": "Neuseeland gewährte Frauen 1893 das Wahlrecht – als erstes selbstregiertes Land der Welt. Das Vereinigte Königreich folgte 1918, Deutschland 1919, die USA 1920, Frankreich erst 1944 und die Schweiz 1971."
+    },
+    {
+      "q": "Welches Gesetz besagt, dass der Druck eines idealen Gases bei konstanter Temperatur umgekehrt proportional zu seinem Volumen ist?",
+      "a": [
+        "Gesetz von Gay-Lussac",
+        "Gesetz von Charles",
+        "Gesetz von Boyle-Mariotte",
+        "Gesetz von Avogadro"
+      ],
+      "r": 2,
+      "cat": "Physik",
+      "type": "mc",
+      "fact": "Das Boyle-Mariotte-Gesetz (1662/1676): p × V = konst. Einfach gesagt: halbiert man das Volumen, verdoppelt sich der Druck. Das Prinzip steckt in Fahrradpumpen, Tauchflaschen und der Funktionsweise von Kolbenmotoren."
+    },
+    {
+      "q": "Welche Sprache hat weltweit die meisten Muttersprachler?",
+      "a": [
+        "Englisch",
+        "Spanisch",
+        "Mandarin-Chinesisch (普通话)",
+        "Hindi"
+      ],
+      "r": 2,
+      "cat": "Sprache",
+      "type": "mc",
+      "fact": "Mandarin-Chinesisch hat ca. 920 Millionen Muttersprachler. Zählt man Zweit- und Fremdsprachler dazu, liegt Englisch mit über 1,5 Milliarden Sprechern vorne. Hindi und Spanisch folgen mit je ca. 500 Millionen Muttersprachlern."
+    }
+  ]
+}
