@@ -73,7 +73,7 @@
 
 /* ── RESET ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; font-size: 16px; }
+html { height: 100%; height: 100dvh; } body { height: 100%; height: 100dvh; overflow: hidden; font-size: 16px; }
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: var(--bg); color: var(--text);
@@ -97,7 +97,23 @@ body {
 
 #mod-game-screen.active,
 #player-game-screen.active {
-  height: 100vh; overflow: hidden; flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* dynamic viewport - accounts for browser chrome on mobile */
+  overflow: hidden; flex-direction: column;
+  display: flex;
+}
+/* Robust game body that always scrolls correctly */
+#mg-main-body, #pg-main-body, #pg-cat-screen {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+#mg-cat-screen {
+  flex: 1 1 0;
+  min-height: 0;
+  display: none;
 }
 
 /* ── GAME LAYOUT ─────────────────────────────────────────────────────────── */
@@ -110,7 +126,9 @@ body {
   display: flex; flex-direction: column;
   justify-content: space-between;
   padding: 10px 14px 8px;
-  flex-shrink: 0; width: 100%;
+  flex-shrink: 0; flex-grow: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 .g-body {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
@@ -121,13 +139,15 @@ body {
 }
 .g-body-inner { flex: 1; display: flex; flex-direction: column; gap: 9px; padding-bottom: 8px; }
 .g-actions {
-  position: sticky; bottom: 0; left: 0; right: 0;
   background: var(--bg);
   border-top: 1px solid var(--card-b);
-  padding: 10px 0 14px;
+  padding: 10px 14px 16px;
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
-  flex-shrink: 0;
+  flex-shrink: 0; flex-grow: 0;
   z-index: 10;
+  /* Stick to bottom of scrollable container */
+  position: sticky;
+  bottom: 0;
 }
 
 /* ── HEADER ROWS ─────────────────────────────────────────────────────────── */
@@ -507,7 +527,7 @@ body {
 <body>
 
 <button id="theme-btn" onclick="Q.toggleTheme()">Hell</button>
-<div id="vtag">v3.3.0</div>
+<div id="vtag">v3.4.0</div>
 
 <!-- Score reveal overlay -->
 <div id="pg-score-reveal">
@@ -648,7 +668,7 @@ body {
     </div>
   </div>
   <!-- Category reveal (between questions) -->
-  <div id="mg-cat-screen" style="display:none;flex:1;flex-direction:column;background:var(--bg)">
+  <div id="mg-cat-screen" style="flex-direction:column;background:var(--bg)">
     <div class="cat-reveal">
       <div class="cat-reveal-label">Nächste Kategorie</div>
       <div id="mg-cat-badge" class="cat-reveal-badge">–</div>
@@ -660,7 +680,7 @@ body {
   </div>
 
   <!-- Main question body -->
-  <div id="mg-main-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;min-height:0;background:var(--bg)">
+  <div id="mg-main-body" style="flex-direction:column;background:var(--bg);display:flex">
     <div style="flex:1;display:flex;flex-direction:column;gap:9px;padding:12px 14px 0">
       <div class="q-box">
         <span id="mg-cat" class="q-cat"></span>
@@ -726,7 +746,7 @@ body {
     </div>
   </div>
   <!-- Player category phase -->
-  <div id="pg-cat-screen" style="display:none;flex:1;flex-direction:column;background:var(--bg)">
+  <div id="pg-cat-screen" style="display:none;flex:1;flex-direction:column;background:var(--bg);min-height:0">
     <div class="cat-reveal">
       <div class="cat-reveal-label">Nächste Kategorie</div>
       <div id="pg-cat-badge" class="cat-reveal-badge">–</div>
@@ -749,7 +769,7 @@ body {
   </div>
 
   <!-- Player main game body -->
-  <div id="pg-main-body" style="display:flex;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column;min-height:0;background:var(--bg);padding:12px 14px 20px;gap:9px">
+  <div id="pg-main-body" style="display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column;min-height:0;background:var(--bg);padding:12px 14px 20px;gap:9px">
     <div class="status-bar" id="pg-status">Warte...</div>
     <div class="q-box">
       <div id="pg-cat" style="font-size:var(--fs);color:var(--text2);margin-bottom:6px"></div>
@@ -1307,6 +1327,7 @@ function renderMod() {
   }
   catScreen.style.display = 'none';
   mainBody.style.display  = 'flex';
+  mainBody.style.flexDirection = 'column';
 
   const pack = getPack(), total = pack.questions.length, q = pack.questions[gs.currentQ||0];
   const n1 = gs.s1Name||'S1', n2 = gs.s2Name||'S2';
@@ -1496,6 +1517,7 @@ function renderPlayer() {
   }
   pgCatScreen.style.display = 'none';
   pgMainBody.style.display  = 'flex';
+  pgMainBody.style.flexDirection = 'column';
 
   const pack=getPack(), total=pack.questions.length, q=pack.questions[gs.currentQ||0];
   const myAns=role==='s1'?gs.s1Answer:gs.s2Answer;
