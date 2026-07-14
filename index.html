@@ -203,7 +203,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
   <button id="fs-btn" onclick="Q.toggleFullscreen()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text2)">⛶</button>
   <button onclick="Q.fullReset()" style="background:var(--bg3);border:1px solid rgba(231,111,81,.35);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--c5)">Reset</button>
   <button onclick="DBG.toggle()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text3)">🐛</button>
-  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.4.0</span>
+  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.5.0</span>
 </div>
 <!-- DEBUG PANEL -->
 <div id="dbg-panel" style="display:none;position:fixed;top:36px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-left:none;border-top:none;border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
@@ -455,6 +455,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 
 
+
+
+
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update, remove }
                            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -668,8 +671,13 @@ const Q={
     const isOT=q.type==='estimate'||q.type==='open';
     const u={revealed:true,phase:'revealed',s1JokerActive:false,s2JokerActive:false,jokerHidden:[]};
     if(!isOT){
+      // MC: score from answer correctness
       if(gs.s1Answer===q.r) u.s1Score=(gs.s1Score||0)+1;
       if(gs.s2Answer===q.r) u.s2Score=(gs.s2Score||0)+1;
+    } else {
+      // OT: score from mod's judged verdict set during 'shown' phase
+      if(gs.s1Judged==='correct') u.s1Score=(gs.s1Score||0)+1;
+      if(gs.s2Judged==='correct') u.s2Score=(gs.s2Score||0)+1;
     }
     await update(SR,u);
   },
@@ -728,15 +736,9 @@ const Q={
   // ── MOD JUDGE (manual correct/wrong for open/estimate) ───────────────────
   toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();const b=el('fs-btn');if(b)b.textContent='✕ Vollbild';}else{document.exitFullscreen&&document.exitFullscreen();const b=el('fs-btn');if(b)b.textContent='⛶ Vollbild';}},
   async judgePlayer(player, correct){
-    const scoreField=player==='s1'?'s1Score':'s2Score';
+    // Only set judged verdict - scores applied in reveal()
     const judgeField=player==='s1'?'s1Judged':'s2Judged';
-    const updates={[judgeField]:correct?'correct':'wrong'};
-    if(correct) updates[scoreField]=(gs[scoreField]||0)+1;
-    // If previously judged correct, revert score
-    const prevJudge=player==='s1'?gs.s1Judged:gs.s2Judged;
-    if(prevJudge==='correct'&&!correct) updates[scoreField]=Math.max(0,(gs[scoreField]||0)-1);
-    if(prevJudge==='wrong'&&correct) updates[scoreField]=(gs[scoreField]||0)+1;
-    await update(SR,updates);
+    await update(SR,{[judgeField]:correct?'correct':'wrong'});
   },
   async fullReset(){
     if(!confirm('Datenbank zurücksetzen?'))return;
@@ -839,14 +841,15 @@ function renderMod(){
   const openPanel=el('mg-open-panel');
   const ph=gs.phase;
 
-  if(isOpenType&&(ph==='shown'||ph==='revealed'||ph==='answering'||ph==='locked')){
+  if(isOpenType){
     openPanel.style.display='';
     const s1a=gs.s1Answer,s2a=gs.s2Answer;
     const n1d=gs.s1Name||'S1',n2d=gs.s2Name||'S2';
 
     // Estimate hint
-    const hint=el('mg-estimate-hint');
-    if(q.type==='estimate'&&q.answer!=null){
+    const hint=el('mg-est-hint');
+    if(!hint){/*element missing*/}
+    else if(q.type==='estimate'&&q.answer!=null){
       const correct=parseFloat(q.answer);
       const d1=s1a!=null?Math.abs(parseFloat(s1a)-correct):null;
       const d2=s2a!=null?Math.abs(parseFloat(s2a)-correct):null;
@@ -860,29 +863,34 @@ function renderMod(){
         +(s2a!=null?`${n2d}: ${s2a} (Differenz: ${d2!=null?d2.toFixed(1):'-'})<br>`:`<span style="color:var(--text3)">${n2d}: noch keine Antwort<br></span>`)
         +(winner?`<strong>Theoretischer Gewinner: ${winner}</strong>`:'');
     }else if(q.type==='open'){
-      // For open type, just show correct answer to mod
       hint.style.display='';
       hint.innerHTML=`<strong>Erwartete Antwort:</strong> ${q.answer||'–'}`;
     }else{hint.style.display='none';}
 
     // Player answer display with judge buttons
-    const pad=el('mg-player-answers-display');pad.innerHTML='';
+    const pad=el('mg-player-ans');
+    if(pad){
     [[s1a,n1d,'s1',gs.s1Judged],[s2a,n2d,'s2',gs.s2Judged]].forEach(([ans,nm,player,judged])=>{
       const wrap=document.createElement('div');
       const judgeColor=judged==='correct'?'rgba(39,174,96,.12)':judged==='wrong'?'rgba(231,76,60,.1)':'var(--card)';
       const judgeBorder=judged==='correct'?'var(--green)':judged==='wrong'?'var(--red)':'var(--card-b)';
       wrap.style.cssText=`border:1.5px solid ${judgeBorder};border-radius:var(--r-sm);padding:10px 13px;background:${judgeColor};transition:all .2s`;
       const canJudge=ans!=null;
-      const ansText=canJudge?`<span style="color:var(--text);font-size:1.1rem;font-weight:800">${ans}</span>`:`<span style="color:var(--text3);font-style:italic;font-size:.84rem">Noch keine Antwort</span>`;
+      const showJudgeBtn=canJudge&&(ph==='shown');
+      const ansColor=judged==='correct'?'var(--green)':judged==='wrong'?'var(--red)':'var(--text)';
+      const ansText=canJudge
+        ?`<span style="color:${ansColor};font-size:1.1rem;font-weight:800">${ans}</span>`
+        :`<span style="color:var(--text3);font-style:italic;font-size:.84rem">Noch keine Antwort</span>`;
       wrap.innerHTML=`
         <div style="font-size:.76rem;color:var(--text3);margin-bottom:5px;font-weight:600">${nm}</div>
-        <div style="margin-bottom:${canJudge?'8':'0'}px">${ansText}</div>
-        ${canJudge?`<div class="judge-row">
-          <button class="judge-btn judge-correct${judged==='correct'?' active':''}" onclick="Q.judgePlayer('${player}',true)">Richtig</button>
-          <button class="judge-btn judge-wrong${judged==='wrong'?' active':''}" onclick="Q.judgePlayer('${player}',false)">Falsch</button>
+        <div style="margin-bottom:${showJudgeBtn?'8':'0'}px">${ansText}</div>
+        ${showJudgeBtn?`<div class="judge-row">
+          <button class="judge-btn judge-correct${judged==='correct'?' active':''}" onclick="Q.judgePlayer('${player}',true)">Richtig ✓</button>
+          <button class="judge-btn judge-wrong${judged==='wrong'?' active':''}" onclick="Q.judgePlayer('${player}',false)">Falsch ✗</button>
         </div>`:''}`;
       pad.appendChild(wrap);
     });
+  } // end if(pad)
   }else{
     openPanel.style.display='none';
   }
@@ -1153,6 +1161,9 @@ function renderResults(){
 }
 
 setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
+
+
+
 
 
 
