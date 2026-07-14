@@ -205,7 +205,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
   <button id="fs-btn" onclick="Q.toggleFullscreen()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text2)">⛶</button>
   <button onclick="Q.fullReset()" style="background:var(--bg3);border:1px solid rgba(231,111,81,.35);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--c5)">Reset</button>
   <button onclick="DBG.toggle()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text3)">🐛</button>
-  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.5.0</span>
+  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.6.0</span>
 </div>
 <!-- DEBUG PANEL -->
 <div id="dbg-panel" style="display:none;position:fixed;top:36px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-left:none;border-top:none;border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
@@ -468,6 +468,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 
 
+
+
+
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update, remove }
                            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -540,9 +543,9 @@ function renderPackGrid(){
   const active=(gs.packId&&PACKS[gs.packId])?gs.packId:packId;
   Object.entries(PACKS).forEach(([id,p])=>{
     const d=document.createElement('div');
-    d.className='pack'+(id===active?' active':'');
+    d.className='pack'+(id===active?' on':'');
     d.innerHTML=`<div class="pack-dot"></div><span style="font-weight:600;font-size:.86rem;flex:1">${p.name}</span><span style="font-size:.7rem;color:var(--text3)">${p.questions.length} Fragen</span>`;
-    d.onclick=()=>{packId=id;document.querySelectorAll('.pack').forEach(e=>e.classList.remove('active'));d.classList.add('active');update(SR,{packId:id});};
+    d.onclick=()=>{packId=id;document.querySelectorAll('.pack').forEach(e=>e.classList.remove('on'));d.classList.add('on');update(SR,{packId:id});};
     g.appendChild(d);
   });
 }
@@ -581,7 +584,7 @@ function tickTimer(){
   const color=rem<=5?'var(--red)':rem<=10?'var(--orange)':'var(--green)';
   const cls=rem<=5?'urgent':rem<=10?'warn':'';
   ['mg','pg'].forEach(p=>{
-    const block=el(p+'-timer');if(!block||!block.classList.contains('visible'))return;
+    const block=el(p+'-timer');if(!block||!block.classList.contains('on'))return;
     const num=el(p+'-tnum'),bar=el(p+'-tbar');
     num.textContent=Math.ceil(rem)+'s';num.className='t-num'+(cls?' '+cls:'');
     bar.style.width=pct+'%';bar.style.background=color;
@@ -624,12 +627,12 @@ const Q={
   },
   setTimerMode(m){
     timerMode=m;
-    document.querySelectorAll('.t-mode').forEach(e=>e.classList.toggle('active',e.dataset.m===m));
+    document.querySelectorAll('.t-mode').forEach(e=>e.classList.toggle('on',e.dataset.m===m));
     el('t-sec-wrap').style.display=m==='none'?'none':'';
   },
   setPreset(s){
-    if(s===0){el('t-custom').style.display='';document.querySelectorAll('.t-opt').forEach(e=>e.classList.toggle('active',e.dataset.s==='0'));}
-    else{timerSec=s;el('t-custom').style.display='none';document.querySelectorAll('.t-opt').forEach(e=>e.classList.toggle('active',parseInt(e.dataset.s)===s));}
+    if(s===0){el('t-custom').style.display='';document.querySelectorAll('.t-opt').forEach(e=>e.classList.toggle('on',e.dataset.s==='0'));}
+    else{timerSec=s;el('t-custom').style.display='none';document.querySelectorAll('.t-opt').forEach(e=>e.classList.toggle('on',parseInt(e.dataset.s)===s));}
   },
   setCustom(){const v=parseInt(el('t-custom-val').value);if(v>=5&&v<=300)timerSec=v;},
 
@@ -775,6 +778,13 @@ function renderMod(){
   if(gs.phase==='lobby'){
     showScreen('lobby-mod-screen');
     if(Object.keys(PACKS).length)renderPackGrid();
+    // Sync timer mode buttons with Firebase state
+    const savedMode=gs.timerMode||'none';
+    document.querySelectorAll('.t-mode').forEach(e=>e.classList.toggle('on',e.dataset.m===savedMode));
+    el('t-sec-wrap').style.display=savedMode==='none'?'none':'';
+    if(savedMode!=='none'&&gs.timerSec){
+      document.querySelectorAll('.t-opt').forEach(e=>e.classList.toggle('on',parseInt(e.dataset.s)===(gs.timerSec||30)));
+    }
     const n1=gs.s1Name||'–',n2=gs.s2Name||'–',r1=!!gs.s1Ready,r2=!!gs.s2Ready;
     slots('m',{s1:n1,s2:n2},{s1:r1?'Bereit':'Eingeloggt',s2:r2?'Bereit':'Eingeloggt'},{s1:r1,s2:r2});
     const cp=getPack();
@@ -1175,6 +1185,9 @@ function renderResults(){
 }
 
 setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
+
+
+
 
 
 
