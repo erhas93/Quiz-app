@@ -22,15 +22,15 @@
   --shadow:0 4px 16px rgba(0,0,0,0.1); --shadow-sm:0 2px 8px rgba(0,0,0,0.07);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;height:100dvh;overflow:hidden}
+html,body{height:100%;height:100dvh;overflow:hidden;}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);
   display:flex;flex-direction:column;align-items:center;height:100%;height:100dvh;overflow:hidden;
   transition:background var(--t),color var(--t)}
-.screen{display:none;width:100%;max-width:480px}
+.screen{display:none;width:100%;max-width:480px;padding-top:36px}
 .screen.active{display:flex;flex-direction:column}
 #role-screen.active,#lobby-mod-screen.active,#lobby-player-screen.active,#results-screen.active{
-  height:100%;overflow-y:auto;padding:24px 16px max(60px,env(safe-area-inset-bottom,60px));gap:14px;justify-content:center;align-items:center}
-#mod-game-screen.active,#player-game-screen.active{height:100%;overflow:hidden}
+  height:calc(100% - 36px);overflow-y:auto;padding:16px 16px max(60px,env(safe-area-inset-bottom,60px));gap:14px;justify-content:center;align-items:center}
+#mod-game-screen.active,#player-game-screen.active{height:calc(100% - 36px);overflow:hidden;flex-direction:column;display:flex}
 /* ── GAME LAYOUT ── */
 .g-hdr{
   height:var(--hdr-h);min-height:var(--hdr-h);max-height:var(--hdr-h);
@@ -189,14 +189,23 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .muted{color:var(--text2);font-size:var(--fs)}
 .spin{width:28px;height:28px;border:2.5px solid var(--card-b);border-top-color:var(--c2);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
 @keyframes spin{to{transform:rotate(360deg)}}
-#theme-btn{position:fixed;top:10px;left:10px;z-index:400;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:5px 10px;font-size:.8rem;cursor:pointer;color:var(--text2);box-shadow:var(--shadow-sm)}
-#vtag{position:fixed;bottom:14px;left:14px;z-index:400;font-size:.66rem;color:var(--text3);font-weight:600}
+#theme-btn{background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:5px 10px;font-size:.8rem;cursor:pointer;color:var(--text2);}
+#vtag{font-size:.66rem;color:var(--text3);font-weight:600}
 </style>
 </head>
 <body>
-<button id="theme-btn" onclick="Q.toggleTheme()">Hell</button>
-<div id="vtag">v3.3.0</div>
-<button id="fs-btn" onclick="Q.toggleFullscreen()" style="position:fixed;bottom:14px;right:14px;z-index:400;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:6px 10px;font-size:.8rem;cursor:pointer;color:var(--text2)">⛶ Vollbild</button>
+<!-- TOP BAR: always visible, never overlaps content -->
+<div id="top-bar" style="position:fixed;top:0;left:0;right:0;height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;z-index:500;pointer-events:none">
+  <button id="theme-btn" onclick="Q.toggleTheme()" style="pointer-events:all;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:4px 10px;font-size:.75rem;cursor:pointer;color:var(--text2)">Hell</button>
+  <button onclick="DBG.toggle()" style="pointer-events:all;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:4px 8px;font-size:.75rem;cursor:pointer;color:var(--text3)" title="Debug Log">🐛</button>
+</div>
+<!-- BOTTOM BAR: always visible -->
+<div id="bottom-bar" style="position:fixed;bottom:0;left:0;right:0;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;z-index:500;pointer-events:none;background:linear-gradient(transparent,var(--bg))">
+  <span id="vtag" style="pointer-events:none">v3.3.0</span>
+  <button id="fs-btn" onclick="Q.toggleFullscreen()" style="pointer-events:all;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:5px 10px;font-size:.75rem;cursor:pointer;color:var(--text2)">⛶ Vollbild</button>
+</div>
+<!-- DEBUG PANEL -->
+<div id="dbg-panel" style="display:none;position:fixed;top:36px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
 <button id="fs-btn" onclick="Q.toggleFullscreen()" title="Vollbild" style="position:fixed;bottom:14px;right:14px;z-index:400;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:6px 10px;font-size:.8rem;cursor:pointer;color:var(--text2)">⛶ Vollbild</button>
 
 <div id="pg-score-reveal">
@@ -432,6 +441,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 
 
+
+
+
+
+
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update, remove }
                            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -440,6 +454,31 @@ const fbApp=initializeApp({apiKey:"AIzaSyCXDcsJocNsiOFY4QUWp8diFRGiYl-BoK8",auth
 const db=getDatabase(fbApp),SR=ref(db,'quizState'),OR=ref(db,'.info/serverTimeOffset');
 let offset=0;onValue(OR,s=>{offset=s.val()||0;});
 const serverNow=()=>Date.now()+offset;
+
+// ── DEBUG SYSTEM ──────────────────────────────────────────────────────────
+const DBG = {
+  logs: [],
+  log(msg, data){
+    const entry = {t: new Date().toISOString().substr(11,12), msg, data};
+    this.logs.push(entry);
+    if(this.logs.length > 150) this.logs.shift();
+    console.log(`[QUIZ ${entry.t}] ${msg}`, data||'');
+    const p = document.getElementById('dbg-panel');
+    if(p && p.style.display!=='none') this._render(p);
+  },
+  _render(p){
+    p.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><b style="color:var(--c3)">Debug Log</b><button onclick="DBG.clear()" style="font-size:.65rem;padding:2px 6px;background:var(--bg3);border:1px solid var(--card-b);border-radius:4px;color:var(--text2);cursor:pointer">Clear</button></div>'
+      + this.logs.slice(-20).reverse().map(e=>`<div style="font-size:.62rem;border-bottom:1px solid rgba(255,255,255,.06);padding:2px 0;word-break:break-all"><span style="color:var(--text3)">${e.t}</span> <span style="color:var(--text)">${e.msg}</span>${e.data?' <span style="color:var(--text2)">'+JSON.stringify(e.data).substr(0,120)+'</span>':''}</div>`).join('');
+  },
+  toggle(){
+    const p = document.getElementById('dbg-panel');
+    if(!p) return;
+    const show = p.style.display==='none';
+    p.style.display = show ? '' : 'none';
+    if(show) this._render(p);
+  },
+  clear(){ this.logs=[]; const p=document.getElementById('dbg-panel'); if(p) p.innerHTML=''; }
+};
 
 const CC={"Tierwelt":"#f39c12","Menschlicher Körper":"#e74c3c","Pflanzenwelt":"#27ae60","Geographie":"#16a085","Weltall":"#8e44ad","Physik":"#1abc9c","Fun Facts":"#e91e8c","Wissenschaft":"#27ae60","Biologie":"#27ae60","Technik & Geschichte":"#e74c3c","Essen & Wissenschaft":"#e67e22","Architektur & Physik":"#95a5a6","Geschichte":"#c0392b","Psychologie":"#9b59b6","Geologie":"#7f8c8d","Musik & Gehirn":"#1abc9c","Chemie":"#d35400","Moderne Geschichte":"#4f86c6","Weltkriege":"#c0392b","Antike Kulturen":"#d4a82f","Europa":"#4aab7e","Deutschland":"#4f86c6","Technologie":"#2980b9","Sprache":"#3498db","Allgemeinwissen":"#4f86c6","WM Geschichte":"#27ae60","Legenden":"#f39c12","Rekorde":"#e74c3c","Europapokal":"#8e44ad","Geschichte & Regelwerk":"#95a5a6","Sprache & Kultur":"#2980b9","Kommunikation":"#3498db","Energie & Licht":"#f39c12","Druck & Medien":"#8e44ad","Mobilität":"#27ae60","Haushalt":"#e67e22","Medizin":"#e74c3c","Alltagsgegenstände":"#95a5a6","Industrie":"#7f8c8d","Pokédex":"#e74c3c","Typen":"#8e44ad","Entwicklungen":"#27ae60","Spielwelt":"#2980b9","Legendäre Pokémon":"#f39c12","Attacken":"#c0392b","Trivia":"#95a5a6"};
 
@@ -488,7 +527,7 @@ function renderPackGrid(){
 
 const el=id=>document.getElementById(id);
 const L=i=>String.fromCharCode(65+i);
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));el(id).classList.add('active');}
+function showScreen(id){DBG.log('showScreen',{id});document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const target=el(id);if(!target){DBG.log('showScreen ERROR - element not found',{id});return;}target.classList.add('active');}
 
 function setHeaderHeightNoop(){
   // Measure actual header height and set --header-h
@@ -573,6 +612,7 @@ const Q={
   setCustom(){const v=parseInt(el('t-custom-val').value);if(v>=5&&v<=300)timerSec=v;},
 
   async join(r){
+    DBG.log('join',{r});
     role=r;name=r==='s1'?'Spieler 1':r==='s2'?'Spieler 2':'Moderator';myReady=false;
     if(r==='moderator'){
       await set(SR,{phase:'lobby',currentQ:0,revealed:false,s1Answer:null,s2Answer:null,s1Score:0,s2Score:0,s1Name:'–',s2Name:'–',s1Ready:false,s2Ready:false,timerMode:'none',timerSec:30,timerStart:null,timerRunning:false,timerPauseLeft:null,packId:packId,s1JokerUsed:false,s2JokerUsed:false,s1JokerActive:false,s2JokerActive:false,jokerHidden:[],history:[]});
@@ -585,7 +625,7 @@ const Q={
       showScreen('lobby-player-screen');
       await loadPacks();
     }
-    onValue(SR,snap=>{if(!snap.exists())return;gs=snap.val();if(role==='moderator')renderMod();else renderPlayer();});
+    onValue(SR,snap=>{if(!snap.exists())return;gs=snap.val();DBG.log('onValue',{phase:gs.phase,role});if(role==='moderator')renderMod();else renderPlayer();});
   },
 
   _nt:null,
@@ -838,6 +878,7 @@ function renderMod(){
 
 // ── RENDER PLAYER ─────────────────────────────────────────────────────────
 function renderPlayer(){
+  DBG.log('renderPlayer', {phase: gs.phase, role, packId: gs.packId});
   if(gs.phase==='lobby'){
     showScreen('lobby-player-screen');
     const n1=gs.s1Name||'–',n2=gs.s2Name||'–',r1=!!gs.s1Ready,r2=!!gs.s2Ready;
@@ -862,7 +903,7 @@ function renderPlayer(){
   const ph=gs.phase;
 
   // Dot color indicator
-  const dot=el('pl-dot');dot.style.background=myC;dot.style.boxShadow=`0 0 6px ${myC}`;
+  const dot=el('pl-dot');if(dot){dot.style.background=myC;dot.style.boxShadow=`0 0 6px ${myC}`;}
   el('pg-name').textContent=myN;el('pg-name').style.color=myC;
   el('pg-score').textContent=mySc;
   el('pg-qnum').textContent=`Frage ${(gs.currentQ||0)+1} / ${total}`;
@@ -874,6 +915,8 @@ function renderPlayer(){
   // Role tag color
   const rtag=el('pg-role-tag');
   if(rtag){rtag.textContent=myN;rtag.style.color=myC;rtag.style.background=role==='s1'?'rgba(230,57,70,.12)':'rgba(29,127,232,.12)';rtag.style.borderColor=role==='s1'?'rgba(230,57,70,.3)':'rgba(29,127,232,.3)';}
+  // Question text
+  const pgQtxt=el('pg-qtxt');if(pgQtxt){pgQtxt.textContent=q.q;DBG.log('pg-qtxt set',{q:q.q.substr(0,40)});}
   // Category
   const pgCat=el('pg-cat');if(pgCat){const cc=CC[q.cat]||'#8899bb';pgCat.textContent=q.cat;pgCat.style.color=cc;}
 
@@ -1061,6 +1104,11 @@ function renderResults(){
 }
 
 setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
+
+
+
+
+
 
 
 
