@@ -26,11 +26,11 @@ html,body{height:100%;height:100dvh;overflow:hidden;}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);
   display:flex;flex-direction:column;align-items:center;height:100%;height:100dvh;overflow:hidden;
   transition:background var(--t),color var(--t)}
-.screen{display:none;width:100%;max-width:480px;padding-top:32px}
+.screen{display:none;width:100%;max-width:480px;padding-top:36px}
 .screen.active{display:flex;flex-direction:column}
 #role-screen.active,#lobby-mod-screen.active,#lobby-player-screen.active,#results-screen.active{
-  height:calc(100% - 32px);overflow-y:auto;padding:16px 16px max(60px,env(safe-area-inset-bottom,60px));gap:14px;justify-content:center;align-items:center}
-#mod-game-screen.active,#player-game-screen.active{height:calc(100% - 32px);overflow:hidden;flex-direction:column;display:flex}
+  height:calc(100% - 36px);overflow-y:auto;padding:16px 16px max(60px,env(safe-area-inset-bottom,60px));gap:14px;justify-content:center;align-items:center}
+#mod-game-screen.active,#player-game-screen.active{height:calc(100% - 36px);overflow:hidden;flex-direction:column;display:flex}
 /* ── GAME LAYOUT ── */
 .g-hdr{
   height:var(--hdr-h);min-height:var(--hdr-h);max-height:var(--hdr-h);
@@ -93,6 +93,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .mkr{padding:2px 7px;border-radius:5px;font-size:.75rem;font-weight:800;border:1.5px solid}
 .mkr1{background:rgba(244,162,97,.2);border-color:var(--c4);color:var(--c4)}
 .mkr2{background:rgba(42,157,143,.2);border-color:var(--c2);color:var(--c2)}
+/* Dynamic player markers */
+.mkr-me{background:rgba(37,99,235,.2);border-color:#2563eb;color:#2563eb;padding:2px 7px;border-radius:5px;font-size:.72rem;font-weight:800;border:1.5px solid}
+.mkr-oth{background:rgba(42,157,143,.2);border-color:var(--c2);color:var(--c2);padding:2px 7px;border-radius:5px;font-size:.72rem;font-weight:800;border:1.5px solid}
 /* ── BUTTONS ── */
 .btn{padding:12px 20px;border:none;border-radius:var(--r);font-size:var(--fs);font-weight:700;cursor:pointer;
   transition:opacity var(--t),transform .1s;display:inline-flex;align-items:center;gap:7px;box-shadow:var(--shadow-sm)}
@@ -195,16 +198,16 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 </head>
 <body>
 <!-- SYSTEM BAR: always on top, never overlaps game content -->
-<div id="sys-bar" style="position:fixed;top:0;left:0;right:0;height:32px;display:flex;align-items:center;gap:4px;padding:0 8px;z-index:500;background:var(--bg2);border-bottom:1px solid var(--card-b)">
-  <button id="theme-btn" onclick="Q.toggleTheme()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:3px 9px;font-size:.72rem;cursor:pointer;color:var(--text2)">Hell</button>
-  <button id="fs-btn" onclick="Q.toggleFullscreen()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:3px 9px;font-size:.72rem;cursor:pointer;color:var(--text2)">⛶</button>
-  <button onclick="Q.fullReset()" style="background:var(--bg3);border:1px solid rgba(231,111,81,.35);border-radius:6px;padding:3px 9px;font-size:.72rem;cursor:pointer;color:var(--c5)">Reset</button>
-  <button onclick="DBG.toggle()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:3px 9px;font-size:.72rem;cursor:pointer;color:var(--text3)">🐛</button>
-  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.3.0</span>
+<div id="sys-bar" style="position:fixed;top:0;left:0;right:0;height:36px;display:flex;align-items:center;gap:4px;padding:0 8px;z-index:500;background:var(--bg2);border-bottom:1px solid var(--card-b)">
+  <button id="theme-btn" onclick="Q.toggleTheme()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text2)">Hell</button>
+  <button id="fs-btn" onclick="Q.toggleFullscreen()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text2)">⛶</button>
+  <button onclick="Q.fullReset()" style="background:var(--bg3);border:1px solid rgba(231,111,81,.35);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--c5)">Reset</button>
+  <button onclick="DBG.toggle()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text3)">🐛</button>
+  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.4.0</span>
 </div>
 <!-- DEBUG PANEL -->
-<div id="dbg-panel" style="display:none;position:fixed;top:32px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-left:none;border-top:none;border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
-<button id="fs-btn" onclick="Q.toggleFullscreen()" title="Vollbild" style="position:fixed;bottom:14px;right:14px;z-index:400;background:var(--bg3);border:1px solid var(--card-b);border-radius:var(--r-sm);padding:6px 10px;font-size:.8rem;cursor:pointer;color:var(--text2)">⛶ Vollbild</button>
+<div id="dbg-panel" style="display:none;position:fixed;top:36px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-left:none;border-top:none;border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
+
 
 <div id="pg-score-reveal">
   <div class="pgr-result" id="pgr-result">–</div>
@@ -280,7 +283,6 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
       </div>
     </div>
     <button class="btn btn-primary btn-full" id="start-btn" onclick="Q.start()" style="padding:14px;font-size:var(--fs-lg)">Quiz starten</button>
-    <button class="btn btn-danger btn-sm btn-full" onclick="Q.fullReset()">Reset</button>
   </div>
 </div>
 
@@ -367,8 +369,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
     </div>
   </div>
   <div class="g-actions">
-    <button class="btn btn-ghost" id="mg-action-btn" onclick="Q.action()">Antworten zeigen</button>
-    <button class="btn btn-danger btn-sm" onclick="Q.fullReset()" style="margin-left:auto">Reset</button>
+    <button class="btn btn-ghost btn-full" id="mg-action-btn" onclick="Q.action()">Antworten zeigen</button>
   </div>
 </div>
 
@@ -434,6 +435,12 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 
 <script type="module">
+
+
+
+
+
+
 
 
 
@@ -804,19 +811,22 @@ function renderMod(){
   const modCon=el('mg-answers');modCon.innerHTML='';
   const isOpenQ=q.type==='estimate'||q.type==='open';
   if(isOpenQ){
-    // For open/estimate: hide placeholder when panel is visible, show otherwise
-    const showingPanel = ph==='shown'||ph==='revealed'||ph==='answering'||ph==='locked';
-    modCon.innerHTML=showingPanel?'':`<div style="padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--card-b);color:var(--text3);font-size:.84rem;text-align:center">${q.type==='estimate'?'Schätzfrage':'Freitextfrage'}</div>`;
+    // For open/estimate: always show type badge
+    modCon.innerHTML=`<div style="display:inline-block;padding:3px 10px;border-radius:99px;border:1px solid var(--card-b);color:var(--text3);font-size:.75rem;background:var(--bg3)">${q.type==='estimate'?'📊 Schätzfrage':'✏️ Freitextfrage'}</div>`;
   }else{
+    // Mod always sees all answers with correct marked + player picks
     q.a.forEach((a,i)=>{
       const d=document.createElement('div');d.className='ans disabled';
-      if(i===q.r)d.classList.add('correct');
-      else if(i===gs.s1Answer||i===gs.s2Answer)d.classList.add('wrong');
+      if(i===q.r) d.classList.add('correct');
+      // Don't mark non-correct as 'wrong' unless a player chose it
+      // and only after answering phase
+      const s1picked=gs.s1Answer===i, s2picked=gs.s2Answer===i;
+      if((s1picked||s2picked)&&i!==q.r) d.classList.add('wrong');
       let mk='';
-      if(gs.s1Answer===i||gs.s2Answer===i){
+      if(s1picked||s2picked){
         mk='<div class="ans-markers">';
-        if(gs.s1Answer===i)mk+=`<div class="mkr mkr1">${n1.slice(0,3)}</div>`;
-        if(gs.s2Answer===i)mk+=`<div class="mkr mkr2">${n2.slice(0,3)}</div>`;
+        if(s1picked)mk+=`<div class="mkr mkr1">${n1.slice(0,4)}</div>`;
+        if(s2picked)mk+=`<div class="mkr mkr2">${n2.slice(0,4)}</div>`;
         mk+='</div>';
       }
       d.innerHTML=`<span class="ans-l">${i===q.r?'✓':L(i)}</span><span style="flex:1">${a}</span>${mk}`;
@@ -981,22 +991,48 @@ function renderPlayer(){
   if(!isOpenType){
     const con=el('pg-answers');con.innerHTML='';
     const hidden=gs.jokerHidden||[];
+    const myNm=role==='s1'?(gs.s1Name||'S1'):(gs.s2Name||'S2');
     q.a.forEach((a,i)=>{
       const d=document.createElement('div');d.className='ans';
       const isMe=myAns===i;
+      const isOth=otherAns===i;
+      const isCorrect=i===q.r;
       const isHidden=jActive&&hidden.includes(i)&&myAns==null;
       const canClick=ph==='answering'&&myAns==null&&!isHidden;
-      if(isHidden){d.classList.add('hidden','disabled');}
-      else if(ph==='revealed'){
-        if(i===q.r)d.classList.add('correct');
-        else if(isMe)d.classList.add('wrong');
-        else d.classList.add('faded');
+
+      if(isHidden){
+        // 50:50 joker: answer blurred but still takes space
         d.classList.add('disabled');
-      }else if(ph==='shown'){if(isMe||i===othAns)d.classList.add('pending');d.classList.add('disabled');}
-      else if(isMe){d.classList.add('pending','disabled');}
-      else if(!canClick){d.classList.add('disabled');if(!isHidden)d.style.opacity='.42';}
-      d.innerHTML=`<span class="ans-l">${ph==='revealed'&&i===q.r?'✓':L(i)}</span><span>${a}</span>`;
-      if(canClick)d.addEventListener('click',()=>answer(i));
+        d.style.opacity='.12';
+      } else if(ph==='revealed'){
+        // Always readable; color-code only
+        d.classList.add('disabled');
+        if(isCorrect) d.classList.add('correct');
+        else if(isMe)  d.classList.add('wrong');
+        // others stay neutral (no faded, always readable)
+      } else if(ph==='shown'){
+        d.classList.add('disabled');
+        if(isMe||isOth) d.classList.add('pending');
+      } else {
+        // answering / locked
+        if(isMe) d.classList.add('pending','disabled');
+        else if(!canClick) d.classList.add('disabled');
+      }
+
+      // Build label: show ✓ on correct in revealed, else letter
+      const lbl = (ph==='revealed'&&isCorrect) ? '✓' : L(i);
+      // Name markers
+      let markers='';
+      if(ph==='shown'||ph==='revealed'){
+        const meColor=role==='s1'?'var(--c4)':'var(--c2)';
+        const othColor=role==='s1'?'var(--c2)':'var(--c4)';
+        const parts=[];
+        if(isMe&&myAns!=null) parts.push(`<span style="padding:2px 7px;border-radius:5px;font-size:.72rem;font-weight:800;border:1.5px solid ${meColor};color:${meColor};background:${meColor}22">${myNm.slice(0,4)}</span>`);
+        if(isOth&&otherAns!=null) parts.push(`<span style="padding:2px 7px;border-radius:5px;font-size:.72rem;font-weight:800;border:1.5px solid ${othColor};color:${othColor};background:${othColor}22">${otherN.slice(0,4)}</span>`);
+        if(parts.length) markers=`<div class="ans-markers">${parts.join('')}</div>`;
+      }
+      d.innerHTML=`<span class="ans-l">${lbl}</span><span style="flex:1">${a}</span>${markers}`;
+      if(canClick) d.addEventListener('click',()=>answer(i));
       con.appendChild(d);
     });
   }
@@ -1028,9 +1064,9 @@ function renderPlayer(){
       // Already submitted
       const sub=el('pg-ans-submitted');
       sub.style.display='';
-      sub.style.background='rgba(29,127,232,.1)';
-      sub.style.borderColor='var(--s2)';
-      sub.style.color='var(--s2)';
+      sub.style.background='rgba(37,99,235,.14)';
+      sub.style.borderColor='#2563eb';
+      sub.style.color='#2563eb';
       sub.textContent=`Antwort: ${myAns} ✓`;
     } else if(ph==='answering'){
       // Show input
@@ -1117,6 +1153,12 @@ function renderResults(){
 }
 
 setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
+
+
+
+
+
+
 
 
 
