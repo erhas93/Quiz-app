@@ -1,0 +1,59 @@
+{
+  "name": "Technischer Test (Demo)",
+  "emoji": "🔧",
+  "questions": [
+    {
+      "q": "Ein Entwickler hat 3 Bugs gefixt und dabei 7 neue eingebaut. Wie viele Bugs hat er insgesamt hinzugefügt?",
+      "a": [
+        "Er hat 4 Bugs weniger – das ist ein Netto-Gewinn!",
+        "7 Bugs. Die 3 gefixten existieren ja nicht mehr.",
+        "4 Bugs netto. Mathematisch betrachtet leider negativ produktiv.",
+        "Keine – er hat ja Bugs gefixt, das zählt doppelt."
+      ],
+      "r": 2,
+      "cat": "Softwareentwicklung",
+      "type": "mc",
+      "fact": "Diese Situation ist in der Softwareentwicklung so bekannt, dass es dafür ein Meme gibt: 'Fixed a bug. Created 2 new bugs. Net gain: -1 bug.' Einige Entwickler nennen das 'Agile Bug Management'."
+    },
+    {
+      "q": "Wie viele Sekunden hat ein Tag? Schätze – ohne Taschenrechner, du weißt schon, wie ein Entwickler.",
+      "answer": 86400,
+      "cat": "Mathematik für Programmierer",
+      "type": "estimate",
+      "fact": "86.400 Sekunden – das ist 60 × 60 × 24. Jeder Entwickler kennt diese Zahl, weil irgendwann immer ein Timestamp-Bug mit genau 86.400 Sekunden Abweichung auftaucht. Meistens um 23:59 Uhr in der Produktion."
+    },
+    {
+      "q": "Welcher Fehler tritt auf, wenn eine Funktion sich selbst aufruft, bis der Speicher voll ist?",
+      "a": [
+        "NullPointerException – der Klassiker, schuld ist immer null",
+        "Stack Overflow – daher auch der Name der bekannten Website",
+        "Blue Screen of Death – Windows macht dann einfach Schluss",
+        "OutOfCoffeeException – der gefährlichste Fehler im Büro"
+      ],
+      "r": 1,
+      "cat": "Programmierung",
+      "type": "mc",
+      "fact": "Stack Overflow entsteht durch unkontrollierte Rekursion. Die gleichnamige Website stackoverflow.com wurde 2008 gegründet und ist heute das wichtigste Tool jedes Entwicklers – noch vor der IDE, dem Terminal und dem Kaffeevollautomat."
+    },
+    {
+      "q": "Was gibt 'git blame' aus?",
+      "cat": "Versionskontrolle",
+      "type": "open",
+      "answer": "Den Autor jeder Zeile",
+      "fact": "git blame zeigt für jede Zeile einer Datei, wer sie wann geschrieben hat. Dieser Befehl wird zu 60% eingesetzt um Kollegen zu beschuldigen, zu 35% um festzustellen dass man selbst der Schuldige ist, und zu 5% für legitime Debugging-Zwecke."
+    },
+    {
+      "q": "Ein Programmierer verlässt das Büro und sagt: 'Ich bin gleich wieder da, ich hol nur kurz Kaffee.' Nach wie vielen Minuten gilt er offiziell als in einem Rabbit Hole verschwunden?",
+      "a": [
+        "5 Minuten – nach einer Tasse ist man wieder da",
+        "15 Minuten – bis der Kaffee sich setzt",
+        "Er kommt nie zurück – er debuggt jetzt den Kaffeautomaten",
+        "47 Minuten – genug Zeit um den Automaten zu reverse-engineeren"
+      ],
+      "r": 2,
+      "cat": "Bürokultur",
+      "type": "mc",
+      "fact": "Das Phänomen ist als 'Yak Shaving' bekannt: Man will Kaffee holen → der Automat ist kaputt → man googelt die Fehlermeldung → man findet ein GitHub Issue → man liest die ganze Diskussion → man öffnet einen Pull Request. Drei Stunden später: noch kein Kaffee."
+    }
+  ]
+}
