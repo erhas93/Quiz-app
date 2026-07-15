@@ -1,0 +1,171 @@
+{
+  "name": "Herr der Ringe (Lord of the Rings)",
+  "emoji": "💍",
+  "questions": [
+    {
+      "q": "Wie heißt der Schöpfer (Creator) der Welt Arda, in der Mittelerde (Middle-earth) liegt?",
+      "a": [
+        "Manwë",
+        "Ilúvatar (Eru)",
+        "Morgoth",
+        "Aulë"
+      ],
+      "r": 1,
+      "cat": "Mittelerde Lore",
+      "type": "mc",
+      "fact": "Ilúvatar (auch Eru genannt) ist der Schöpfergott in Tolkiens Mythologie. Er schuf die Welt durch Musik – die Ainulindalë (Musik der Ainur). Tolkien entwarf eine vollständige Kosmologie, Sprachen und Geschichte für Mittelerde, die im Silmarillion (1977) beschrieben wird. Er arbeitete sein ganzes Leben daran."
+    },
+    {
+      "q": "Wie viele Ringe der Macht (Rings of Power) wurden insgesamt geschmiedet?",
+      "answer": 20,
+      "cat": "Mittelerde Lore",
+      "type": "estimate",
+      "fact": "Es wurden 20 Ringe geschmiedet: 3 für die Elbenkönige, 7 für die Zwergenanführer, 9 für die sterblichen Menschen – und ein Einziger Ring, um sie alle zu beherrschen. Der Eine Ring wurde von Sauron heimlich in den Feuern des Schicksalsbergs (Mount Doom) geschmiedet."
+    },
+    {
+      "q": "Welches Volk (Race) bewohnte ursprünglich die Minen von Moria (Mines of Moria)?",
+      "a": [
+        "Orks (Orcs)",
+        "Zwerge (Dwarves)",
+        "Trolle (Trolls)",
+        "Ents"
+      ],
+      "r": 1,
+      "cat": "Mittelerde",
+      "type": "mc",
+      "fact": "Moria, auch Khazad-dûm genannt, war das mächtigste Zwergenkönigreich Mittelerdes – erbaut vom Zwergenfürsten Durin dem Deathless. Die Zwerge gruben zu tief und weckten einen Balrog (Durin's Bane), was zum Fall von Moria führte. Gimli ist ein Nachfahre dieser Zwerge."
+    },
+    {
+      "q": "Welche Sprache sprachen die Elben (Elves) von Rivendell (Bruchtal) hauptsächlich?",
+      "a": [
+        "Sindarin",
+        "Quenya",
+        "Khuzdul",
+        "Westron"
+      ],
+      "r": 0,
+      "cat": "Mittelerde Sprachen",
+      "type": "mc",
+      "fact": "Sindarin war die Alltagssprache der Elben in Mittelerde, während Quenya die ältere, zeremonielle Hochsprache war – vergleichbar mit Latein. J.R.R. Tolkien erfand beide Sprachen vollständig, mit eigener Grammatik und Vokabular. Er war Professor für Anglistik in Oxford und begann Sprachen zu erfinden schon als Kind."
+    },
+    {
+      "q": "Wie lautet der wahre Name (True Name) des Zauberers Gandalf in der Sprache der Elben?",
+      "a": [
+        "Mithrandir",
+        "Olórin",
+        "Incánus",
+        "Tharkûn"
+      ],
+      "r": 1,
+      "cat": "Mittelerde Lore",
+      "type": "mc",
+      "fact": "Gandalfs ursprünglicher Name ist Olórin – so wurde er in Valinor genannt, bevor er als Istari (Zauberer) nach Mittelerde gesandt wurde. Er hat verschiedene Namen in verschiedenen Völkern: Mithrandir bei den Elben, Tharkûn bei den Zwergen, Incánus im Süden. Gandalf ist sein Name bei den Menschen des Nordens."
+    },
+    {
+      "q": "Was ist Lembas (Lembas)?",
+      "a": [
+        "Das magische Schwert der Elben von Lothlórien",
+        "Ein Elvenbrot (Elven Waybread), das lange sättigt",
+        "Eine Heilpflanze aus dem Auenland (The Shire)",
+        "Der Name des Palantírs von Saruman"
+      ],
+      "r": 1,
+      "cat": "Mittelerde",
+      "type": "mc",
+      "fact": "Lembas ist das Reisebrot (Waybread) der Elben – ein kleines Stück sättigt einen ausgewachsenen Mann für einen ganzen Tag. Es wurde von der Gemeinschaft des Rings auf ihrer Reise durch Mittelerde mitgenommen. Gollum hasste es, weil es nach dem Licht der Elben schmeckt – und er das Licht hasste."
+    },
+    {
+      "q": "In welchem Jahr veröffentlichte J.R.R. Tolkien den ersten Band des Herrn der Ringe, 'Die Gefährten' (The Fellowship of the Ring)?",
+      "answer": 1954,
+      "cat": "Literatur",
+      "type": "estimate",
+      "fact": "Die Gefährten erschien am 29. Juli 1954, gefolgt von Die zwei Türme im November 1954 und Die Rückkehr des Königs im Oktober 1955. Tolkien arbeitete über 12 Jahre an dem Werk. Er begann es als Fortsetzung des Hobbits (1937), aber das Buch wurde viel dunkler und epischer als ursprünglich geplant."
+    },
+    {
+      "q": "Wer ist Shelob (Kankra) in der Geschichte?",
+      "a": [
+        "Eine Elbenwächterin des Düsterwolds (Mirkwood)",
+        "Eine riesige Spinne (Giant Spider), Nachkomme von Ungoliant",
+        "Die Anführerin der Orks von Mordor",
+        "Ein weiblicher Balrog im Dienste Saurons"
+      ],
+      "r": 1,
+      "cat": "Mittelerde",
+      "type": "mc",
+      "fact": "Shelob (auf Deutsch: Kankra) ist eine riesige Spinne, die in den Tunneln von Cirith Ungol lebt – und die letzte Nachkommin von Ungoliant, der Spinnenkreatur, die im Ersten Zeitalter die Zwei Bäume von Valinor tötete. Shelob sticht Frodo auf dem Weg nach Mordor. Sam rettet ihn mit dem Licht von Eärendil."
+    },
+    {
+      "q": "Nenne den Titel (Title) des letzten Königs von Gondor vor der Zeit der Statthalter (Stewards).",
+      "cat": "Mittelerde Geschichte",
+      "type": "open",
+      "answer": "Eärnur",
+      "fact": "Eärnur war der letzte König von Gondor – er verschwand 2050 des Dritten Zeitalters, als er dem Hexenkönig von Angmar (Witch-king of Angmar) in Minas Morgul zum Duell folgte und nie zurückkehrte. Danach regierten die Statthalter (Stewards) für fast tausend Jahre – bis zur Rückkehr Aragorns."
+    },
+    {
+      "q": "Welcher Schauspieler (Actor) spielte Frodo Beutlin (Frodo Baggins) in Peter Jacksons Filmtrilogie?",
+      "a": [
+        "Orlando Bloom",
+        "Dominic Monaghan",
+        "Elijah Wood",
+        "Billy Boyd"
+      ],
+      "r": 2,
+      "cat": "Filme",
+      "type": "mc",
+      "fact": "Elijah Wood spielte Frodo in Peter Jacksons Trilogie (2001–2003). Wood war damals 18–20 Jahre alt. Die Trilogie gewann insgesamt 17 Oscars – Die Rückkehr des Königs (The Return of the King) gewann alle 11 Kategorien, für die es nominiert war, ein Rekord, der bis heute gilt."
+    },
+    {
+      "q": "Was ist der Schicksalsberg (Mount Doom) auf Sindarin?",
+      "a": [
+        "Orodruin",
+        "Amon Amarth",
+        "Gorgoroth",
+        "Ephel Dúath"
+      ],
+      "r": 0,
+      "cat": "Mittelerde Sprachen",
+      "type": "mc",
+      "fact": "Orodruin (Sindarin: Brennender Berg) ist der einzige Ort, an dem der Eine Ring vernichtet werden kann – da er in den Feuern Orodruins geschmiedet wurde. Der Vulkan liegt in Mordor und ist aktiv. Amon Amarth bedeutet auf Sindarin ebenfalls 'Berg des Schicksals' – daraus leitete die schwedische Metal-Band Amon Amarth ihren Namen ab."
+    },
+    {
+      "q": "Welches Volk (People) lebt in den Baumhütten des Fangorn-Waldes (Fangorn Forest)?",
+      "a": [
+        "Waldläufer (Rangers)",
+        "Rohan-Reiter (Rohirrim)",
+        "Ents",
+        "Orks von Isengard"
+      ],
+      "r": 2,
+      "cat": "Mittelerde",
+      "type": "mc",
+      "fact": "Ents sind die Hirten der Bäume (Shepherds of the Trees) – uralte baumähnliche Wesen, von Yavanna geschaffen, um die Wälder zu schützen. Ihr Anführer ist Baumbart (Treebeard / Fangorn), der älteste Ent. Ents sprechen sehr langsam – eine Unterhaltung dauert Tage. Tolkien erfand sie nach einem Gespräch mit C.S. Lewis über nordische Mythologie."
+    },
+    {
+      "q": "Was ist der Name des magischen Umhangs (Cloak), den Frodo von den Elben in Lothlórien erhält?",
+      "a": [
+        "Mithril-Mantel",
+        "Lorien-Mantel (Elven Cloak)",
+        "Mantel der Dunkelheit",
+        "Unsichtbarkeitsumhang"
+      ],
+      "r": 1,
+      "cat": "Mittelerde",
+      "type": "mc",
+      "fact": "Der Lorien-Mantel (Elven Cloak) wurde von den Galadhrim aus Lorien-Wolle gewebt und hat die Eigenschaft, seinen Träger mit der Umgebung zu verschmelzen. Frodo erhält zusätzlich das Mithril-Kettenhemd – ein Geschenk Bilbos – das ihn im Verlauf der Geschichte das Leben rettet."
+    },
+    {
+      "q": "Nenne den Elben-Namen (Elvish Name) für das Auenland (The Shire).",
+      "cat": "Mittelerde Sprachen",
+      "type": "open",
+      "answer": "Sûza",
+      "fact": "Der westliche Name des Auenlandes ist Sûza in Hobbitsprache oder i Drann in Sindarin. Das Auenland liegt im Nordwesten Mittelerdes und wurde im Jahr 1601 des Dritten Zeitalters von den Hobbits Marcho und Blanco besiedelt. Tolkien entwarf es nach dem englischen Shire (Grafschaft) seiner Kindheit in Worcestershire."
+    },
+    {
+      "q": "Wie viele Gefährten umfasste die Gemeinschaft des Rings (Fellowship of the Ring) ursprünglich?",
+      "answer": 9,
+      "cat": "Mittelerde",
+      "type": "estimate",
+      "fact": "Die Gemeinschaft des Rings bestand aus 9 Mitgliedern: Frodo, Sam, Merry, Pippin (Hobbits), Gandalf (Zauberer), Aragorn, Boromir (Menschen), Legolas (Elbe) und Gimli (Zwerg). Die Zahl 9 spiegelt die Neun Ringgeister (Nazgûl) wider – eine bewusste Entscheidung Elronds, dem Bösen die gleiche Zahl entgegenzustellen."
+    }
+  ]
+}
