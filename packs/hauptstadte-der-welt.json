@@ -1,0 +1,177 @@
+{
+  "name": "Hauptstädte der Welt",
+  "emoji": "🌍",
+  "questions": [
+    {
+      "q": "Was ist die Hauptstadt von Australien?",
+      "a": [
+        "Sydney",
+        "Melbourne",
+        "Canberra",
+        "Brisbane"
+      ],
+      "r": 2,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Viele Menschen denken, Sydney sei die Hauptstadt Australiens – tatsächlich ist es Canberra. Die Stadt wurde 1908 eigens als Kompromiss zwischen den rivalisierenden Städten Sydney und Melbourne zur Hauptstadt bestimmt und 1913 gegründet."
+    },
+    {
+      "q": "Welche Stadt ist die Hauptstadt von Kanada (Canada)?",
+      "a": [
+        "Toronto",
+        "Vancouver",
+        "Montreal",
+        "Ottawa"
+      ],
+      "r": 3,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Ottawa ist seit 1857 Hauptstadt Kanadas – damals auf Wunsch von Königin Victoria (Queen Victoria) bestimmt. Toronto ist zwar die größte Stadt, aber Ottawa liegt strategisch günstig an der Grenze zwischen den anglophonen und frankophonen Provinzen."
+    },
+    {
+      "q": "Wie viele Einwohner hat die Hauptstadt Japans, Tokio (Tokyo), ungefähr?",
+      "answer": 14000000,
+      "cat": "Geographie",
+      "type": "estimate",
+      "fact": "Tokio hat ca. 14 Millionen Einwohner in der Kernstadt – der Großraum Tokio (Tokyo Metropolitan Area) ist mit über 37 Millionen Menschen die größte Metropolregion der Welt. Zum Vergleich: ganz Australien hat nur 26 Millionen Einwohner."
+    },
+    {
+      "q": "Was ist die Hauptstadt von Brasilien (Brazil)?",
+      "a": [
+        "Rio de Janeiro",
+        "São Paulo",
+        "Brasília",
+        "Salvador"
+      ],
+      "r": 2,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Brasília wurde erst 1960 zur Hauptstadt erklärt und von Grund auf neu gebaut – mitten im Landesinneren. Die Stadt wurde vom Architekten Oscar Niemeyer entworfen und gilt als Meisterwerk der modernen Architektur. Sie ist seit 1987 UNESCO-Weltkulturerbe."
+    },
+    {
+      "q": "Welche Stadt ist die Hauptstadt von Neuseeland (New Zealand)?",
+      "a": [
+        "Auckland",
+        "Wellington",
+        "Christchurch",
+        "Queenstown"
+      ],
+      "r": 1,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Wellington ist seit 1865 Hauptstadt Neuseelands – nicht Auckland, obwohl Auckland die größte Stadt ist. Wellington liegt am südlichen Ende der Nordinsel und ist bekannt als windige Stadt sowie als Heimat von Weta Workshop, dem Studio hinter Herr der Ringe."
+    },
+    {
+      "q": "Was ist die Hauptstadt von Südafrika (South Africa)?",
+      "a": [
+        "Kapstadt (Cape Town)",
+        "Johannesburg",
+        "Durban",
+        "Pretoria"
+      ],
+      "r": 3,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Südafrika hat drei Hauptstädte: Pretoria (Exekutive), Kapstadt (Legislative) und Bloemfontein (Judikative). Pretoria ist die Verwaltungshauptstadt, in der die Regierung ihren Sitz hat. Johannesburg hingegen ist die größte und wirtschaftlich wichtigste Stadt."
+    },
+    {
+      "q": "Welche europäische Hauptstadt liegt am weitesten nördlich?",
+      "a": [
+        "Oslo",
+        "Stockholm",
+        "Helsinki",
+        "Reykjavík"
+      ],
+      "r": 3,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Reykjavík in Island liegt auf 64° nördlicher Breite und ist damit die nördlichste Hauptstadt der Welt. Die Stadt hat nur ca. 130.000 Einwohner, aber Island nutzt zu fast 100% erneuerbare Energien – hauptsächlich Geothermie und Wasserkraft."
+    },
+    {
+      "q": "Was ist die Hauptstadt der Mongolei (Mongolia)?",
+      "a": [
+        "Ulan-Ude",
+        "Ulaanbaatar",
+        "Darkhan",
+        "Erdenet"
+      ],
+      "r": 1,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Ulaanbaatar (auch Ulan Bator) bedeutet auf Mongolisch 'Roter Held'. Die Stadt beherbergt fast die Hälfte der gesamten Bevölkerung der Mongolei – ein extremes Beispiel für Urbanisierung. Die Mongolei ist das am dünnsten besiedelte Land der Welt."
+    },
+    {
+      "q": "Nenne die Hauptstadt von Argentinien.",
+      "cat": "Geographie",
+      "type": "open",
+      "answer": "Buenos Aires",
+      "fact": "Buenos Aires bedeutet auf Spanisch 'gute Lüfte'. Die Stadt ist mit ca. 15 Millionen Einwohnern im Großraum die größte Stadt Südamerikas nach São Paulo und gilt als das 'Paris Südamerikas' wegen seiner europäisch geprägten Architektur."
+    },
+    {
+      "q": "Welche Stadt ist die Hauptstadt von Indonesien (Indonesia) – seit dem Umzug 2024?",
+      "a": [
+        "Jakarta",
+        "Surabaya",
+        "Nusantara",
+        "Bandung"
+      ],
+      "r": 2,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Indonesien verlegte seine Hauptstadt von Jakarta auf der Insel Java zur neuen Stadt Nusantara auf Borneo (Kalimantan). Jakarta war durch Überschwemmungen, Überbevölkerung und Bodensenkung bedroht. Nusantara wurde als vollständig neue Stadt geplant."
+    },
+    {
+      "q": "Was ist die Hauptstadt von Kasachstan (Kazakhstan)?",
+      "a": [
+        "Almaty",
+        "Astana",
+        "Schymkent",
+        "Karaganda"
+      ],
+      "r": 1,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Astana (früher Nur-Sultan und davor Aqmola) ist seit 1997 Hauptstadt Kasachstans. Die Stadt wurde quasi aus dem Nichts in der kasachischen Steppe gebaut und hat eine futuristische Architektur. Almaty war zuvor die Hauptstadt und ist nach wie vor die größte Stadt."
+    },
+    {
+      "q": "In welchem Land ist Naypyidaw die Hauptstadt?",
+      "a": [
+        "Thailand",
+        "Kambodscha (Cambodia)",
+        "Myanmar (Burma)",
+        "Laos"
+      ],
+      "r": 2,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Naypyidaw wurde 2005 zur neuen Hauptstadt Myanmars erklärt und innerhalb weniger Jahre aus dem Nichts gebaut. Die Stadt gilt als eine der seltsamsten Hauptstädte der Welt: riesige, leere Straßen mit bis zu 20 Fahrspuren, aber kaum Verkehr."
+    },
+    {
+      "q": "Wie viele Kilometer liegen zwischen Berlin und der australischen Hauptstadt Canberra (Luftlinie)?",
+      "answer": 16000,
+      "cat": "Geographie",
+      "type": "estimate",
+      "fact": "Zwischen Berlin und Canberra liegen etwa 16.000 km Luftlinie – fast genau die halbe Erdumfang-Distanz (ca. 20.000 km). Ein Direktflug würde theoretisch über 17 Stunden dauern. Zum Vergleich: Berlin–New York sind nur ca. 6.400 km."
+    },
+    {
+      "q": "Welche dieser Städte ist NICHT die Hauptstadt des jeweiligen Landes?",
+      "a": [
+        "Wien (Vienna) – Österreich",
+        "Bern – Schweiz",
+        "Amsterdam – Niederlande",
+        "Barcelona – Spanien"
+      ],
+      "r": 3,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Barcelona ist die Hauptstadt Kataloniens und die zweitgrößte Stadt Spaniens – aber nicht die Hauptstadt Spaniens. Das ist Madrid. Interessant: Amsterdam ist zwar offiziell die Hauptstadt der Niederlande, aber die Regierung sitzt in Den Haag (The Hague)."
+    },
+    {
+      "q": "Nenne die Hauptstadt von Äthiopien (Ethiopia).",
+      "cat": "Geographie",
+      "type": "open",
+      "answer": "Addis Abeba",
+      "fact": "Addis Abeba bedeutet auf Amharisch 'Neue Blume'. Die Stadt ist mit ca. 5 Millionen Einwohnern die größte Stadt Afrikas nach Kairo und Lagos und Sitz der Afrikanischen Union (African Union). Äthiopien ist eines der ältesten Länder der Welt mit über 3.000 Jahren Geschichte."
+    }
+  ]
+}
