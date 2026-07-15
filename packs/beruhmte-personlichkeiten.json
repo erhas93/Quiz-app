@@ -1,0 +1,177 @@
+{
+  "name": "Berühmte Persönlichkeiten",
+  "emoji": "🧑‍🎤",
+  "questions": [
+    {
+      "q": "In welchem Jahr veröffentlichte Albert Einstein seine Allgemeine Relativitätstheorie (General Theory of Relativity)?",
+      "a": [
+        "1905",
+        "1915",
+        "1921",
+        "1933"
+      ],
+      "r": 1,
+      "cat": "Wissenschaft",
+      "type": "mc",
+      "fact": "Einstein veröffentlichte die Allgemeine Relativitätstheorie 1915 – zehn Jahre nach seiner Speziellen Relativitätstheorie (1905). Den Nobelpreis erhielt er jedoch 1921 – nicht für die Relativitätstheorie, sondern für die Erklärung des photoelektrischen Effekts."
+    },
+    {
+      "q": "Welche Frau war die erste Person, die zweimal den Nobelpreis (Nobel Prize) erhielt?",
+      "a": [
+        "Rosalind Franklin",
+        "Marie Curie",
+        "Lise Meitner",
+        "Dorothy Hodgkin"
+      ],
+      "r": 1,
+      "cat": "Wissenschaft",
+      "type": "mc",
+      "fact": "Marie Curie erhielt 1903 den Nobelpreis für Physik und 1911 den für Chemie – als erste Person überhaupt zweimal ausgezeichnet. Sie entdeckte die Elemente Polonium und Radium. Ihre Notizbücher sind bis heute so radioaktiv, dass sie in Bleiboxen aufbewahrt werden."
+    },
+    {
+      "q": "In welchem Jahr wurde Nelson Mandela (Nelson Mandela) nach 27 Jahren Haft freigelassen?",
+      "a": [
+        "1985",
+        "1988",
+        "1990",
+        "1993"
+      ],
+      "r": 2,
+      "cat": "Geschichte",
+      "type": "mc",
+      "fact": "Nelson Mandela wurde am 11. Februar 1990 aus dem Gefängnis entlassen, nachdem er 27 Jahre inhaftiert war – größtenteils auf Robben Island. Vier Jahre später, 1994, wurde er als erster demokratisch gewählter Präsident Südafrikas vereidigt."
+    },
+    {
+      "q": "Wie alt wurde Leonardo da Vinci, als er starb?",
+      "answer": 67,
+      "cat": "Geschichte",
+      "type": "estimate",
+      "fact": "Leonardo da Vinci lebte von 1452 bis 1519 und wurde 67 Jahre alt – für seine Zeit ein hohes Alter. Er war nicht nur Maler der Mona Lisa und des Letzten Abendmahls, sondern auch Erfinder, Anatom, Musiker und Ingenieur. Er hat nie eines seiner großen Werke selbst als fertig bezeichnet."
+    },
+    {
+      "q": "Welches Unternehmen (Company) gründete Elon Musk NICHT?",
+      "a": [
+        "Tesla",
+        "SpaceX",
+        "Amazon",
+        "Neuralink"
+      ],
+      "r": 2,
+      "cat": "Wirtschaft",
+      "type": "mc",
+      "fact": "Amazon wurde 1994 von Jeff Bezos gegründet – nicht von Elon Musk. Musk gründete u.a. SpaceX (2002), war Mitgründer von Tesla (2003), gründete Neuralink (2016) und The Boring Company (2016). Er war auch Mitgründer von PayPal (damals X.com, 1999)."
+    },
+    {
+      "q": "Welcher Musiker (Musician) war unter dem Künstlernamen (Stage Name) 'The King of Pop' bekannt?",
+      "a": [
+        "Elvis Presley",
+        "Prince",
+        "Michael Jackson",
+        "David Bowie"
+      ],
+      "r": 2,
+      "cat": "Musik",
+      "type": "mc",
+      "fact": "Michael Jackson wurde als 'King of Pop' bekannt – ein Titel, den ihm Elizabeth Taylor 1989 bei einer Preisverleihung verlieh. Sein Album Thriller (1982) ist mit über 66 Millionen verkauften Einheiten das meistverkaufte Album aller Zeiten."
+    },
+    {
+      "q": "In welchem Land wurde Nikola Tesla geboren?",
+      "a": [
+        "Österreich-Ungarn (heutiges Serbien)",
+        "Russland",
+        "Deutschland",
+        "USA"
+      ],
+      "r": 0,
+      "cat": "Wissenschaft",
+      "type": "mc",
+      "fact": "Nikola Tesla wurde 1856 in Smiljan, damals Teil des Österreichisch-Ungarischen Kaiserreichs (heute Serbien), geboren. Er wanderte später in die USA aus und arbeitete zunächst für Thomas Edison – bevor sie zu erbitterten Konkurrenten im 'Stromkrieg' (War of Currents) wurden."
+    },
+    {
+      "q": "Wer schrieb das Werk 'Zur Kritik der Politischen Ökonomie' – besser bekannt als 'Das Kapital'?",
+      "a": [
+        "Friedrich Engels",
+        "Karl Marx",
+        "Max Weber",
+        "Vladimir Lenin"
+      ],
+      "r": 1,
+      "cat": "Geschichte",
+      "type": "mc",
+      "fact": "Karl Marx schrieb Das Kapital, dessen erster Band 1867 erschien. Friedrich Engels war sein enger Mitarbeiter und veröffentlichte nach Marx' Tod (1883) die Bände 2 und 3. Marx und Engels verfassten gemeinsam das Kommunistische Manifest (Communist Manifesto, 1848)."
+    },
+    {
+      "q": "Nenne den bürgerlichen Namen (Birth Name) von Coco Chanel.",
+      "cat": "Kultur",
+      "type": "open",
+      "answer": "Gabrielle Bonheur Chanel",
+      "fact": "Gabrielle Bonheur Chanel wurde 1883 geboren und nannte sich später 'Coco' – möglicherweise nach einem Kabarett-Song. Sie revolutionierte die Damenmode, indem sie Frauen aus dem Korsett befreite und schlichte, elegante Kleidung salonfähig machte. Chanel Nr. 5 (1921) ist bis heute das meistverkaufte Parfüm der Welt."
+    },
+    {
+      "q": "Wie viele Bücher (Books) schrieb Stephen Hawking für ein breites Publikum – also keine rein akademischen Werke?",
+      "answer": 15,
+      "cat": "Wissenschaft",
+      "type": "estimate",
+      "fact": "Stephen Hawking schrieb rund 15 populärwissenschaftliche Bücher, darunter Eine kurze Geschichte der Zeit (A Brief History of Time, 1988), das über 25 Millionen Mal verkauft wurde und 237 Wochen auf der Bestsellerliste stand. Er verfasste die meisten Werke trotz seiner ALS-Erkrankung per Augen- oder Wangenbewegung."
+    },
+    {
+      "q": "Welcher Komponist (Composer) schrieb die Neunte Sinfonie (Ninth Symphony), obwohl er zu diesem Zeitpunkt fast vollständig taub war?",
+      "a": [
+        "Wolfgang Amadeus Mozart",
+        "Johann Sebastian Bach",
+        "Ludwig van Beethoven",
+        "Franz Schubert"
+      ],
+      "r": 2,
+      "cat": "Musik",
+      "type": "mc",
+      "fact": "Ludwig van Beethoven vollendete seine Neunte Sinfonie 1824 – da war er bereits vollständig taub. Bei der Uraufführung stand er auf der Bühne und musste von einer Sängerin umgedreht werden, um den tosenden Applaus des Publikums zu sehen, da er ihn nicht hören konnte."
+    },
+    {
+      "q": "Wer war die erste Frau, die in der Geschichte der USA (United States) als Vizepräsidentin (Vice President) vereidigt wurde?",
+      "a": [
+        "Hillary Clinton",
+        "Kamala Harris",
+        "Michelle Obama",
+        "Condoleezza Rice"
+      ],
+      "r": 1,
+      "cat": "Politik",
+      "type": "mc",
+      "fact": "Kamala Harris wurde am 20. Januar 2021 als erste Frau, erste Schwarze und erste Person südasiatischer Abstammung zur Vizepräsidentin der USA vereidigt. Sie ist die Tochter einer indischen Mutter und eines jamaikanischen Vaters und wuchs in Kalifornien auf."
+    },
+    {
+      "q": "In welcher Stadt gründete Bill Gates gemeinsam mit Paul Allen Microsoft?",
+      "a": [
+        "Seattle",
+        "Albuquerque",
+        "San Francisco",
+        "Boston"
+      ],
+      "r": 1,
+      "cat": "Wirtschaft",
+      "type": "mc",
+      "fact": "Microsoft wurde 1975 in Albuquerque, New Mexico gegründet – nicht in Seattle. Gates und Allen zogen erst 1979 nach Seattle (Bellevue). Der Firmenname setzt sich aus 'Microcomputer' und 'Software' zusammen. Gates brach dafür sein Studium in Harvard ab."
+    },
+    {
+      "q": "Nenne den Geburtsort von Mahatma Gandhi.",
+      "cat": "Geschichte",
+      "type": "open",
+      "answer": "Porbandar",
+      "fact": "Mahatma Gandhi wurde 1869 in Porbandar, einem kleinen Küstenstädtchen im heutigen Gujarat, Indien, geboren. Sein vollständiger Name war Mohandas Karamchand Gandhi. Den Ehrentitel 'Mahatma' (Große Seele) erhielt er vom indischen Volk. Er studierte Jura in London und begann seinen Aktivismus zunächst in Südafrika."
+    },
+    {
+      "q": "Welcher Künstler (Artist) malte die Sixtinische Kapelle (Sistine Chapel) in Rom?",
+      "a": [
+        "Leonardo da Vinci",
+        "Raphael",
+        "Michelangelo",
+        "Donatello"
+      ],
+      "r": 2,
+      "cat": "Kunst",
+      "type": "mc",
+      "fact": "Michelangelo bemalte die Decke der Sixtinischen Kapelle zwischen 1508 und 1512 – über vier Jahre lang. Er arbeitete dabei nicht liegend, wie oft behauptet wird, sondern auf einem Gerüst im Stehen mit nach hinten geneigtem Kopf. Das Werk umfasst über 300 Figuren auf 500 Quadratmetern."
+    }
+  ]
+}
