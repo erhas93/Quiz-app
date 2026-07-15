@@ -105,6 +105,12 @@ textarea{resize:vertical;min-height:280px;font-family:'Courier New',monospace;fo
 /* Divider */
 .div{height:1px;background:var(--card-b);margin:6px 0}
 
+/* Branch select */
+select{appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237788aa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:36px!important}
+select option{background:var(--bg);color:var(--text)}
+
 @media(max-width:480px){body{padding:10px}.card{padding:14px}}
 </style>
 </head>
@@ -128,6 +134,18 @@ textarea{resize:vertical;min-height:280px;font-family:'Courier New',monospace;fo
       Token wird nur lokal im Browser gespeichert – nie übertragen außer direkt an GitHub.<br>
       Erstellen unter: <strong>github.com/settings/tokens</strong> → Scope: <code>repo</code>
     </p>
+  </div>
+
+  <!-- BRANCH -->
+  <div class="card" id="branch-card">
+    <h2>🌿 Branch</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="branch-select" onchange="BRANCH=this.value;saveBranch();const lbl=document.getElementById('active-branch-label');if(lbl)lbl.textContent=this.value" style="flex:1;padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--card);color:var(--text);font-size:.91rem;outline:none;cursor:pointer">
+        <option value="main">main</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="loadBranches()" id="branch-load-btn" style="white-space:nowrap">🔄 Laden</button>
+    </div>
+    <div id="branch-status" class="status" style="margin-top:8px"></div>
   </div>
 
   <!-- TABS -->
@@ -159,6 +177,7 @@ textarea{resize:vertical;min-height:280px;font-family:'Courier New',monospace;fo
       <div id="upload-status" class="status"></div>
       <div style="height:10px"></div>
 
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:6px;text-align:center">Branch: <strong id="active-branch-label" style="color:var(--s2)">main</strong></div>
       <button class="btn btn-primary btn-full" onclick="uploadPack()" id="upload-btn">
         ⬆️ Auf GitHub hochladen
       </button>
@@ -188,7 +207,7 @@ textarea{resize:vertical;min-height:280px;font-family:'Courier New',monospace;fo
 <script>
 const OWNER = 'erhas93';
 const REPO  = 'Quiz-app';
-const BRANCH = 'main';
+let BRANCH = 'main'; // dynamisch gesetzt
 
 // ── THEME ─────────────────────────────────────────────────────────────────
 function toggleTheme() {
@@ -411,10 +430,73 @@ async function deletePack(packId) {
   }
 }
 
+// ── BRANCH ────────────────────────────────────────────────────────────────
+function saveBranch() {
+  localStorage.setItem('gh_branch', BRANCH);
+}
+
+async function loadBranches() {
+  const token = getToken();
+  if (!token) { setStatus('branch-status','err','Zuerst Token eingeben'); return; }
+
+  const btn = document.getElementById('branch-load-btn');
+  btn.textContent = '⏳';
+  btn.disabled = true;
+  setStatus('branch-status','info','Lade Branches...');
+
+  try {
+    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/branches?per_page=50`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) throw new Error(`GitHub Fehler: ${r.status}`);
+    const branches = await r.json();
+
+    const sel = document.getElementById('branch-select');
+    const current = sel.value;
+    sel.innerHTML = '';
+    branches.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.name;
+      opt.textContent = b.name + (b.name === 'main' ? ' (default)' : '');
+      if (b.name === current || b.name === BRANCH) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    BRANCH = sel.value;
+    saveBranch();
+
+    const count = branches.length;
+    setStatus('branch-status','ok',`${count} Branch${count!==1?'es':''} geladen → aktiv: <strong>${BRANCH}</strong>`);
+  } catch(e) {
+    setStatus('branch-status','err', e.message);
+  } finally {
+    btn.textContent = '🔄 Laden';
+    btn.disabled = false;
+  }
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 window.onload = () => {
-  const saved = getToken();
-  if (saved) document.getElementById('token-input').value = saved;
+  const savedToken = getToken();
+  if (savedToken) document.getElementById('token-input').value = savedToken;
+
+  const savedBranch = localStorage.getItem('gh_branch');
+  if (savedBranch) {
+    BRANCH = savedBranch;
+    const sel = document.getElementById('branch-select');
+    // Add saved branch as option if not already there
+    if (![...sel.options].find(o => o.value === savedBranch)) {
+      const opt = document.createElement('option');
+      opt.value = savedBranch;
+      opt.textContent = savedBranch;
+      opt.selected = true;
+      sel.appendChild(opt);
+    } else {
+      sel.value = savedBranch;
+    }
+  }
+
+  // Auto-load branches if token exists
+  if (savedToken) loadBranches();
 };
 </script>
 </body>
