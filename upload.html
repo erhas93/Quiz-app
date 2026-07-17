@@ -449,7 +449,7 @@ async function loadPackList() {
       syncBtn.className = 'btn btn-ghost btn-full';
       syncBtn.style.marginTop = '10px';
       syncBtn.innerHTML = '🔄 index.json synchronisieren';
-      syncBtn.onclick = () => syncIndex(actualIds, indexSha);
+      syncBtn.onclick = () => syncIndex(actualIds);
       list.appendChild(syncBtn);
     }
 
@@ -461,26 +461,33 @@ async function loadPackList() {
 }
 
 // ── SYNC INDEX.JSON ───────────────────────────────────────────────────────
-async function syncIndex(actualIds, existingSha) {
+async function syncIndex(actualIds) {
   setStatus('packs-status','info','Synchronisiere index.json...');
   try {
-    // Always use the actual files as source of truth
-    // Preserve order: existing index order first, then append new ones
+    // Always fetch fresh SHA + content right before writing to avoid conflicts
     let currentIndex = [];
-    let sha = existingSha;
-    if (!sha) {
-      try {
-        const d = await ghGet('packs/index.json');
-        sha = d.sha;
-        currentIndex = JSON.parse(atob(d.content.replace(/\n/g,'')));
-      } catch(e) { currentIndex = []; }
+    let sha = null;
+    try {
+      const fresh = await ghGet('packs/index.json');
+      sha = fresh.sha;
+      currentIndex = JSON.parse(atob(fresh.content.replace(/\n/g,'')));
+    } catch(e) {
+      // index.json doesn't exist yet - will create it
+      currentIndex = [];
     }
-    // Keep existing order for known IDs, append missing ones
+
+    // Keep existing order, append any missing pack IDs
     const synced = [
       ...currentIndex.filter(id => actualIds.includes(id)),
       ...actualIds.filter(id => !currentIndex.includes(id))
     ];
-    await ghPut('packs/index.json', JSON.stringify(synced, null, 2), 'Sync index.json with actual pack files', sha);
+
+    await ghPut(
+      'packs/index.json',
+      JSON.stringify(synced, null, 2),
+      'Sync index.json with actual pack files',
+      sha  // null = create new file, string = update existing
+    );
     setStatus('packs-status','ok',`index.json synchronisiert – ${synced.length} Pakete`);
     loadPackList();
   } catch(e) {
