@@ -1,0 +1,177 @@
+{
+  "name": "Videospiele (Video Games)",
+  "emoji": "🎮",
+  "questions": [
+    {
+      "q": "In welchem Jahr erschien das erste The Legend of Zelda-Spiel in Japan?",
+      "a": [
+        "1983",
+        "1986",
+        "1989",
+        "1991"
+      ],
+      "r": 1,
+      "cat": "Gaming Geschichte",
+      "type": "mc",
+      "fact": "The Legend of Zelda erschien am 21. Februar 1986 in Japan für das Famicom Disk System – in Europa erst 1987. Shigeru Miyamoto ließ sich von seiner Kindheit inspirieren, als er die Wälder und Höhlen rund um Kyoto erkundete. Link heißt so, weil er die Verbindung (Link) zwischen Spieler und Spielwelt darstellt."
+    },
+    {
+      "q": "Wie heißt der Antagonist (Main Villain) in der The Witcher (Wiedźmin)-Spielreihe von CD Projekt Red?",
+      "a": [
+        "Gaunter O'Dimm",
+        "The Crones",
+        "Eredin Bréacc Glas",
+        "Gilles de Rais"
+      ],
+      "r": 2,
+      "cat": "RPG",
+      "type": "mc",
+      "fact": "Eredin Bréacc Glas ist der König der Wilden Jagd (Wild Hunt) und Hauptantagonist in The Witcher 3: Wild Hunt (2015). Das Spiel gilt als eines der besten RPGs aller Zeiten und gewann über 800 Auszeichnungen (Game of the Year Awards). CD Projekt Red ist ein polnisches Studio – die Bücher stammen von Andrzej Sapkowski."
+    },
+    {
+      "q": "In welchem Jahr erschien Grand Theft Auto V (GTA V) ursprünglich?",
+      "answer": 2013,
+      "cat": "Gaming Geschichte",
+      "type": "estimate",
+      "fact": "GTA V erschien am 17. September 2013 für PS3 und Xbox 360 – und wird seitdem kontinuierlich neu veröffentlicht. Es ist eines der meistverkauften Spiele aller Zeiten mit über 195 Millionen verkauften Einheiten. Rockstar Games verdiente in den ersten drei Tagen nach Release eine Milliarde US-Dollar."
+    },
+    {
+      "q": "Was ist der Name der Hauptfigur in der Half-Life (Half-Life)-Reihe von Valve?",
+      "a": [
+        "Isaac Clarke",
+        "Gordon Freeman",
+        "Alex Mercer",
+        "Thomas Wade"
+      ],
+      "r": 1,
+      "cat": "FPS",
+      "type": "mc",
+      "fact": "Gordon Freeman ist ein Physiker (Quantum Physicist) mit Doktortitel vom MIT – und trotzdem ein Ein-Mann-Heer. Bemerkenswert: In keinem Half-Life-Spiel spricht er ein einziges Wort. Half-Life (1998) revolutionierte den First-Person-Shooter und Half-Life 2 (2004) gilt als eines der einflussreichsten Spiele aller Zeiten."
+    },
+    {
+      "q": "Welche Spieleschmiede (Developer) entwickelte das Spiel Dark Souls (Dark Souls)?",
+      "a": [
+        "Capcom",
+        "FromSoftware",
+        "Bandai Namco",
+        "Square Enix"
+      ],
+      "r": 1,
+      "cat": "Gaming",
+      "type": "mc",
+      "fact": "FromSoftware, ein japanisches Studio, entwickelte Dark Souls (2011) unter der Leitung von Hidetaka Miyazaki. Das Spiel begründete das Genre der 'Soulslike'-Spiele – bekannt für hohen Schwierigkeitsgrad und tiefes, umweltbasiertes Storytelling. Miyazaki ließ sich von westlichen Fantasy-Büchern inspirieren, die er als Kind nur halb verstand."
+    },
+    {
+      "q": "Wie heißt die Währung (In-Game Currency) in The Elder Scrolls V: Skyrim?",
+      "a": [
+        "Gold",
+        "Septim",
+        "Krone",
+        "Draken"
+      ],
+      "r": 1,
+      "cat": "RPG",
+      "type": "mc",
+      "fact": "In Skyrim und allen The Elder Scrolls-Spielen heißt die Währung Septim – benannt nach der Kaiserdynastie der Septims. Skyrim (2011) wurde von Bethesda Game Studios entwickelt und bis heute auf über 10 verschiedenen Plattformen veröffentlicht, inklusive Alexa und einem Samsung-Kühlschrank (als Werbegag)."
+    },
+    {
+      "q": "In welcher Stadt spielt der Großteil von Cyberpunk 2077 (Cyberpunk 2077)?",
+      "a": [
+        "Los Angeles",
+        "Night City",
+        "Neo-Tokyo",
+        "San Francisco 2077"
+      ],
+      "r": 1,
+      "cat": "RPG",
+      "type": "mc",
+      "fact": "Cyberpunk 2077 spielt in Night City, einer fiktiven Megacity an der Küste Nordkaliforniens. Das Spiel wurde von CD Projekt Red entwickelt und erschien 2020 nach jahrelanger Entwicklung – mit einem chaotischen Launch voller Bugs. Nach mehreren Updates gilt es heute als eines der besten Open-World-Spiele."
+    },
+    {
+      "q": "Nenne den Namen des Protagonisten (Protagonist) aus Red Dead Redemption 2.",
+      "cat": "Gaming",
+      "type": "open",
+      "answer": "Arthur Morgan",
+      "fact": "Arthur Morgan ist der Protagonist von Red Dead Redemption 2 (2018) von Rockstar Games. Er ist ein Outlaw der Van der Linde Gang im Jahr 1899. Das Spiel gilt als eines der narrativ reichsten Spiele aller Zeiten – die Entwicklung dauerte 8 Jahre und das Team arbeitete oft 100-Stunden-Wochen."
+    },
+    {
+      "q": "Welches Spiel gewann 2023 den The Game Awards (TGA) als 'Game of the Year'?",
+      "a": [
+        "Hogwarts Legacy",
+        "Baldur's Gate 3",
+        "The Legend of Zelda: Tears of the Kingdom",
+        "Alan Wake 2"
+      ],
+      "r": 2,
+      "cat": "Gaming Aktuell",
+      "type": "mc",
+      "fact": "The Legend of Zelda: Tears of the Kingdom gewann 2023 den GOTY-Award bei den The Game Awards. Das Spiel von Nintendo erschien im Mai 2023 und verkaufte sich in den ersten drei Tagen über 10 Millionen Mal. Es ist der Nachfolger von Breath of the Wild und gilt als eines der ambitioniertesten Spiele der Geschichte."
+    },
+    {
+      "q": "Was ist der Name des Battle-Royale-Modus (Battle Royale Mode) in Fortnite?",
+      "a": [
+        "Fortnite Royale",
+        "Battle Royale",
+        "Fortnite BR",
+        "Island Clash"
+      ],
+      "r": 1,
+      "cat": "Gaming Aktuell",
+      "type": "mc",
+      "fact": "Fortnite Battle Royale erschien im September 2017 als kostenloser Ableger des ursprünglichen Fortnite (Save the World). Epic Games entwickelte den Modus in nur zwei Monaten als Reaktion auf den Erfolg von PUBG. Fortnite hat zeitweise über 350 Millionen registrierte Spieler weltweit."
+    },
+    {
+      "q": "In welchem Jahr erschien das originale Minecraft (Minecraft) als Vollversion (Full Release)?",
+      "answer": 2011,
+      "cat": "Gaming Geschichte",
+      "type": "estimate",
+      "fact": "Minecraft erschien am 18. November 2011 als Vollversion – entwickelt von Markus 'Notch' Persson zunächst alleine. Microsoft kaufte Mojang und Minecraft 2014 für 2,5 Milliarden US-Dollar. Minecraft ist mit über 238 Millionen verkauften Einheiten das meistverkaufte Videospiel aller Zeiten."
+    },
+    {
+      "q": "Welches Studio (Developer Studio) steckt hinter der God of War (God of War)-Reihe?",
+      "a": [
+        "Naughty Dog",
+        "Insomniac Games",
+        "Santa Monica Studio",
+        "Guerrilla Games"
+      ],
+      "r": 2,
+      "cat": "Gaming",
+      "type": "mc",
+      "fact": "Santa Monica Studio, ein First-Party-Studio von Sony, entwickelt die God of War-Reihe seit 2005. Der Neustart 2018 mit Kratos und seinem Sohn Atreus in der nordischen Mythologie wurde vom langjährigen Cory Barlog geleitet. Das Spiel wurde in einer einzigen, unterbrechungsfreien Kameraeinstellung gedreht."
+    },
+    {
+      "q": "Was ist ein 'Roguelite' (Roguelite) im Kontext von Videospielen?",
+      "a": [
+        "Ein Spiel, das ausschließlich nachts gespielt werden kann",
+        "Ein Spiel mit prozedural generierten Levels und permanentem Tod, aber mit persistenten Fortschritten",
+        "Ein Klon des Klassikers Rogue aus den 1980ern",
+        "Ein Spiel ohne Speichermöglichkeit"
+      ],
+      "r": 1,
+      "cat": "Gaming Begriffe",
+      "type": "mc",
+      "fact": "Roguelites wie Hades, Dead Cells oder Slay the Spire kombinieren den permanenten Tod (Permadeath) und zufällig generierte Level des Roguelikes mit persistenten Fortschritten zwischen den Runs. Das Original Rogue erschien 1980 – fast niemand hat es je zu Ende gespielt. Hades von Supergiant Games (2020) gilt als bestes Roguelite."
+    },
+    {
+      "q": "Nenne den Namen der Protagonistin (Female Protagonist) aus dem Spiel Horizon Zero Dawn.",
+      "cat": "Gaming",
+      "type": "open",
+      "answer": "Aloy",
+      "fact": "Aloy ist die Protagonistin von Horizon Zero Dawn (2017) und Horizon Forbidden West (2022), entwickelt von Guerrilla Games für PlayStation. Die Welt spielt in einer postapokalyptischen Zukunft, in der Maschinen die Erde bevölkern. Der Name Aloy ist eine Anspielung auf 'Alloy' (Legierung) – da sie in einer Welt aus Mensch und Maschine lebt."
+    },
+    {
+      "q": "Welches Spiel gilt als Wegbereiter (Pioneer) des modernen Battle-Royale-Genres?",
+      "a": [
+        "H1Z1",
+        "PUBG (PlayerUnknown's Battlegrounds)",
+        "Fortnite",
+        "DayZ"
+      ],
+      "r": 1,
+      "cat": "Gaming Geschichte",
+      "type": "mc",
+      "fact": "PUBG: PlayerUnknown's Battlegrounds (2017) von Brendan 'PlayerUnknown' Greene gilt als Begründer des modernen Battle-Royale-Genres. Greene hatte zuvor einen Battle-Royale-Mod für ARMA entwickelt. PUBG erreichte 2018 über 3 Millionen gleichzeitige Spieler auf Steam – ein Rekord, der lange ungebrochen blieb."
+    }
+  ]
+}
