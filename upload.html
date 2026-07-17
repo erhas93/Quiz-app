@@ -186,7 +186,7 @@ select option{background:var(--bg);color:var(--text)}
     <!-- PACKS TAB -->
     <div id="tab-packs" style="display:none">
       <div id="packs-status" class="status" style="margin-bottom:12px"></div>
-      <button class="btn btn-ghost btn-sm" onclick="loadPackList()" style="margin-bottom:14px">🔄 Pakete laden</button>
+      <div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn btn-ghost btn-sm" onclick="loadPackList()">🔄 Scannen &amp; laden</button></div>
       <div class="pack-list" id="pack-list">
         <p class="muted">Klicke auf „Pakete laden" um die aktuelle Liste zu sehen.</p>
       </div>
@@ -277,12 +277,26 @@ function updatePreview() {
 }
 
 // ── GITHUB API ────────────────────────────────────────────────────────────
-async function ghGet(path) {
-  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
+async function ghGet(path, branch) {
+  const br = branch || BRANCH;
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${br}`, {
     headers: { Authorization: `token ${getToken()}`, Accept: 'application/vnd.github.v3+json' }
   });
-  if (!r.ok) throw new Error(`GitHub API Fehler: ${r.status}`);
+  if (!r.ok) throw new Error(`GitHub API Fehler: ${r.status} (${path})`);
   return r.json();
+}
+
+// Scan packs/ directory - returns all .json files except index.json
+async function ghListPacks(branch) {
+  const br = branch || BRANCH;
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/packs?ref=${br}`, {
+    headers: { Authorization: `token ${getToken()}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!r.ok) throw new Error(`Ordner nicht gefunden: ${r.status}`);
+  const files = await r.json();
+  return files
+    .filter(f => f.name.endsWith('.json') && f.name !== 'index.json')
+    .map(f => f.name.replace('.json', ''));
 }
 
 async function ghPut(path, content, message, sha) {
@@ -370,35 +384,105 @@ async function uploadPack() {
 async function loadPackList() {
   const token = getToken();
   if (!token) { setStatus('packs-status','err','Kein Token eingegeben!'); return; }
-  setStatus('packs-status','info','Lade Paketliste...');
+  setStatus('packs-status','info','Scanne packs/-Ordner...');
 
   try {
-    const indexData = await ghGet('packs/index.json');
-    const ids = JSON.parse(atob(indexData.content.replace(/\n/g,'')));
+    // Scan actual files in packs/ directory
+    const [actualIds, indexData] = await Promise.all([
+      ghListPacks(),
+      ghGet('packs/index.json').catch(() => null)
+    ]);
 
-    const details = await Promise.all(ids.map(async id => {
+    let indexIds = [];
+    let indexSha = null;
+    if (indexData) {
+      indexSha = indexData.sha;
+      indexIds = JSON.parse(atob(indexData.content.replace(/\n/g,'')));
+    }
+
+    // Find discrepancies
+    const missingFromIndex = actualIds.filter(id => !indexIds.includes(id));
+    const missingFiles     = indexIds.filter(id => !actualIds.includes(id));
+    const hasMismatch      = missingFromIndex.length > 0 || missingFiles.length > 0;
+
+    // Load pack details for all actual files
+    const details = await Promise.all(actualIds.map(async id => {
       try {
         const d = await ghGet(`packs/${id}.json`);
         const p = JSON.parse(atob(d.content.replace(/\n/g,'')));
-        return { id, name: p.name, emoji: p.emoji, count: p.questions?.length||0, sha: d.sha };
-      } catch(e) { return { id, name: id, emoji:'❓', count:'?', sha:null }; }
+        return { id, name: p.name, emoji: p.emoji||'📦', count: p.questions?.length||0, sha: d.sha, inIndex: indexIds.includes(id) };
+      } catch(e) { return { id, name: id, emoji:'❓', count:'?', sha:null, inIndex: indexIds.includes(id) }; }
     }));
 
+    // Render list
     const list = document.getElementById('pack-list');
     list.innerHTML = '';
+
+    // Show sync warning if mismatch
+    if (hasMismatch) {
+      const warn = document.createElement('div');
+      warn.style.cssText = 'padding:10px 13px;border-radius:var(--r-sm);border:1.5px solid rgba(241,196,15,.4);background:rgba(241,196,15,.08);color:#f1c40f;font-size:.83rem;margin-bottom:10px';
+      let warnText = '⚠️ index.json ist nicht synchron:';
+      if (missingFromIndex.length) warnText += `<br>• Nicht in index.json: <strong>${missingFromIndex.join(', ')}</strong>`;
+      if (missingFiles.length) warnText += `<br>• In index.json aber Datei fehlt: <strong>${missingFiles.join(', ')}</strong>`;
+      warn.innerHTML = warnText;
+      list.appendChild(warn);
+    }
+
     details.forEach(p => {
       const div = document.createElement('div');
       div.className = 'pack-item';
+      div.style.borderColor = p.inIndex ? '' : 'rgba(241,196,15,.4)';
       div.innerHTML = `
         <span style="font-size:1.1rem">${p.emoji}</span>
         <span class="pack-name">${p.name}</span>
         <span class="pack-count">${p.count} Fragen</span>
+        ${!p.inIndex ? '<span style="font-size:.7rem;color:#f1c40f;font-weight:700;padding:2px 6px;border-radius:5px;border:1px solid rgba(241,196,15,.4)">nicht in index</span>' : ''}
         <button class="pack-del" onclick="deletePack('${p.id}')" title="Löschen">🗑️</button>
       `;
       list.appendChild(div);
     });
 
-    setStatus('packs-status','ok',`${ids.length} Paket${ids.length!==1?'e':''} gefunden`);
+    // Sync button
+    if (hasMismatch) {
+      const syncBtn = document.createElement('button');
+      syncBtn.className = 'btn btn-ghost btn-full';
+      syncBtn.style.marginTop = '10px';
+      syncBtn.innerHTML = '🔄 index.json synchronisieren';
+      syncBtn.onclick = () => syncIndex(actualIds, indexSha);
+      list.appendChild(syncBtn);
+    }
+
+    const syncState = hasMismatch ? ` – ⚠️ ${missingFromIndex.length + missingFiles.length} Differenz(en)` : ' – ✓ synchron';
+    setStatus('packs-status','ok',`${actualIds.length} Paket${actualIds.length!==1?'e':''} gefunden${syncState}`);
+  } catch(e) {
+    setStatus('packs-status','err', e.message);
+  }
+}
+
+// ── SYNC INDEX.JSON ───────────────────────────────────────────────────────
+async function syncIndex(actualIds, existingSha) {
+  setStatus('packs-status','info','Synchronisiere index.json...');
+  try {
+    // Always use the actual files as source of truth
+    // Preserve order: existing index order first, then append new ones
+    let currentIndex = [];
+    let sha = existingSha;
+    if (!sha) {
+      try {
+        const d = await ghGet('packs/index.json');
+        sha = d.sha;
+        currentIndex = JSON.parse(atob(d.content.replace(/\n/g,'')));
+      } catch(e) { currentIndex = []; }
+    }
+    // Keep existing order for known IDs, append missing ones
+    const synced = [
+      ...currentIndex.filter(id => actualIds.includes(id)),
+      ...actualIds.filter(id => !currentIndex.includes(id))
+    ];
+    await ghPut('packs/index.json', JSON.stringify(synced, null, 2), 'Sync index.json with actual pack files', sha);
+    setStatus('packs-status','ok',`index.json synchronisiert – ${synced.length} Pakete`);
+    loadPackList();
   } catch(e) {
     setStatus('packs-status','err', e.message);
   }
