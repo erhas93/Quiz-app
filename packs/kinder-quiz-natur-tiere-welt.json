@@ -1,0 +1,177 @@
+{
+  "name": "Kinder-Quiz: Natur, Tiere & Welt",
+  "emoji": "🌍",
+  "questions": [
+    {
+      "q": "Welches Tier ist das größte Landtier der Welt?",
+      "a": [
+        "Nashorn",
+        "Nilpferd",
+        "Afrikanischer Elefant",
+        "Giraffe"
+      ],
+      "r": 2,
+      "cat": "Tiere",
+      "type": "mc",
+      "fact": "Der afrikanische Elefant ist das größte Landtier der Welt. Ein ausgewachsener Bulle kann bis zu 6 Tonnen wiegen – das ist so schwer wie vier große Autos zusammen! Elefanten sind auch sehr klug und haben ein ausgezeichnetes Gedächtnis."
+    },
+    {
+      "q": "Wie viele Beine hat eine Spinne?",
+      "a": [
+        "4 Beine",
+        "6 Beine",
+        "8 Beine",
+        "10 Beine"
+      ],
+      "r": 2,
+      "cat": "Tiere",
+      "type": "mc",
+      "fact": "Alle Spinnen haben genau 8 Beine – deshalb gehören sie auch nicht zu den Insekten, sondern zu den Spinnentieren. Insekten haben immer 6 Beine. Spinnen nutzen ihre Beine auch zum Fühlen und Schmecken!"
+    },
+    {
+      "q": "Welches ist das schnellste Landtier der Welt?",
+      "a": [
+        "Löwe",
+        "Gepard",
+        "Springbock",
+        "Straußenvogel"
+      ],
+      "r": 1,
+      "cat": "Tiere",
+      "type": "mc",
+      "fact": "Der Gepard ist das schnellste Landtier der Welt und kann bis zu 120 km/h schnell laufen – aber nur für kurze Strecken. Nach einem Sprint ist er so erschöpft, dass er erst einmal eine halbe Stunde ausruhen muss, bevor er seine Beute fressen kann."
+    },
+    {
+      "q": "Aus wie vielen Knochen besteht das Skelett eines erwachsenen Menschen?",
+      "answer": 206,
+      "cat": "Menschlicher Körper",
+      "type": "estimate",
+      "fact": "Ein erwachsener Mensch hat 206 Knochen. Als Baby hat man sogar noch mehr – nämlich etwa 300! Viele Knochen wachsen im Laufe der Kindheit zusammen. Der kleinste Knochen im Körper ist der Steigbügel im Ohr – er ist nur 3 mm groß."
+    },
+    {
+      "q": "Welcher Planet ist der größte in unserem Sonnensystem?",
+      "a": [
+        "Saturn",
+        "Uranus",
+        "Jupiter",
+        "Neptun"
+      ],
+      "r": 2,
+      "cat": "Weltraum",
+      "type": "mc",
+      "fact": "Jupiter ist der größte Planet in unserem Sonnensystem. Er ist so riesig, dass alle anderen Planeten zusammen noch in ihn hineinpassen würden! Der große rote Fleck auf Jupiter ist ein Sturm, der schon seit über 300 Jahren tobt."
+    },
+    {
+      "q": "Was ist die Hauptstadt von Frankreich?",
+      "a": [
+        "Madrid",
+        "Paris",
+        "London",
+        "Rom"
+      ],
+      "r": 1,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Paris ist die Hauptstadt von Frankreich und hat etwa 2 Millionen Einwohner. Das bekannteste Wahrzeichen ist der Eiffelturm, der 1889 gebaut wurde. Im Sommer wird der Eiffelturm durch die Hitze sogar etwa 15 cm größer – weil sich Metall bei Wärme ausdehnt!"
+    },
+    {
+      "q": "Wie nennt man junge Katzen?",
+      "a": [
+        "Welpen",
+        "Küken",
+        "Kälber",
+        "Kätzchen"
+      ],
+      "r": 3,
+      "cat": "Tiere",
+      "type": "mc",
+      "fact": "Junge Katzen nennt man Kätzchen. Eine Katze kann bis zu 6 Kätzchen auf einmal bekommen. Kätzchen werden blind und taub geboren – erst nach etwa 10 Tagen öffnen sie die Augen. In den ersten Wochen brauchen sie ihre Mutter um sich zu wärmen und zu fressen."
+    },
+    {
+      "q": "Wie viele Kontinente gibt es auf der Erde?",
+      "answer": 7,
+      "cat": "Geographie",
+      "type": "estimate",
+      "fact": "Die Erde hat 7 Kontinente: Europa, Asien, Afrika, Nord- und Südamerika, Australien (Ozeanien) und die Antarktis. Asien ist der größte Kontinent – er ist fast viermal so groß wie Europa. Die Antarktis ist der kälteste und der windigste Kontinent der Welt."
+    },
+    {
+      "q": "Was machen Bären im Winter?",
+      "a": [
+        "Sie ziehen in wärmere Länder",
+        "Sie halten Winterschlaf",
+        "Sie suchen Futter unter dem Schnee",
+        "Sie leben unter Wasser"
+      ],
+      "r": 1,
+      "cat": "Tiere",
+      "type": "mc",
+      "fact": "Bären halten Winterschlaf – sie schlafen von Herbst bis Frühjahr in einer Höhle oder einem Erdbau. Bevor sie schlafen fressen sie sich extra viel an, damit sie genug Fett für den Winter haben. Bärenmütter bekommen ihre Jungen sogar während des Winterschlafs!"
+    },
+    {
+      "q": "Welche Farbe hat Chlorophyll – der Stoff, der Pflanzen grün macht?",
+      "a": [
+        "Blau",
+        "Gelb",
+        "Grün",
+        "Rot"
+      ],
+      "r": 2,
+      "cat": "Natur",
+      "type": "mc",
+      "fact": "Chlorophyll ist der grüne Farbstoff in Pflanzen. Pflanzen brauchen ihn, um Sonnenlicht in Energie umzuwandeln – das nennt man Fotosynthese. Dabei nehmen Pflanzen Kohlendioxid aus der Luft auf und geben Sauerstoff ab, den wir zum Atmen brauchen."
+    },
+    {
+      "q": "In welchem Land steht die Chinesische Mauer?",
+      "a": [
+        "Japan",
+        "Indien",
+        "Korea",
+        "China"
+      ],
+      "r": 3,
+      "cat": "Geographie",
+      "type": "mc",
+      "fact": "Die Chinesische Mauer steht in China und ist eines der größten Bauwerke der Menschheit. Sie ist über 21.000 km lang – das ist ungefähr halb so weit wie der Umfang der Erde! Gebaut wurde sie über viele Jahrhunderte, um das Land vor Angreifern zu schützen."
+    },
+    {
+      "q": "Nenne das größte Tier, das jemals auf der Erde gelebt hat – und heute noch lebt.",
+      "cat": "Tiere",
+      "type": "open",
+      "answer": "Blauwal",
+      "fact": "Der Blauwal ist das größte Tier, das je auf der Erde gelebt hat – er kann bis zu 30 Meter lang und 180 Tonnen schwer werden. Das Herz eines Blauwals ist so groß wie ein kleines Auto! Blauwale leben im Meer und ernähren sich fast ausschließlich von winzigen Krebstieren, den sogenannten Krill."
+    },
+    {
+      "q": "Was ist die Aufgabe der roten Blutkörperchen in unserem Körper?",
+      "a": [
+        "Sie bekämpfen Krankheiten",
+        "Sie transportieren Sauerstoff durch den Körper",
+        "Sie helfen beim Verdauen von Essen",
+        "Sie schützen die Knochen"
+      ],
+      "r": 1,
+      "cat": "Menschlicher Körper",
+      "type": "mc",
+      "fact": "Rote Blutkörperchen transportieren Sauerstoff von der Lunge zu allen Teilen des Körpers. Im Blut gibt es Milliarden davon! Sie leben nur etwa 120 Tage, danach werden sie abgebaut und durch neue ersetzt. Die weißen Blutkörperchen hingegen sind die Soldaten unseres Körpers und bekämpfen Krankheitserreger."
+    },
+    {
+      "q": "Welches Gas atmen wir ein, das wir zum Leben brauchen?",
+      "a": [
+        "Kohlendioxid",
+        "Stickstoff",
+        "Sauerstoff",
+        "Wasserstoff"
+      ],
+      "r": 2,
+      "cat": "Natur",
+      "type": "mc",
+      "fact": "Wir atmen Sauerstoff ein und Kohlendioxid aus. Luft besteht zu etwa 78% aus Stickstoff und nur zu 21% aus Sauerstoff. Pflanzen machen es genau andersherum: Sie nehmen Kohlendioxid auf und geben Sauerstoff ab – deshalb sind Wälder so wichtig für unsere Erde."
+    },
+    {
+      "q": "Nenne das Land, das die meisten Einwohner der Welt hat.",
+      "cat": "Geographie",
+      "type": "open",
+      "answer": "Indien",
+      "fact": "Indien hat seit 2023 die meisten Einwohner aller Länder der Welt – mehr als 1,4 Milliarden Menschen! China lag viele Jahrzehnte auf Platz 1, wurde aber von Indien überholt. Zum Vergleich: In Deutschland leben etwa 84 Millionen Menschen – das ist weniger als ein Zehntel der Einwohnerzahl Indiens."
+    }
+  ]
+}
