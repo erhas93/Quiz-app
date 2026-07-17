@@ -1,0 +1,177 @@
+{
+  "name": "Astrophysik & Kosmos",
+  "emoji": "🔭",
+  "questions": [
+    {
+      "q": "Wie lange braucht Licht von der Sonne bis zur Erde (ungefähr)?",
+      "a": [
+        "1,3 Sekunden",
+        "8 Minuten",
+        "42 Minuten",
+        "3 Stunden"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Licht braucht exakt 8 Minuten und 20 Sekunden von der Sonne zur Erde. Das bedeutet: Das Sonnenlicht, das wir gerade sehen, hat die Sonne bereits vor 8 Minuten verlassen. Wenn die Sonne plötzlich erlöschen würde, würden wir es erst 8 Minuten später bemerken."
+    },
+    {
+      "q": "Was ist ein Schwarzes Loch (Black Hole)?",
+      "a": [
+        "Ein toter Stern, der kein Licht mehr aussendet",
+        "Ein Bereich im All, aus dem nicht einmal Licht entweichen kann",
+        "Ein Tunnel zwischen zwei Punkten im Universum",
+        "Eine Region mit extrem niedriger Temperatur im Weltall"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Ein Schwarzes Loch entsteht, wenn Materie so dicht komprimiert wird, dass die Fluchtgeschwindigkeit die Lichtgeschwindigkeit übersteigt – selbst Licht kann nicht entkommen. Die Grenze heißt Ereignishorizont (Event Horizon). 2019 wurde erstmals ein Foto eines Schwarzen Lochs veröffentlicht."
+    },
+    {
+      "q": "Wie viele Planeten hat unser Sonnensystem (Solar System)?",
+      "answer": 8,
+      "cat": "Astronomie",
+      "type": "estimate",
+      "fact": "Seit 2006 hat unser Sonnensystem offiziell 8 Planeten – Pluto wurde von der Internationalen Astronomischen Union (IAU) zum Zwergplaneten (Dwarf Planet) degradiert. Die 8 Planeten sind: Merkur, Venus, Erde, Mars, Jupiter, Saturn, Uranus und Neptun."
+    },
+    {
+      "q": "Was ist die Hubble-Konstante (Hubble Constant)?",
+      "a": [
+        "Die Geschwindigkeit, mit der sich die Erde um die Sonne dreht",
+        "Die Expansionsrate des Universums",
+        "Der Abstand zwischen Milchstraße und Andromeda-Galaxie",
+        "Die Masse des größten bekannten Schwarzen Lochs"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Die Hubble-Konstante beschreibt, wie schnell sich das Universum ausdehnt – benannt nach Edwin Hubble, der 1929 entdeckte, dass sich Galaxien voneinander entfernen. Der aktuelle Wert beträgt etwa 70 km/s pro Megaparsec, was bedeutet: Je weiter eine Galaxie entfernt ist, desto schneller entfernt sie sich."
+    },
+    {
+      "q": "Wie wird der Effekt genannt, bei dem das Licht eines sich entfernenden Objekts zu rötlichen Wellenlängen verschoben wird?",
+      "a": [
+        "Blauverschebung (Blueshift)",
+        "Rotverschiebung (Redshift)",
+        "Doppler-Kollaps",
+        "Spektralabweichung"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Die Rotverschiebung (Redshift) ist das kosmologische Äquivalent des Doppler-Effekts bei Schall. Wenn sich eine Galaxie von uns entfernt, werden die Lichtwellen gestreckt – sie werden 'röter'. Edwin Hubble nutzte dieses Prinzip, um die Expansion des Universums zu beweisen."
+    },
+    {
+      "q": "Was ist ein Neutronenstern (Neutron Star)?",
+      "a": [
+        "Ein Stern, der nur aus Wasserstoff besteht",
+        "Der extrem dichte Überrest eines explodierten massereichen Sterns",
+        "Ein Stern in der Frühphase seiner Entstehung",
+        "Ein Stern, der kein Licht aussendet, aber Wärme abstrahlt"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Ein Neutronenstern entsteht nach einer Supernova-Explosion. Er ist extrem dicht: Ein Teelöffel Neutronensternmaterial würde auf der Erde etwa eine Milliarde Tonnen wiegen. Neutronensterne können sich hunderte Male pro Sekunde drehen – diese rotierenden Varianten nennt man Pulsare (Pulsars)."
+    },
+    {
+      "q": "Wie heißt unsere Galaxie (Galaxy)?",
+      "cat": "Astronomie",
+      "type": "open",
+      "answer": "Milchstraße",
+      "fact": "Die Milchstraße (Milky Way) hat einen Durchmesser von ca. 100.000 Lichtjahren und enthält zwischen 100 und 400 Milliarden Sterne. Unser Sonnensystem liegt etwa 26.000 Lichtjahre vom Zentrum entfernt. Eine Umrundung des galaktischen Zentrums dauert ca. 225 Millionen Jahre – ein 'galaktisches Jahr'."
+    },
+    {
+      "q": "Was ist Dunkle Energie (Dark Energy)?",
+      "a": [
+        "Die Energie, die von Schwarzen Löchern absorbiert wird",
+        "Eine hypothetische Energieform, die die beschleunigte Expansion des Universums antreibt",
+        "Die thermische Energie kalter, dunkler Sterne",
+        "Strahlung, die von Neutronensternen ausgesandt wird"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Dunkle Energie ist eine der größten Mysterien der modernen Physik. Sie macht etwa 68% des Universums aus – aber niemand weiß wirklich, was sie ist. Zusammen mit Dunkler Materie (Dark Matter, ~27%) besteht das Universum zu 95% aus Dingen, die wir nicht direkt beobachten können."
+    },
+    {
+      "q": "Wie viele Lichtjahre (Light-years) ist die nächste Galaxie, die Andromedagalaxie (Andromeda Galaxy), von der Milchstraße entfernt?",
+      "answer": 2500000,
+      "cat": "Astronomie",
+      "type": "estimate",
+      "fact": "Die Andromedagalaxie ist ca. 2,5 Millionen Lichtjahre entfernt – das bedeutet, wir sehen sie so, wie sie vor 2,5 Millionen Jahren aussah. Andromeda und die Milchstraße kollidieren in etwa 4,5 Milliarden Jahren. Da Galaxien aber zum Großteil aus leerem Raum bestehen, wird kein einziger Stern direkt kollidieren."
+    },
+    {
+      "q": "Was ist ein Quasar (Quasar)?",
+      "a": [
+        "Ein sehr kleiner, sehr dichter Zwerg-Stern",
+        "Der extrem helle Kern einer aktiven Galaxie, angetrieben von einem Schwarzen Loch",
+        "Eine Ansammlung von Gaswolken am Rand eines Sonnensystems",
+        "Ein hypothetisches Teilchen, das schneller als Licht reist"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Quasare (Quasi-Stellar Objects) sind die hellsten Objekte im Universum – sie können hunderter von Galaxien überstrahlen, sind aber selbst kleiner als unser Sonnensystem. Sie werden durch supermassive Schwarze Löcher angetrieben, die enorme Mengen Materie verschlingen und dabei Energie freisetzen."
+    },
+    {
+      "q": "Was beschreibt das Fermi-Paradoxon (Fermi Paradox)?",
+      "a": [
+        "Den Widerspruch zwischen der hohen Wahrscheinlichkeit außerirdischen Lebens und dem Fehlen jeglichen Kontakts",
+        "Die Unmöglichkeit, schneller als Licht zu reisen",
+        "Den Energieverlust eines Schwarzen Lochs über Zeit",
+        "Den Unterschied zwischen Relativitätstheorie und Quantenmechanik"
+      ],
+      "r": 0,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Enrico Fermi fragte 1950 bei einem Mittagessen: 'Wo sind all die Aliens?' Angesichts von Milliarden Sternen und Milliarden Jahren Zeit sollte die Milchstraße voller intelligenter Zivilisationen sein – aber wir hören nichts. Dieses Schweigen des Universums ist als 'Großes Schweigen' (Great Silence) bekannt."
+    },
+    {
+      "q": "Wie heißt das Phänomen, bei dem zwei Schwarze Löcher verschmelzen und dabei Raumzeit-Wellen erzeugen?",
+      "a": [
+        "Supernova-Resonanz",
+        "Gravitationswellen (Gravitational Waves)",
+        "Quantenverschränkung (Quantum Entanglement)",
+        "Relativistische Gezeitenkräfte"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Gravitationswellen wurden von Albert Einstein 1916 vorhergesagt – aber erst 2015 von den LIGO-Detektoren erstmals gemessen. Das Signal stammte von zwei verschmelzenden Schwarzen Löchern, 1,3 Milliarden Lichtjahre entfernt. Für diese Entdeckung gab es 2017 den Nobelpreis für Physik."
+    },
+    {
+      "q": "Nenne den Namen des größten bekannten Sterns in unserem Universum.",
+      "cat": "Astronomie",
+      "type": "open",
+      "answer": "Stephenson 2-18",
+      "fact": "Stephenson 2-18 (auch St2-18) ist derzeit der größte bekannte Stern mit einem Radius von ca. 2.150 Sonnenradien. Würde man ihn an die Stelle unserer Sonne setzen, würde er bis weit über die Umlaufbahn des Saturn reichen. Zum Vergleich: Die Sonne ist schon 109-mal größer als die Erde."
+    },
+    {
+      "q": "Was ist der Unterschied zwischen einem Meteoroid, einem Meteor und einem Meteoriten (Meteoroid, Meteor, Meteorite)?",
+      "a": [
+        "Es sind drei verschiedene Bezeichnungen für dasselbe Objekt",
+        "Meteoroid im All, Meteor beim Eintritt in die Atmosphäre, Meteorit nach der Landung",
+        "Meteorit im All, Meteor in der Atmosphäre, Meteoroid nach der Landung",
+        "Größenunterschiede: klein, mittel, groß"
+      ],
+      "r": 1,
+      "cat": "Astronomie",
+      "type": "mc",
+      "fact": "Ein Meteoroid ist ein Gesteinsbrocken im Weltraum. Tritt er in die Erdatmosphäre ein und leuchtet auf, wird er zum Meteor – die sogenannte Sternschnuppe (Shooting Star). Überlebt ein Teil den Einschlag auf der Erde, heißt er Meteorit. Jedes Jahr treffen ca. 50.000 Tonnen Meteoritenmaterial auf die Erde."
+    },
+    {
+      "q": "Was ist die Chandrasekhar-Grenze (Chandrasekhar Limit)?",
+      "a": [
+        "Die maximale Geschwindigkeit eines Objekts in einem Schwarzen Loch",
+        "Die maximale Masse eines Weißen Zwergs, bevor er kollabiert",
+        "Der minimale Abstand zwischen zwei Neutronensternen",
+        "Die Mindesttemperatur für eine Kernfusion in einem Stern"
+      ],
+      "r": 1,
+      "cat": "Astrophysik",
+      "type": "mc",
+      "fact": "Die Chandrasekhar-Grenze (ca. 1,4 Sonnenmassen) ist die maximale Masse, die ein Weißer Zwerg haben kann. Überschreitet er diese Grenze, kollabiert er entweder zu einem Neutronenstern oder explodiert als Supernova Typ Ia. Subrahmanyan Chandrasekhar berechnete dies 1930 mit 19 Jahren auf einem Schiff von Indien nach England."
+    }
+  ]
+}
