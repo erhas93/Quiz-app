@@ -206,7 +206,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
   <button id="fs-btn" onclick="Q.toggleFullscreen()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text2)">⛶</button>
   <button onclick="Q.fullReset()" style="background:var(--bg3);border:1px solid rgba(231,111,81,.35);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--c5)">Reset</button>
   <button onclick="DBG.toggle()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text3)">🐛</button>
-  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.7.0</span>
+  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.8.0</span>
 </div>
 <!-- DEBUG PANEL -->
 <div id="dbg-panel" style="display:none;position:fixed;top:36px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-left:none;border-top:none;border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
@@ -425,6 +425,12 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
       <button class="btn btn-full" onclick="Q.useJoker()" style="background:rgba(42,157,143,.1);border:1.5px solid rgba(42,157,143,.3);color:var(--c2)">50:50 Joker einsetzen</button>
     </div>
   </div>
+  <!-- Player action bar: Einloggen button -->
+  <div class="g-actions" id="pg-actions" style="display:none">
+    <button class="btn btn-primary btn-full" id="pg-commit-btn" onclick="Q.commitAnswer()">
+      Einloggen ✓
+    </button>
+  </div>
 </div>
 
 <!-- RESULTS -->
@@ -444,6 +450,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 
 <script type="module">
+
+
+
 
 
 
@@ -569,6 +578,7 @@ function slots(prefix,n,s,r){
 }
 
 let role=null,name='',gs={},myReady=false,timerMode='none',timerSec=30,raf=null;
+let pendingAnswer=null; // MC selection not yet committed to Firebase
 let scoreRevealTimer=null,lastRevealedQ=-1;
 
 function stopRaf(){if(raf){cancelAnimationFrame(raf);raf=null;}}
@@ -646,7 +656,10 @@ const Q={
       showScreen('lobby-player-screen');
       await loadPacks();
     }
-    onValue(SR,snap=>{if(!snap.exists())return;gs=snap.val();DBG.log('onValue',{phase:gs.phase,role});if(role==='moderator')renderMod();else renderPlayer();});
+    onValue(SR,snap=>{if(!snap.exists())return;gs=snap.val();DBG.log('onValue',{phase:gs.phase,role});
+  // Reset pending on new question
+  if(gs.phase==='answering'){const myA=role==='s1'?gs.s1Answer:gs.s2Answer;if(myA==null)pendingAnswer=null;}
+  if(role==='moderator')renderMod();else renderPlayer();});
   },
 
   _nt:null,
@@ -746,6 +759,7 @@ const Q={
 
   // ── MOD JUDGE (manual correct/wrong for open/estimate) ───────────────────
   toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();const b=el('fs-btn');if(b)b.textContent='✕ Vollbild';}else{document.exitFullscreen&&document.exitFullscreen();const b=el('fs-btn');if(b)b.textContent='⛶ Vollbild';}},
+  commitAnswer,
   async judgePlayer(player, correct){
     // Only set judged verdict - scores applied in reveal()
     const judgeField=player==='s1'?'s1Judged':'s2Judged';
@@ -784,18 +798,29 @@ const Q={
 window.Q=Q;
 window.DBG=DBG;
 
-async function answer(idx){
-  if(gs.phase!=='answering')return;
+function answer(idx){
+  // MC: just select locally, don't commit to Firebase yet
+  if(gs.phase!=='answering') return;
   const q=getPack().questions[gs.currentQ||0];
-  if(q.type==='estimate'||q.type==='open') return; // handled by confirmAnswer
-  const af=role==='s1'?'s1Answer':'s2Answer',sf=role==='s1'?'s1Score':'s2Score';
-  const u={[af]:idx};
-  // Score NOT updated here - only on reveal
-  // Track answer time
+  if(q.type==='estimate'||q.type==='open') return;
+  const myAns=role==='s1'?gs.s1Answer:gs.s2Answer;
+  if(myAns!=null) return; // already committed
+  pendingAnswer = idx;
+  renderPlayer(); // re-render to show selection + Einloggen button
+}
+
+async function commitAnswer(){
+  // MC: commit pendingAnswer to Firebase
+  if(gs.phase!=='answering') return;
+  if(pendingAnswer===null) return;
+  const q=getPack().questions[gs.currentQ||0];
+  const af=role==='s1'?'s1Answer':'s2Answer';
+  const u={[af]:pendingAnswer};
   if(gs.questionStartTime){
     const tf=role==='s1'?'s1Time':'s2Time';
     u[tf]=Math.round(serverNow()-gs.questionStartTime);
   }
+  pendingAnswer=null; // clear before update to prevent double-submit
   await update(SR,u);
 }
 
@@ -1067,36 +1092,36 @@ function renderPlayer(){
     const con=el('pg-answers');con.innerHTML='';
     const hidden=gs.jokerHidden||[];
     const myNm=role==='s1'?(gs.s1Name||'S1'):(gs.s2Name||'S2');
+    // myAns = committed to Firebase; pendingAnswer = locally selected, not yet committed
+    const hasPending = myAns==null && pendingAnswer!==null && ph==='answering';
+
     q.a.forEach((a,i)=>{
       const d=document.createElement('div');d.className='ans';
       const isMe=myAns===i;
+      const isPending=hasPending&&pendingAnswer===i;
       const isOth=otherAns===i;
       const isCorrect=i===q.r;
-      const isHidden=jActive&&hidden.includes(i)&&myAns==null;
+      const isHidden=jActive&&hidden.includes(i)&&myAns==null&&pendingAnswer==null;
       const canClick=ph==='answering'&&myAns==null&&!isHidden;
 
       if(isHidden){
-        // 50:50 joker: answer blurred but still takes space
         d.classList.add('disabled');
         d.style.opacity='.12';
       } else if(ph==='revealed'){
-        // Always readable; color-code only
         d.classList.add('disabled');
         if(isCorrect) d.classList.add('correct');
         else if(isMe)  d.classList.add('wrong');
-        // others stay neutral (no faded, always readable)
       } else if(ph==='shown'){
         d.classList.add('disabled');
         if(isMe||isOth) d.classList.add('pending');
       } else {
-        // answering / locked
-        if(isMe) d.classList.add('pending','disabled');
+        // answering phase
+        if(isMe) d.classList.add('pending','disabled'); // committed
+        else if(isPending) d.classList.add('pending','disabled'); // locally selected
         else if(!canClick) d.classList.add('disabled');
       }
 
-      // Build label: show ✓ on correct in revealed, else letter
       const lbl = (ph==='revealed'&&isCorrect) ? '✓' : L(i);
-      // Name markers
       let markers='';
       if(ph==='shown'||ph==='revealed'){
         const meColor=role==='s1'?'var(--c4)':'var(--c2)';
@@ -1107,14 +1132,21 @@ function renderPlayer(){
         if(parts.length) markers=`<div class="ans-markers">${parts.join('')}</div>`;
       }
       d.innerHTML=`<span class="ans-l">${lbl}</span><span style="flex:1">${a}</span>${markers}`;
-      if(canClick) d.addEventListener('click',()=>answer(i));
+      if(canClick&&myAns==null) d.addEventListener('click',()=>answer(i));
       con.appendChild(d);
     });
-  }
 
-  // ── OPEN / ESTIMATE ──────────────────────────────────────────────────────
-  if(isOpenType){
+    // Show/hide Einloggen button
+    const pgAct=el('pg-actions');
+    if(pgAct){
+      // Show button only when pending selection exists and not yet committed
+      const showBtn=ph==='answering'&&myAns==null&&hasPending;
+      pgAct.style.display=showBtn?'':'none';
+    }
+  }
+if(isOpenType){
     el('pg-answers').innerHTML='';
+    const pgActOT=el('pg-actions');if(pgActOT)pgActOT.style.display='none';
     const myJudged=role==='s1'?gs.s1Judged:gs.s2Judged;
 
     if(ph==='revealed'||ph==='finished'){
@@ -1269,6 +1301,9 @@ function renderResults(){
 }
 
 setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
+
+
+
 
 
 
