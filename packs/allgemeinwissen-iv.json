@@ -1,0 +1,177 @@
+{
+  "name": "Allgemeinwissen IV",
+  "emoji": "🌐",
+  "questions": [
+    {
+      "q": "Welches Land verbrauchte 2023 den meisten Kaffee (Coffee) pro Kopf weltweit?",
+      "a": [
+        "Italien",
+        "Brasilien",
+        "Finnland",
+        "USA"
+      ],
+      "r": 2,
+      "cat": "Essen & Kulinarik",
+      "type": "mc",
+      "fact": "Finnland führt die Weltrangliste des Pro-Kopf-Kaffeekonsums an – mit etwa 12 kg pro Person und Jahr. Das liegt an der langen, dunklen Wintern und einer tief verwurzelten Kaffeekultur. Zum Vergleich: In Deutschland trinkt man ca. 6,5 kg pro Kopf jährlich."
+    },
+    {
+      "q": "Was versteht man unter dem psychologischen Begriff 'kognitive Dissonanz' (Cognitive Dissonance)?",
+      "a": [
+        "Die Fähigkeit, mehrere Aufgaben gleichzeitig zu erledigen",
+        "Das Unbehagen, das entsteht wenn Überzeugungen und Handlungen im Widerspruch stehen",
+        "Eine Störung des Kurzzeitgedächtnisses",
+        "Der Effekt, dass man Informationen besser erinnert, die man selbst erlebt hat"
+      ],
+      "r": 1,
+      "cat": "Psychologie",
+      "type": "mc",
+      "fact": "Kognitive Dissonanz wurde 1957 vom Psychologen Leon Festinger beschrieben. Ein klassisches Beispiel: Ein Raucher weiß, dass Rauchen schädlich ist, raucht aber trotzdem. Das erzeugt innere Spannung – die man entweder durch Verhaltensänderung oder durch Rationalisierung ('Mein Opa hat auch geraucht und wurde 90') auflöst."
+    },
+    {
+      "q": "Durch wie viele Länder fließt der Nil (Nile), der längste Fluss Afrikas?",
+      "answer": 11,
+      "cat": "Geographie",
+      "type": "estimate",
+      "fact": "Der Nil fließt durch 11 Länder: Burundi, Ruanda, Tansania, Uganda, Demokratische Republik Kongo, Kenia, Äthiopien, Eritrea, Südsudan, Sudan und Ägypten. Mit ca. 6.650 km ist er der längste Fluss der Welt – obwohl der Amazonas beim Wasservolumen deutlich größer ist."
+    },
+    {
+      "q": "In welchem Jahr wurde das World Wide Web (WWW) von Tim Berners-Lee erfunden?",
+      "a": [
+        "1983",
+        "1989",
+        "1993",
+        "1997"
+      ],
+      "r": 1,
+      "cat": "Technologie & Internet",
+      "type": "mc",
+      "fact": "Tim Berners-Lee entwickelte das World Wide Web 1989 am CERN in Genf – ursprünglich als System zum Austausch wissenschaftlicher Dokumente. Die erste Website ging 1991 online. Berners-Lee verzichtete bewusst auf ein Patent und machte das Web kostenlos zugänglich – eine der folgenreichsten Entscheidungen der Technikgeschichte."
+    },
+    {
+      "q": "Welches Tier hat die längste Trächtigkeitsdauer (Gestation Period) aller Säugetiere?",
+      "a": [
+        "Wal",
+        "Elefant",
+        "Nashorn",
+        "Giraffe"
+      ],
+      "r": 1,
+      "cat": "Tiere & Natur",
+      "type": "mc",
+      "fact": "Elefanten tragen ihre Jungen etwa 22 Monate – fast zwei Jahre. Das ist die längste Trächtigkeitsdauer aller Landsäugetiere. Elefantenkälber wiegen bei der Geburt bereits ca. 100 kg und können innerhalb weniger Stunden laufen. Der Spitzmaus hingegen trägt nur 18 Tage."
+    },
+    {
+      "q": "Wer malte das Werk 'Der Schrei' (The Scream, 1893)?",
+      "a": [
+        "Vincent van Gogh",
+        "Paul Gauguin",
+        "Edvard Munch",
+        "Gustav Klimt"
+      ],
+      "r": 2,
+      "cat": "Kultur & Kunst",
+      "type": "mc",
+      "fact": "Edvard Munch schuf 'Der Schrei' 1893 – es ist eines der bekanntesten Kunstwerke der Welt. Munch schrieb in seinem Tagebuch, er habe während eines Spaziergangs plötzlich einen 'unendlichen Schrei durch die Natur' wahrgenommen. Das Bild wurde zweimal gestohlen und beide Male wiedergefunden."
+    },
+    {
+      "q": "Was beschreibt das Gesetz von Moore (Moore's Law) in der Informatik?",
+      "a": [
+        "Die Übertragungsgeschwindigkeit im Internet verdoppelt sich alle 18 Monate",
+        "Die Anzahl der Transistoren auf einem Chip verdoppelt sich etwa alle zwei Jahre",
+        "Der Speicherbedarf von Software wächst schneller als die Hardware-Kapazität",
+        "Jedes neue Betriebssystem ist doppelt so komplex wie sein Vorgänger"
+      ],
+      "r": 1,
+      "cat": "Technologie & Internet",
+      "type": "mc",
+      "fact": "Gordon Moore, Mitgründer von Intel, beobachtete 1965, dass sich die Transistorenzahl auf Chips etwa alle zwei Jahre verdoppelt. Diese Beobachtung galt erstaunlich lange als Faustregel der Halbleiterindustrie. Heute gilt Moore's Law als langsam ausgelaufen – physikalische Grenzen machen weitere Miniaturisierung immer schwieriger."
+    },
+    {
+      "q": "Wie viele Gramm Protein enthält 100g Hühnerbrust (ungekocht) ungefähr?",
+      "answer": 22,
+      "cat": "Essen & Kulinarik",
+      "type": "estimate",
+      "fact": "Rohe Hühnerbrust enthält pro 100g etwa 22g Protein, 1g Fett und kaum Kohlenhydrate – weshalb sie in der Sporternährung so beliebt ist. Beim Garen verliert das Fleisch Wasser, weshalb der Proteingehalt auf ~31g pro 100g steigt. Hühnerbrust ist damit eines der proteinreichsten und kalorienärmsten Lebensmittel überhaupt."
+    },
+    {
+      "q": "Welches Land hat die meisten Welterbstätten (UNESCO World Heritage Sites)?",
+      "a": [
+        "China",
+        "Spanien",
+        "Italien",
+        "Deutschland"
+      ],
+      "r": 2,
+      "cat": "Kultur & Kunst",
+      "type": "mc",
+      "fact": "Italien führt die Liste der UNESCO-Weltkulturerbestätten mit 58 Stätten an (Stand 2024), gefolgt von China mit 57 und Deutschland mit 52. Italien beherbergt darunter Ikonen wie das Kolosseum, Pompeji, Venedig und die Cinque Terre. Damit hat Italien mehr Welterbestätten als jedes andere Land der Erde."
+    },
+    {
+      "q": "Was ist der 'Dunning-Kruger-Effekt' (Dunning-Kruger Effect)?",
+      "a": [
+        "Menschen überschätzen ihre Fähigkeiten in Bereichen, in denen sie wenig Wissen haben",
+        "Experten kommunizieren ihr Wissen schlechter als Laien",
+        "Menschen lernen schneller unter Druck",
+        "Gruppen treffen schlechtere Entscheidungen als Einzelpersonen"
+      ],
+      "r": 0,
+      "cat": "Psychologie",
+      "type": "mc",
+      "fact": "Der Dunning-Kruger-Effekt (1999) beschreibt, dass Menschen mit wenig Kompetenz in einem Bereich ihre eigenen Fähigkeiten überschätzen – weil ihnen das Wissen fehlt, ihre eigene Unwissenheit zu erkennen. Umgekehrt neigen Experten dazu, sich zu unterschätzen. Die Studie wurde mit dem Ig-Nobelpreis ausgezeichnet."
+    },
+    {
+      "q": "In welchem Sport wird um den 'Stanley Cup' gespielt?",
+      "a": [
+        "Basketball",
+        "Baseball",
+        "Eishockey (Ice Hockey)",
+        "American Football"
+      ],
+      "r": 2,
+      "cat": "Sport",
+      "type": "mc",
+      "fact": "Der Stanley Cup ist die älteste professionelle Sporttrophäe Nordamerikas und wird seit 1893 im Eishockey vergeben. Einzigartig: Jeder Spieler des Siegerteams darf den Cup für einen Tag mit nach Hause nehmen. Manche Spieler haben daraus gegessen, ihn in Seen geworfen oder sogar vergessen – er hat eine eigene Begleitperson."
+    },
+    {
+      "q": "Nenne das chemische Element mit dem Symbol 'Au'.",
+      "cat": "Wissenschaft",
+      "type": "open",
+      "answer": "Gold",
+      "fact": "Das Symbol 'Au' kommt vom lateinischen Wort 'Aurum' für Gold. Gold ist eines der wenigen Metalle, das in der Natur gediegen – also in reiner Form – vorkommt. Es ist so dehnbar, dass man aus einem Gramm Gold einen Draht von 3 km Länge ziehen könnte. Alles bisher abgebaute Gold der Welt würde einen Würfel von etwa 22 Metern Kantenlänge füllen."
+    },
+    {
+      "q": "Welches ist das einzige Säugetier, das wirklich fliegen kann?",
+      "a": [
+        "Flughörnchen (Flying Squirrel)",
+        "Fledermaus (Bat)",
+        "Flugbeutler (Sugar Glider)",
+        "Fliegender Fuchs (Flying Fox)"
+      ],
+      "r": 1,
+      "cat": "Tiere & Natur",
+      "type": "mc",
+      "fact": "Fledermäuse sind die einzigen Säugetiere mit echtem aktiven Flug – alle anderen 'fliegenden' Säugetiere wie Flughörnchen oder Flugbeutler gleiten nur. Weltweit gibt es über 1.400 Fledermausarten – das ist etwa ein Fünftel aller Säugetierarten. Fledermäuse navigieren per Echolot (Echolocation) und können im Dunkeln Insekten fangen."
+    },
+    {
+      "q": "Bei welchen Olympischen Spielen (Olympic Games) wurde zum ersten Mal ein Marathonlauf ausgetragen?",
+      "a": [
+        "Paris 1900",
+        "London 1908",
+        "Athen 1896",
+        "St. Louis 1904"
+      ],
+      "r": 2,
+      "cat": "Sport",
+      "type": "mc",
+      "fact": "Der erste olympische Marathon fand 1896 in Athen statt – als Hommage an den legendären griechischen Boten Pheidippides, der nach der Schlacht von Marathon nach Athen gelaufen sein soll. Den ersten Olympischen Marathon gewann der Grieche Spyridon Louis. Die standardisierte Distanz von 42,195 km wurde erst 1921 festgelegt."
+    },
+    {
+      "q": "Nenne das Phänomen, bei dem warmes Oberflächenwasser im Pazifik die globalen Wettermuster beeinflusst.",
+      "cat": "Wissenschaft",
+      "type": "open",
+      "answer": "El Niño",
+      "fact": "El Niño ist eine periodische Erwärmung des Pazifischen Ozeans, die alle 2–7 Jahre auftritt und das Wetter weltweit beeinflusst – von Dürren in Australien bis zu Überschwemmungen in Südamerika. Das Gegenstück heißt La Niña. Peruanische Fischer nannten das Phänomen 'El Niño' (das Christkind), weil es oft um Weihnachten auftrat."
+    }
+  ]
+}
