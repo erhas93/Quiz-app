@@ -1,0 +1,177 @@
+{
+  "name": "Allgemeinwissen V",
+  "emoji": "🧩",
+  "questions": [
+    {
+      "q": "Welches Land hat die meisten Seen (Lakes) der Welt?",
+      "a": [
+        "Russland",
+        "Finnland",
+        "Kanada",
+        "Schweden"
+      ],
+      "r": 2,
+      "cat": "Geografie",
+      "type": "mc",
+      "fact": "Kanada beherbergt etwa 60% aller Seen der Welt – rund 879.000 Seen mit einer Fläche über 0,1 km². Das liegt an der Eiszeit, die das Land mit Gletschern überzog und beim Schmelzen unzählige Vertiefungen hinterließ. Zusammen enthalten Kanadas Seen etwa 20% des weltweiten Süßwassers."
+    },
+    {
+      "q": "Was versteht man unter dem 'Placebo-Effekt' (Placebo Effect)?",
+      "a": [
+        "Eine Nebenwirkung, die nur bei starken Medikamenten auftritt",
+        "Die Verbesserung eines Zustands allein durch die Erwartung einer Behandlung",
+        "Die Gewöhnung des Körpers an ein Medikament über Zeit",
+        "Ein Messverfahren zur Bestimmung von Medikamentendosen"
+      ],
+      "r": 1,
+      "cat": "Psychologie",
+      "type": "mc",
+      "fact": "Beim Placebo-Effekt verbessert sich der Zustand eines Patienten, obwohl er nur ein Scheinmedikament erhält. Erstaunlich: Selbst wenn Patienten wissen, dass sie ein Placebo nehmen, tritt der Effekt oft noch auf. Das Gehirn schüttet dabei echte Endorphine aus – der Effekt ist also physiologisch real."
+    },
+    {
+      "q": "Wie heißt das höchste Gebäude (Tallest Building) der Welt?",
+      "a": [
+        "Shanghai Tower",
+        "Abraj Al-Bait Tower",
+        "Ping An Finance Centre",
+        "Burj Khalifa"
+      ],
+      "r": 3,
+      "cat": "Architektur",
+      "type": "mc",
+      "fact": "Der Burj Khalifa in Dubai ist mit 828 Metern das höchste Gebäude der Welt. Er hat 163 Stockwerke und wurde 2010 eröffnet. Interessant: Auf der Spitze des Burj Khalifa ist es jeden Tag etwa 45 Minuten länger hell als am Fuß – weil die Sonne dort später untergeht. Muslime auf den oberen Etagen müssen daher ihr Fastenbrechen später abhalten."
+    },
+    {
+      "q": "In welchem Jahr wurde das erste iPhone (iPhone) von Apple vorgestellt?",
+      "answer": 2007,
+      "cat": "Technologie",
+      "type": "estimate",
+      "fact": "Steve Jobs stellte das erste iPhone am 9. Januar 2007 auf der Macworld Conference vor – und bezeichnete es als 'revolutionäres Produkt, das alles verändert'. Das originale iPhone hatte weder App Store noch 3G. Heute werden weltweit jährlich über 220 Millionen iPhones verkauft."
+    },
+    {
+      "q": "Was ist 'Biomimikry' (Biomimicry)?",
+      "a": [
+        "Die Herstellung von künstlichem Gewebe im Labor",
+        "Eine Methode zur genetischen Veränderung von Organismen",
+        "Das Nachahmen von Naturprinzipien in Design und Technik",
+        "Das Klonen von Tieren für wissenschaftliche Zwecke"
+      ],
+      "r": 2,
+      "cat": "Wissenschaft",
+      "type": "mc",
+      "fact": "Biomimikry bedeutet, Lösungen der Natur auf technische Probleme zu übertragen. Bekannte Beispiele: Der Hochgeschwindigkeitszug Shinkansen wurde nach dem Schnabel des Eisvogels geformt, um Druckwellen in Tunneln zu reduzieren. Klettverschlüsse (Velcro) wurden von Klettfrüchten inspiriert. Die Natur entwickelte Millionen Jahre lang optimale Lösungen."
+    },
+    {
+      "q": "Welches Tier schläft durchschnittlich am längsten pro Tag?",
+      "a": [
+        "Faultier (Sloth)",
+        "Hauskatze",
+        "Braunbär (Brown Bear)",
+        "Koala"
+      ],
+      "r": 3,
+      "cat": "Tiere & Natur",
+      "type": "mc",
+      "fact": "Koalas schlafen bis zu 22 Stunden täglich – mehr als jedes andere Säugetier. Der Grund: Eukalyptusblätter, ihre einzige Nahrung, sind kalorienarm und enthalten Giftstoffe. Die Verdauung dieser Blätter kostet den Koala so viel Energie, dass er fast den ganzen Tag schlafen muss, um diese aufzubringen."
+    },
+    {
+      "q": "Welcher Architekt entwarf das Guggenheim Museum (Guggenheim Museum) in Bilbao?",
+      "a": [
+        "Frank Gehry",
+        "Renzo Piano",
+        "Zaha Hadid",
+        "Norman Foster"
+      ],
+      "r": 0,
+      "cat": "Architektur",
+      "type": "mc",
+      "fact": "Frank Gehry entwarf das 1997 eröffnete Guggenheim Museum Bilbao mit seiner charakteristischen Titanverkleidung. Das Gebäude gilt als eines der bedeutendsten Bauwerke des 20. Jahrhunderts und löste den sogenannten 'Bilbao-Effekt' aus: Die Stadt erlebte durch das Museum einen wirtschaftlichen Aufschwung, der ganze Stadtteile revitalisierte."
+    },
+    {
+      "q": "Wie viele Muskeln hat der menschliche Körper ungefähr?",
+      "answer": 640,
+      "cat": "Wissenschaft",
+      "type": "estimate",
+      "fact": "Der menschliche Körper hat etwa 640 Skelettmuskeln. Dazu kommen noch glatte Muskeln in Organen und der Herzmuskel, was die Gesamtzahl auf über 800 erhöht. Der kleinste Muskel ist der Steigbügelmuskel im Ohr (1,27 mm), der stärkste – bezogen auf sein Gewicht – der Kaumuskel (Masseter)."
+    },
+    {
+      "q": "Was ist der 'Halo-Effekt' (Halo Effect) in der Psychologie?",
+      "a": [
+        "Die Tendenz, freundlichen Menschen mehr zu vertrauen",
+        "Der Effekt, dass Lob die Leistung dauerhaft steigert",
+        "Die Neigung, von einer positiven Eigenschaft auf weitere positive Eigenschaften zu schließen",
+        "Die Wahrnehmung, dass attraktive Menschen glücklicher sind"
+      ],
+      "r": 2,
+      "cat": "Psychologie",
+      "type": "mc",
+      "fact": "Der Halo-Effekt wurde 1920 vom Psychologen Edward Thorndike beschrieben. Wenn wir eine Person in einer Eigenschaft (z.B. Aussehen) positiv wahrnehmen, übertragen wir das unbewusst auf andere Eigenschaften (Intelligenz, Kompetenz). Studien zeigen: Attraktivere Angeklagte erhalten vor Gericht im Schnitt mildere Urteile."
+    },
+    {
+      "q": "Welches Musikinstrument hat die meisten Saiten?",
+      "a": [
+        "Konzertharfe (Concert Harp)",
+        "Konzertflügel (Concert Grand Piano)",
+        "Sitar",
+        "Kontrabass (Double Bass)"
+      ],
+      "r": 1,
+      "cat": "Musik",
+      "type": "mc",
+      "fact": "Ein Konzertflügel hat 230 bis 243 Saiten – obwohl er nur 88 Tasten hat, weil die meisten Töne von zwei oder drei Saiten gleichzeitig erzeugt werden. Die tiefsten Töne haben nur eine Saite, die mittleren zwei, die höchsten drei. Die gesamte Zugkraft aller Saiten beträgt bis zu 20 Tonnen."
+    },
+    {
+      "q": "In welchem Land wurde die Spielshow 'Who Wants to Be a Millionaire?' (Wer wird Millionär?) ursprünglich erfunden?",
+      "a": [
+        "Großbritannien",
+        "USA",
+        "Australien",
+        "Deutschland"
+      ],
+      "r": 0,
+      "cat": "Kultur",
+      "type": "mc",
+      "fact": "Wer wird Millionär? wurde 1998 in Großbritannien entwickelt und erstmals ausgestrahlt. Das Format wurde in über 100 Ländern adaptiert. In Deutschland läuft die Show seit 1999 mit Günther Jauch. Die erste Millionengewinnerin in Deutschland war 1999 eine Lehrerin – sie beantwortete die Frage nach der Zusammensetzung von Messing."
+    },
+    {
+      "q": "Nenne das Land, in dem die Tinte des Tintenfisches (Squid Ink) traditionell als Lebensmittelfarbe in der Küche verwendet wird.",
+      "cat": "Essen & Kulinarik",
+      "type": "open",
+      "answer": "Spanien",
+      "fact": "In Spanien – besonders in der valencianischen und katalanischen Küche – ist schwarzes Tintenfischtinten-Risotto (Arroz Negro) oder schwarze Pasta ein Klassiker. Die Tinte des Tintenfisches enthält Melanin und verleiht Gerichten eine tiefschwarze Farbe und einen leicht salzigen Meeresgeschmack. Sie ist völlig ungiftig und aromatisch."
+    },
+    {
+      "q": "Wie nennt man den Effekt, bei dem Menschen in Gruppen weniger Verantwortung übernehmen als alleine?",
+      "a": [
+        "Konformitätseffekt",
+        "Soziales Faulenzen (Social Loafing)",
+        "Gruppendenken (Groupthink)",
+        "Diffusion of Responsibility"
+      ],
+      "r": 3,
+      "cat": "Psychologie",
+      "type": "mc",
+      "fact": "Die Verantwortungsdiffusion (Diffusion of Responsibility) erklärt, warum in Notfallsituationen mit vielen Zeugen oft niemand hilft – jeder denkt, ein anderer wird eingreifen. Das Kitty-Genovese-Experiment von 1964 machte diesen Effekt bekannt. Der Rat lautet: Sprich in Notfällen gezielt eine bestimmte Person an, nicht die Gruppe."
+    },
+    {
+      "q": "Welcher Film gewann 2020 als erster nicht-englischsprachiger Film den Oscar für den besten Film (Best Picture)?",
+      "a": [
+        "Parasite (기생충)",
+        "Roma",
+        "Das Leben ist schön (La vita è bella)",
+        "Amour"
+      ],
+      "r": 0,
+      "cat": "Kultur",
+      "type": "mc",
+      "fact": "Parasite (기생충) des südkoreanischen Regisseurs Bong Joon-ho gewann 2020 als erster fremdsprachiger Film den Oscar für den besten Film – und räumte insgesamt vier Oscars ab. Bong Joon-ho sagte in seiner Rede: 'Wenn ihr die Untertitel-Barriere überwindet, könnt ihr viele erstaunlichere Filme entdecken.'"
+    },
+    {
+      "q": "Nenne die Hauptstadt der australischen Bundesstaats-Hauptstadt New South Wales.",
+      "cat": "Geografie",
+      "type": "open",
+      "answer": "Sydney",
+      "fact": "Sydney ist mit über 5 Millionen Einwohnern die größte Stadt Australiens und Hauptstadt von New South Wales. Das Opernhaus (Sydney Opera House) wurde 1973 eröffnet und ist seit 2007 UNESCO-Weltkulturerbe. Die Baukosten explodierten von ursprünglich 7 Millionen auf 102 Millionen australische Dollar."
+    }
+  ]
+}
