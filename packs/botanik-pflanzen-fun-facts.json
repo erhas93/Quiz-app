@@ -1,0 +1,177 @@
+{
+  "name": "Botanik & Pflanzen-Fun-Facts",
+  "emoji": "🌿",
+  "questions": [
+    {
+      "q": "Welche Pflanze wächst am schnellsten und kann bis zu 91 cm pro Tag zulegen?",
+      "a": [
+        "Riesenmammutbaum (Giant Sequoia)",
+        "Bambus (Bamboo)",
+        "Wasserlinse (Duckweed)",
+        "Sonnenblume (Sunflower)"
+      ],
+      "r": 1,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Bestimmte Bambusarten wachsen bis zu 91 cm pro Tag – man kann ihnen beim Wachsen regelrecht zusehen. Bambus ist technisch gesehen ein Gras, kein Baum. Er ist so robust, dass er nach dem Atombombenabwurf auf Hiroshima 1945 als erste Pflanze wieder austrieb – nur 1,5 km vom Epizentrum entfernt."
+    },
+    {
+      "q": "Was ist die größte Blume (Largest Flower) der Welt?",
+      "a": [
+        "Titanwurz (Corpse Flower)",
+        "Riesenseerose (Victoria amazonica)",
+        "Königin der Nacht (Epiphyllum oxypetalum)",
+        "Rafflesia arnoldii"
+      ],
+      "r": 3,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Rafflesia arnoldii hat die größten Einzelblüten der Welt – bis zu 105 cm Durchmesser und 11 kg Gewicht. Sie hat keine Blätter, Stängel oder Wurzeln und lebt parasitär in anderen Pflanzen. Um Insekten zur Bestäubung anzulocken, riecht sie wie verwesende Leichen – daher wird sie auch 'Leichenpflanze' genannt."
+    },
+    {
+      "q": "Wie viele Jahre kann ein Baobab-Baum (Baobab Tree) alt werden?",
+      "answer": 3000,
+      "cat": "Botanik",
+      "type": "estimate",
+      "fact": "Afrikanische Baobab-Bäume können über 3.000 Jahre alt werden – sie gehören zu den ältesten lebenden Organismen der Erde. Ihr Stamm kann so viel Wasser speichern, dass einige Exemplare bis zu 120.000 Liter fassen. In Südafrika gibt es einen Baobab, der so riesig ist, dass Menschen in seinem Hohlstamm eine Bar eingerichtet haben."
+    },
+    {
+      "q": "Was ist Phototropismus (Phototropism) bei Pflanzen?",
+      "a": [
+        "Das Wachstum von Pflanzen in Richtung einer Lichtquelle",
+        "Die Fähigkeit von Pflanzen, Licht in Energie umzuwandeln",
+        "Die Reaktion von Pflanzen auf Berührung",
+        "Das Abwerfen von Blättern bei Lichtmangel"
+      ],
+      "r": 0,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Phototropismus ist das Wachstum von Pflanzenteilen in Richtung des Lichts. Er wird durch das Hormon Auxin gesteuert: Auf der schattigen Seite sammelt sich mehr Auxin, die Zellen wachsen schneller – die Pflanze biegt sich zur Lichtquelle. Charles Darwin und sein Sohn Francis entdeckten diesen Mechanismus 1880."
+    },
+    {
+      "q": "Welche Pflanze kann unter Wasser 'schreien' – also Geräusche produzieren?",
+      "a": [
+        "Keine – Pflanzen erzeugen keine Geräusche",
+        "Algen bei Fotosynthese",
+        "Bäume geben Ultraschallsignale bei Trockenstress ab",
+        "Seegras erzeugt Knistergeräusche bei Wachstum"
+      ],
+      "r": 2,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Forscher der Tel Aviv University entdeckten 2023, dass Pflanzen tatsächlich Ultraschallgeräusche erzeugen – besonders bei Trockenstress oder Verletzung. Diese Laute liegen im Bereich von 20–100 kHz, also außerhalb des menschlichen Gehörbereichs. Manche Insekten und Tiere könnten diese Signale wahrnehmen."
+    },
+    {
+      "q": "Welcher Teil der Pflanze ist ein Erdbeere (Strawberry) botanisch gesehen wirklich?",
+      "a": [
+        "Eine Beere (Berry)",
+        "Eine Steinfrucht (Drupe)",
+        "Eine Sammelsteinfrucht (Aggregate Drupe)",
+        "Eine Scheinfrucht (Accessory Fruit)"
+      ],
+      "r": 3,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Botanisch gesehen ist eine Erdbeere keine echte Beere – sie ist eine Scheinfrucht. Was wir essen, ist der fleischig angeschwollene Blütenboden. Die kleinen gelblichen Punkte auf der Oberfläche sind die eigentlichen Früchte. Echte Beeren sind dagegen Bananen, Wassermelonen und Avocados – denn botanisch zählen auch sie als Beeren."
+    },
+    {
+      "q": "Wie alt wurde 'Methuselah', die älteste bekannte lebende Einzelpflanze der Welt (eine Borstenkiefer)?",
+      "answer": 4855,
+      "cat": "Botanik",
+      "type": "estimate",
+      "fact": "Die Borstenkiefer 'Methuselah' (Bristlecone Pine) in den White Mountains, Kalifornien, ist über 4.855 Jahre alt und damit der älteste bekannte einzelne Baum der Welt. Sein genauer Standort wird geheim gehalten, um Vandalismus zu verhindern. Borstenkiefern wachsen in unwirtlichen Hochlagen – Kälte und Trockenheit verlangsamen ihren Stoffwechsel und machen sie so langlebig."
+    },
+    {
+      "q": "Was ist eine 'Fleischfressende Pflanze' (Carnivorous Plant) und wie verdaut die Venusfliegenfalle (Venus Flytrap) ihre Beute?",
+      "a": [
+        "Mit Verdauungsenzymen die im geschlossenen Blatt produziert werden",
+        "Mit starken Giftstoffen die sofort töten, dann aufsaugen",
+        "Indem sie die Beute in die Erde drückt wo Bakterien verdauen",
+        "Durch Eintrocknen der Beute mit Hitze aus Sonnenlicht"
+      ],
+      "r": 0,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Die Venusfliegenfalle schließt ihre Blätter in ca. 100 Millisekunden – eine der schnellsten Bewegungen im Pflanzenreich. Dann produziert sie Verdauungsenzyme und Magensäure ähnlich wie ein Magen. Das Verdauen einer Fliege dauert 5–12 Tage. Jedes Blatt kann sich nur 3–5 Mal schließen, bevor es abstirbt."
+    },
+    {
+      "q": "Welche Substanz macht die Rinde der Korkeiche (Cork Oak) zu einem der besten natürlichen Isoliermaterialien?",
+      "a": [
+        "Zellulose (Cellulose)",
+        "Suberin",
+        "Lignin",
+        "Tannin"
+      ],
+      "r": 1,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Suberin ist ein wasserabweisendes Polymer in der Korkrinde, das für ihre einzigartigen Eigenschaften verantwortlich ist: leicht, elastisch, feuerfest und luft- sowie wasserdicht. Portugal produziert etwa 50% des weltweiten Korks. Korkeichen können geerntet werden ohne zu sterben – alle 9 Jahre wird die Rinde abgeschält, sie wächst vollständig nach."
+    },
+    {
+      "q": "Nenne die Pflanze, deren Blätter sich bei Berührung innerhalb von Sekunden zusammenfalten.",
+      "cat": "Botanik",
+      "type": "open",
+      "answer": "Mimose",
+      "fact": "Die Mimose (Mimosa pudica) faltet ihre Blätter bei Berührung, Wind oder Erschütterung innerhalb von einer Sekunde zusammen – durch einen hydraulischen Mechanismus: Wasser fließt schnell aus den Blattzellen ab, der Druck sinkt, die Blätter kollabieren. Man nimmt an, dass dies Fressfeinde abschreckt oder die Pflanze vor Schäden schützt."
+    },
+    {
+      "q": "Was ist die Funktion der Mykorrhiza (Mycorrhiza) für Pflanzen?",
+      "a": [
+        "Eine Schutzschicht aus Pilzen gegen Insektenfraß",
+        "Ein Netz aus Wurzelzellen das Giftstoffe im Boden neutralisiert",
+        "Ein Pilzgeflecht, das Pflanzen bei der Wasseraufnahme und Nährstoffversorgung hilft",
+        "Eine Symbiose mit Bakterien die Sauerstoff produzieren"
+      ],
+      "r": 2,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Mykorrhiza ist eine Symbiose zwischen Pilzen und Pflanzenwurzeln: Der Pilz vergrößert die effektive Wurzeloberfläche um das bis zu 1.000-fache und versorgt die Pflanze mit Wasser und Mineralstoffen. Im Gegenzug erhält der Pilz Zucker. Über 90% aller Landpflanzen leben in dieser Symbiose. Das sogenannte 'Wood Wide Web' bezeichnet das unterirdische Pilznetz, über das Bäume sogar Nährstoffe austauschen."
+    },
+    {
+      "q": "Welche Pflanze produziert das stärkste natürliche Nervengift (Natural Neurotoxin)?",
+      "a": [
+        "Oleander (Nerium oleander)",
+        "Tollkirsche (Atropa belladonna)",
+        "Rizinus (Ricinus communis)",
+        "Gefleckter Schierling (Conium maculatum)"
+      ],
+      "r": 3,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Gefleckter Schierling enthält das Alkaloid Coniin – eines der stärksten pflanzlichen Nervengifte. Es lähmt die Muskeln von außen nach innen, bis schließlich die Atemmuskulatur versagt. Der Philosoph Sokrates wurde 399 v. Chr. mit Schierling hingerichtet. Schon 6–8 frische Blätter können für einen Menschen tödlich sein."
+    },
+    {
+      "q": "Was bedeutet es, wenn eine Pflanze 'zweihäusig' (Dioecious) ist?",
+      "a": [
+        "Männliche und weibliche Blüten befinden sich auf getrennten Pflanzen",
+        "Die Pflanze wächst nur in zwei verschiedenen Klimazonen",
+        "Die Pflanze kann sich sowohl durch Samen als auch durch Ableger vermehren",
+        "Die Pflanze blüht genau zweimal im Jahr"
+      ],
+      "r": 0,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Zweihäusige Pflanzen haben männliche und weibliche Blüten auf verschiedenen Exemplaren – wie bei Tieren unterschiedliche Geschlechter. Bekannte Beispiele: Hanf, Brennnessel, Weide und Ginkgo. Beim Ginkgo trägt nur der weibliche Baum Früchte, deren Außenhülle beim Zerfall einen unangenehmen Geruch nach Buttersäure verbreitet."
+    },
+    {
+      "q": "Nenne die Pflanzenfamilie, zu der sowohl Tomaten als auch Kartoffeln und Tabak gehören.",
+      "cat": "Botanik",
+      "type": "open",
+      "answer": "Nachtschattengewächse",
+      "fact": "Die Nachtschattengewächse (Solanaceae) umfassen über 2.700 Arten und gehören zu den wirtschaftlich wichtigsten Pflanzenfamilien. Neben Tomaten, Kartoffeln und Tabak gehören auch Paprika, Auberginen, Chili und die giftige Tollkirsche dazu. Viele Arten enthalten Alkaloide – teils giftig (Solanin in grünen Kartoffeln), teils medizinisch wertvoll."
+    },
+    {
+      "q": "Welcher Baum hat die größte natürliche Einzelkrone (Crown Spread) der Welt?",
+      "a": [
+        "Affenbrotbaum (Baobab)",
+        "Küstenredwood (Coast Redwood)",
+        "Großer Banyanbaum (Great Banyan Tree)",
+        "Zitterpappel-Kolonie Pando (Pando Quaking Aspen)"
+      ],
+      "r": 2,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Der 'Great Banyan Tree' im Acharya Jagadish Chandra Bose Botanical Garden in Kolkata, Indien, hat eine Kronenfläche von über 1,8 Hektar – mehr als zwei Fußballfelder. Obwohl er wie ein Wald aussieht, ist es ein einziger Baum: Banyanfeigen bilden Luftwurzeln, die zu neuen Stämmen werden. Der Baum ist etwa 250 Jahre alt."
+    }
+  ]
+}
