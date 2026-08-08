@@ -206,7 +206,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
   <button id="fs-btn" onclick="Q.toggleFullscreen()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text2)">⛶</button>
   <button onclick="Q.fullReset()" style="background:var(--bg3);border:1px solid rgba(231,111,81,.35);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--c5)">Reset</button>
   <button onclick="DBG.toggle()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text3)">🐛</button>
-  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.9.0</span>
+  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.9.1</span>
 </div>
 <!-- DEBUG PANEL -->
 <div id="dbg-panel" style="display:none;position:fixed;top:36px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-left:none;border-top:none;border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
@@ -450,6 +450,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 
 <script type="module">
+
 
 
 
@@ -983,7 +984,7 @@ function renderMod(){
     const showSp=(ph==='shown'||ph==='revealed')&&(s1t!=null||s2t!=null);
     spEl.style.display=showSp?'':'none';
     if(showSp){
-      const fmt=ms=>ms!=null?(ms/1000).toFixed(2)+'s':'--';
+      const fmt=ms=>ms!=null?(()=>{const s=ms/1000;const m=Math.floor(s/60);const sec=(s%60).toFixed(1);return m+':'+String(sec).padStart(4,'0');})():'–';
       const f1=s1t!=null&&s2t!=null&&s1t<s2t, f2=s1t!=null&&s2t!=null&&s2t<s1t;
       el('mg-speed-content').innerHTML=
         `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">`
@@ -1259,8 +1260,8 @@ function renderResults(){
 
     if(hasTime){
       rsEl.style.display='';
-      const fmt=ms=>ms!=null?(ms/1000).toFixed(2)+'s':'–';
-      const fmtTotal=ms=>ms>0?(ms/1000).toFixed(1)+'s':'–';
+      const fmt=ms=>ms!=null?(()=>{const s=ms/1000;const m=Math.floor(s/60);const sec=(s%60).toFixed(1);return m+':'+String(sec).padStart(4,'0');})():'–';
+      const fmtTotal=ms=>ms>0?(()=>{const s=Math.round(ms/1000);const m=Math.floor(s/60);const sec=s%60;return m+':'+String(sec).padStart(2,'0');})():'–';
       const totalFaster=s1Total>0&&s2Total>0?(s1Total<s2Total?n1:n2):null;
 
       let tbl='';
@@ -1329,6 +1330,7 @@ function renderResults(){
 }
 
 setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
+
 
 
 
