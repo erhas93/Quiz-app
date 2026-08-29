@@ -1,0 +1,177 @@
+{
+  "name": "Verkehr & Transport",
+  "emoji": "🚆",
+  "questions": [
+    {
+      "q": "Wie nennt man den Abstand zwischen den beiden Schienen eines Eisenbahngleises?",
+      "a": [
+        "Spurbreite",
+        "Gleisabstand",
+        "Schienenmaß",
+        "Trassierung"
+      ],
+      "r": 0,
+      "cat": "Eisenbahn",
+      "type": "mc",
+      "fact": "Die Spurweite (auch Spurbreite) bezeichnet den lichten Abstand zwischen den Innenseiten der Schienenköpfe. Die internationale Normalspur beträgt 1.435 mm – ein Maß, das sich aus dem englischen Kutschenmaß des 19. Jahrhunderts ableitet. In Deutschland, Europa und Nordamerika ist sie Standard; Länder wie Russland oder Spanien nutzen abweichende Spurweiten."
+    },
+    {
+      "q": "Welcher Flughafen (Airport) ist nach Passagierzahlen der verkehrsreichste der Welt?",
+      "a": [
+        "London Heathrow (LHR)",
+        "Dubai International (DXB)",
+        "Hartsfield-Jackson Atlanta (ATL)",
+        "Tokio Haneda (HND)"
+      ],
+      "r": 2,
+      "cat": "Luftverkehr",
+      "type": "mc",
+      "fact": "Der Hartsfield-Jackson Atlanta International Airport ist seit Jahrzehnten der meistfrequentierte Flughafen der Welt – mit über 100 Millionen Passagieren pro Jahr. Er ist das größte Drehkreuz (Hub) von Delta Air Lines. Der Flughafen hat ein unterirdisches Bahnsystem, das die Terminals verbindet, da die Wege sonst zu lang wären."
+    },
+    {
+      "q": "Was bedeutet die Abkürzung ÖPNV?",
+      "a": [
+        "Österreichischer Personen- und Nahverkehr",
+        "Öffentlicher Personen-Nah-Verkehr",
+        "Öffentlicher Personennahverkehrsverbund",
+        "Organisierter Personen- und Nahverkehr"
+      ],
+      "r": 1,
+      "cat": "ÖPNV",
+      "type": "mc",
+      "fact": "ÖPNV steht für Öffentlicher Personennahverkehr und umfasst alle öffentlichen Verkehrsmittel im Nahbereich: Busse, Straßenbahnen, U-Bahnen, S-Bahnen und Regionalzüge. Er wird abgegrenzt vom ÖSPV (Straße) und dem Schienenpersonennahverkehr (SPNV). In Deutschland nutzen täglich über 30 Millionen Menschen den ÖPNV."
+    },
+    {
+      "q": "In welchem Jahr nahm die erste U-Bahn (Underground Railway) der Welt in London ihren Betrieb auf?",
+      "answer": 1863,
+      "cat": "ÖPNV",
+      "type": "estimate",
+      "fact": "Die Metropolitan Railway in London eröffnete am 10. Januar 1863 als erste U-Bahn der Welt – zunächst mit Dampflokomotiven. Die Strecke verband Paddington mit Farringdon. Die Passagiere mussten damals Rauch und Ruß ertragen, weswegen die Tunnel anfangs bewusst mit Lüftungsschächten versehen wurden. Heute ist die London Underground ('The Tube') das drittälteste U-Bahnnetz der Welt."
+    },
+    {
+      "q": "Welches Land betreibt das längste Hochgeschwindigkeitsbahnnetz (High-Speed Rail Network) der Welt?",
+      "a": [
+        "Japan",
+        "Deutschland",
+        "Frankreich",
+        "China"
+      ],
+      "r": 3,
+      "cat": "Eisenbahn",
+      "type": "mc",
+      "fact": "China betreibt mit über 45.000 km das bei weitem längste Hochgeschwindigkeitsbahnnetz der Welt – mehr als alle anderen Länder zusammen. Zum Vergleich: Japan hat etwa 3.400 km, Deutschland etwa 1.600 km. China hat sein Netz erst 2007 begonnen und in weniger als 20 Jahren zur weltweiten Dominanz ausgebaut."
+    },
+    {
+      "q": "Was versteht man unter dem Begriff 'Intermodalität' im Verkehrswesen?",
+      "a": [
+        "Die Verknüpfung verschiedener Verkehrsmittel zu einer durchgehenden Reisekette",
+        "Die Nutzung ausschließlich umweltfreundlicher Verkehrsmittel",
+        "Den internationalen Austausch von Verkehrsdaten zwischen Ländern",
+        "Die Steuerung des Verkehrsflusses durch digitale Systeme"
+      ],
+      "r": 0,
+      "cat": "Verkehr Allgemein",
+      "type": "mc",
+      "fact": "Intermodalität bezeichnet die Nutzung verschiedener Verkehrsträger (z.B. Fahrrad + Zug + Bus) auf einer einzigen Reise, wobei die Übergänge möglichst nahtlos gestaltet werden. Ziel ist es, die Stärken jedes Verkehrsmittels zu kombinieren. Klassisches Beispiel: Fahrrad zur S-Bahn, S-Bahn zum Fernbahnhof, ICE ans Ziel."
+    },
+    {
+      "q": "Wie lautet der internationale IATA-Code des Flughafens München?",
+      "a": [
+        "FRA",
+        "BER",
+        "MUC",
+        "MUN"
+      ],
+      "r": 2,
+      "cat": "Luftverkehr",
+      "type": "mc",
+      "fact": "Der IATA-Code des Flughafens München Franz Josef Strauß lautet MUC. Die International Air Transport Association (IATA) vergibt dreistellige Codes für alle kommerziellen Flughäfen weltweit. FRA steht für Frankfurt, BER für Berlin Brandenburg. IATA-Codes sind nicht immer intuitiv: London Heathrow ist LHR, weil 'H' für Heathrow und 'LR' für London Region steht."
+    },
+    {
+      "q": "Wie viele Kilometer beträgt die Länge des Gotthard-Basistunnels (Gotthard Base Tunnel), dem längsten Eisenbahntunnel der Welt?",
+      "answer": 57,
+      "cat": "Eisenbahn",
+      "type": "estimate",
+      "fact": "Der Gotthard-Basistunnel in der Schweiz ist mit 57,09 km der längste Eisenbahntunnel der Welt. Er wurde 2016 nach 17 Jahren Bauzeit eröffnet und kostete rund 12 Milliarden Franken. Züge durchqueren die Alpen darin in nur 20 Minuten – bisher dauerte die Fahrt über den Gotthard-Pass deutlich länger und war anfälliger für Witterungseinflüsse."
+    },
+    {
+      "q": "Was ist eine 'Taktung' im ÖPNV?",
+      "a": [
+        "Die Lautstärke der Durchsagen in Bussen und Bahnen",
+        "Das regelmäßige Intervall, in dem ein Verkehrsmittel einen Haltepunkt anfährt",
+        "Die Geschwindigkeit, mit der Türen in U-Bahnen öffnen und schließen",
+        "Das System zur Abrechnung von Fahrtkosten"
+      ],
+      "r": 1,
+      "cat": "ÖPNV",
+      "type": "mc",
+      "fact": "Die Taktung beschreibt, wie häufig ein Bus, eine Bahn oder eine U-Bahn einen bestimmten Haltepunkt anfährt – z.B. alle 10 Minuten (10-Minuten-Takt). Ein dichter Takt gilt als Qualitätsmerkmal des ÖPNV: Fahrgäste müssen keine langen Wartezeiten einplanen und können spontan fahren. Viele Verkehrsverbünde streben einen Takt von 15 Minuten oder besser an."
+    },
+    {
+      "q": "Wie heißt das internationale Abkommen, das die Rechte und Pflichten im Zivilluftfahrtrecht regelt und 1944 unterzeichnet wurde?",
+      "a": [
+        "Warschauer Abkommen",
+        "Montrealer Übereinkommen",
+        "Kyoto-Protokoll Luftfahrt",
+        "Chicagoer Abkommen (Chicago Convention)"
+      ],
+      "r": 3,
+      "cat": "Luftverkehr",
+      "type": "mc",
+      "fact": "Das Chicagoer Abkommen von 1944 (Convention on International Civil Aviation) ist das Grundgesetz der zivilen Luftfahrt. Es gründete die Internationale Zivilluftfahrtorganisation (ICAO), legte die Souveränität der Staaten über ihren Luftraum fest und schuf einheitliche Standards für Sicherheit, Navigation und Lizenzen. Heute haben 193 Staaten das Abkommen unterzeichnet."
+    },
+    {
+      "q": "Was bedeutet der Begriff 'Deadhead' in der Luftfahrt?",
+      "a": [
+        "Das Mitfliegen von Besatzungsmitgliedern als Passagier ohne Dienst",
+        "Ein Flug, der wegen technischer Probleme umgeleitet wurde",
+        "Ein Flugzeug, das ohne Passagiere an einen anderen Standort überführt wird",
+        "Eine Notlandung auf einem Ausweichflughafen"
+      ],
+      "r": 0,
+      "cat": "Luftverkehr",
+      "type": "mc",
+      "fact": "Als 'Deadhead' bezeichnet man in der Luftfahrt Besatzungsmitglieder (Piloten oder Flugbegleiter), die als Passagier mitfliegen, weil sie zu einem anderen Einsatzort gebracht werden müssen. Sie sitzen dabei oft in der Kabine, tragen keine Dienstverantwortung und werden in der Besatzungsplanung separat erfasst. Das Wort stammt ursprünglich aus dem amerikanischen Eisenbahnwesen."
+    },
+    {
+      "q": "Nenne den Fachbegriff für die Kennzeichnung von Zügen oder Bahnstrecken, bei der ein Zug die gesamte Strecke ohne Halt durchfährt.",
+      "cat": "Eisenbahn",
+      "type": "open",
+      "answer": "Direktverbindung",
+      "fact": "Eine Direktverbindung (auch Direktzug) fährt ohne Umsteigen von A nach B – der Zug hält jedoch unterwegs an anderen Bahnhöfen. Davon abzugrenzen ist der Nonstop-Zug (auch Schnellzug), der keine Zwischenhalte hat. In der Luftfahrt entspricht dies dem Direktflug vs. Nonstop-Flug – auch dort bedeutet 'direkt' nicht zwangsläufig ohne Zwischenstopp."
+    },
+    {
+      "q": "Was ist ein 'Verkehrsverbund' in Deutschland?",
+      "a": [
+        "Ein privates Unternehmen, das Busse und Bahnen betreibt",
+        "Eine staatliche Behörde zur Kontrolle des Straßenverkehrs",
+        "Ein Zusammenschluss von Automobilherstellern zur Förderung der Mobilität",
+        "Eine Organisation, die verschiedene Verkehrsunternehmen unter einem gemeinsamen Tarif und Fahrplan koordiniert"
+      ],
+      "r": 3,
+      "cat": "ÖPNV",
+      "type": "mc",
+      "fact": "Ein Verkehrsverbund (z.B. HVV Hamburg, MVV München, VRR Rhein-Ruhr) koordiniert mehrere Verkehrsunternehmen mit einheitlichem Tarif, Fahrplan und Ticket. Fahrgäste können nahtlos zwischen Bus, U-Bahn, S-Bahn und Tram wechseln, ohne extra zu zahlen. Das Verbundsystem wurde in Deutschland Ende der 1960er Jahre eingeführt – zuerst im Hamburger Verkehrsverbund (1967)."
+    },
+    {
+      "q": "Nenne den internationalen Begriff für die Sicherheitszone um einen Flughafen, in der Gebäude und Hindernisse eine bestimmte Höhe nicht überschreiten dürfen.",
+      "cat": "Luftverkehr",
+      "type": "open",
+      "answer": "Bauschutzbereich",
+      "fact": "Der Bauschutzbereich (englisch: Obstacle Limitation Surface, OLS) ist eine gesetzlich festgelegte Schutzzone rund um einen Flughafen. Gebäude, Bäume, Masten und andere Hindernisse dürfen die definierten Höhengrenzen nicht überschreiten, um die Sicherheit beim Starten und Landen zu gewährleisten. In Deutschland ist er im Luftverkehrsgesetz (LuftVG) geregelt."
+    },
+    {
+      "q": "Wie nennt man die Technik bei Hochgeschwindigkeitszügen, bei der das Fahrzeug durch Magnetfelder berührungslos über der Schiene schwebt?",
+      "a": [
+        "Pneumatische Traktionssystem (PTS)",
+        "Linearmotortechnik (LIM)",
+        "Magnetschwebetechnik (Maglev)",
+        "Hyperloop-Prinzip"
+      ],
+      "r": 2,
+      "cat": "Eisenbahn",
+      "type": "mc",
+      "fact": "Maglev (Magnetic Levitation) nutzt elektromagnetische Kräfte, um Züge berührungslos über der Fahrschiene schweben zu lassen – dadurch gibt es keinen mechanischen Verschleiß und sehr geringe Reibung. Der japanische SCMaglev hält mit 603 km/h den Geschwindigkeitsweltrekord für Schienenfahrzeuge. In Deutschland wurde der Transrapid entwickelt, der heute auf einer Strecke in Shanghai in Betrieb ist."
+    }
+  ]
+}
