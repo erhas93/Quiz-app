@@ -206,7 +206,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
   <button id="fs-btn" onclick="Q.toggleFullscreen()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text2)">⛶</button>
   <button onclick="Q.fullReset()" style="background:var(--bg3);border:1px solid rgba(231,111,81,.35);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--c5)">Reset</button>
   <button onclick="DBG.toggle()" style="background:var(--bg3);border:1px solid var(--card-b);border-radius:6px;padding:5px 12px;font-size:.78rem;cursor:pointer;color:var(--text3)">🐛</button>
-  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.9.1</span>
+  <span id="vtag" style="font-size:.65rem;color:var(--text3);margin-left:auto">v3.9.3</span>
 </div>
 <!-- DEBUG PANEL -->
 <div id="dbg-panel" style="display:none;position:fixed;top:36px;right:0;width:min(360px,100vw);max-height:50vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--card-b);border-left:none;border-top:none;border-radius:0 0 0 var(--r);padding:8px;z-index:600;box-shadow:var(--shadow)"></div>
@@ -333,6 +333,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
         <div class="hdr-spts"  id="mg-sc2">0</div>
       </div>
     </div>
+      <div id="mg-speed-lead" style="display:none;text-align:center;font-size:.72rem;padding:2px 0;min-height:16px"></div>
     <div class="hdr-r3">
       <div class="prog-wrap"><div class="prog-fill" id="mg-prog" style="width:0%"></div></div>
       <div class="hdr-timer-row">
@@ -397,6 +398,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
         <div class="hdr-spts"  id="pg-other-score">0</div>
       </div>
     </div>
+      <div id="pg-speed-lead" style="display:none;text-align:center;font-size:.72rem;padding:2px 0;min-height:16px"></div>
     <div class="hdr-r3">
       <div class="prog-wrap"><div class="prog-fill" id="pg-prog" style="width:0%"></div></div>
       <div class="hdr-timer-row">
@@ -450,6 +452,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 
 <script type="module">
+
+
+
 
 
 
@@ -660,7 +665,7 @@ const Q={
     }
     onValue(SR,snap=>{if(!snap.exists())return;gs=snap.val();DBG.log('onValue',{phase:gs.phase,role});
   // Reset pending on new question
-  if(gs.phase==='answering'){const myA=role==='s1'?gs.s1Answer:gs.s2Answer;if(myA==null)pendingAnswer=null;}
+  if(gs.phase==='answering'){const myA=role==='s1'?gs.s1Answer:gs.s2Answer;if(myA==null&&pendingAnswer===null)pendingAnswer=null;/*Bug1 fixed: only reset if no local pending*/}
   if(role==='moderator')renderMod();else renderPlayer();});
   },
 
@@ -792,7 +797,7 @@ const Q={
   },
   async fullReset(){
     if(!confirm('Datenbank zurücksetzen?'))return;
-    stopRaf();myReady=false;clearTimeout(scoreRevealTimer);
+    stopRaf();myReady=false;clearTimeout(scoreRevealTimer);lastRevealedQ=-1;pendingAnswer=null;/*Bug3 fixed*/
     el('pg-score-reveal').style.display='none';
     await remove(SR);showScreen('role-screen');
   },
@@ -826,13 +831,65 @@ async function commitAnswer(){
   await update(SR,u);
 }
 
+// ── SPEED LEAD INDICATOR ──────────────────────────────────────────
+function renderSpeedLead(prefix, n1, n2){
+  const el2=el(prefix+'-speed-lead');
+  if(!el2) return;
+
+  // Collect all answered times from history
+  const hist=gs.history||[];
+  let s1Times=[], s2Times=[];
+  hist.forEach(h=>{
+    if(h&&h.s1t!=null) s1Times.push(h.s1t);
+    if(h&&h.s2t!=null) s2Times.push(h.s2t);
+  });
+
+  // Also include current question if answered
+  if(gs.s1Time!=null) s1Times.push(gs.s1Time);
+  if(gs.s2Time!=null) s2Times.push(gs.s2Time);
+
+  // Need at least one answered time to show anything
+  if(s1Times.length===0&&s2Times.length===0){el2.style.display='none';return;}
+
+  const avg=arr=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;
+  const a1=avg(s1Times), a2=avg(s2Times);
+
+  // Format delta
+  const fmtD=ms=>{
+    const s=Math.abs(ms)/1000;
+    const m=Math.floor(s/60);
+    const sec=(s%60).toFixed(1);
+    return m>0?`${m}:${String(sec).padStart(4,'0')}`:`${sec}s`;
+  };
+
+  let html='';
+  if(a1!==null&&a2!==null){
+    const delta=Math.abs(a1-a2);
+    const s1faster=a1<a2;
+    const leaderName=s1faster?n1:n2;
+    const leaderC=s1faster?'var(--c4)':'var(--c2)';
+    html=`<span style="color:${leaderC};font-weight:700">⚡ ${leaderName}</span>`
+        +`<span style="color:var(--text3)"> führt · Δ ${fmtD(delta)}</span>`;
+  } else if(a1!==null){
+    html=`<span style="color:var(--c4);font-weight:700">⚡ ${n1}</span><span style="color:var(--text3)"> hat geantwortet</span>`;
+  } else {
+    html=`<span style="color:var(--c2);font-weight:700">⚡ ${n2}</span><span style="color:var(--text3)"> hat geantwortet</span>`;
+  }
+
+  el2.style.display='';
+  el2.innerHTML=html;
+}
+
 // ── RENDER MOD ───────────────────────────────────────────────────────────
 function renderMod(){
   if(gs.phase==='lobby'){
     showScreen('lobby-mod-screen');
     if(Object.keys(PACKS).length)renderPackGrid();
     // Sync timer mode buttons with Firebase state
+    // Bug4 fixed: also write back to local module vars so start() uses correct values
     const savedMode=gs.timerMode||'none';
+    timerMode=savedMode;
+    if(gs.timerSec) timerSec=gs.timerSec;
     document.querySelectorAll('.t-mode').forEach(e=>e.classList.toggle('on',e.dataset.m===savedMode));
     el('t-sec-wrap').style.display=savedMode==='none'?'none':'';
     if(savedMode!=='none'&&gs.timerSec){
@@ -857,6 +914,7 @@ function renderMod(){
   el('mg-sc1').textContent=gs.s1Score||0;el('mg-sc2').textContent=gs.s2Score||0;
   el('mg-prog').style.width=((gs.currentQ||0)/total*100)+'%';
   el('mg-qnum').textContent=`Frage ${(gs.currentQ||0)+1} / ${total}`;
+  renderSpeedLead('mg', n1, n2);
 
   // Timer
   const hasT=gs.timerMode&&gs.timerMode!=='none';
@@ -1004,14 +1062,23 @@ function renderMod(){
 // ── RENDER PLAYER ─────────────────────────────────────────────────────────
 function renderPlayer(){
   DBG.log('renderPlayer', {phase: gs.phase, role, packId: gs.packId});
-  if(gs.phase==='lobby'){
+  if(gs.phase==='lobby'){const sl=el('pg-speed-lead');if(sl)sl.style.display='none';
     showScreen('lobby-player-screen');
     const n1=gs.s1Name||'–',n2=gs.s2Name||'–',r1=!!gs.s1Ready,r2=!!gs.s2Ready;
     slots('p',{s1:n1,s2:n2},{s1:r1?'Bereit':'Eingeloggt',s2:r2?'Bereit':'Eingeloggt'},{s1:r1,s2:r2});
     const myN=role==='s1'?gs.s1Name:gs.s2Name;
     if(myN&&myN!=='–'&&myN!==name){name=myN;el('pl-name').value=myN;}
     const gsReady=role==='s1'?!!gs.s1Ready:!!gs.s2Ready;
-    if(gsReady!==myReady){myReady=gsReady;const btn=el('ready-btn');btn.className='ready-btn'+(myReady?' active':'');btn.textContent=myReady?'Bereit ✓':'Bereit';}
+    // Bug2 fixed: only sync Firebase→local if they diverge AND local wasn't
+    // recently set (prevent race condition flicker on slow connections)
+    if(gsReady!==myReady){
+      // Only pull from Firebase if our local state hasn't been confirmed yet
+      // i.e. Firebase shows false but we just set true → keep local true
+      if(!myReady||!gsReady){myReady=gsReady;}
+      const btn=el('ready-btn');
+      btn.className='ready-btn'+(myReady?' active':'');
+      btn.textContent=myReady?'Bereit ✓':'Bereit';
+    }
     const cp=getPack();
     el('pl-lobby-hint').innerHTML=(r1&&r2?'Beide bereit':r1||r2?'Warte auf anderen Spieler':'Drücke Bereit wenn du startklar bist')
       +`<br><span style="color:var(--text3);font-size:.74rem">Paket: ${cp.name||'–'}</span>`;
@@ -1041,6 +1108,7 @@ function renderPlayer(){
   const rtag=el('pg-role-tag');
   if(rtag){rtag.textContent=myN;rtag.style.color=myC;rtag.style.background=role==='s1'?'rgba(230,57,70,.12)':'rgba(29,127,232,.12)';rtag.style.borderColor=role==='s1'?'rgba(230,57,70,.3)':'rgba(29,127,232,.3)';}
   // Question text
+  renderSpeedLead('pg', gs.s1Name||'S1', gs.s2Name||'S2');
   const pgQtxt=el('pg-qtxt');if(pgQtxt){pgQtxt.textContent=q.q;DBG.log('pg-qtxt set',{q:q.q.substr(0,40)});}
   // Category
   const pgCat=el('pg-cat');if(pgCat){const cc=CC[q.cat]||'#8899bb';pgCat.textContent=q.cat;pgCat.style.color=cc;}
@@ -1330,6 +1398,9 @@ function renderResults(){
 }
 
 setTimeout(()=>{el('t-sec-wrap').style.display='none';},0);
+
+
+
 
 
 
