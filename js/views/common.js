@@ -1,91 +1,179 @@
-// Gemeinsame Bausteine der Ansichten
-import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf } from "../model.js";
+// Gemeinsame Bausteine der Ansichten (Design A · Kompakt)
+import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking } from "../model.js";
 
 export const L = i => String.fromCharCode(65 + i);
 
-const CAT_COLORS = ["#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#4f86c6", "#9b59b6", "#27ae60", "#e91e8c", "#16a085", "#d35400"];
-export function catBadge(cat) {
-  if (!cat) return "";
-  let h = 0; for (const ch of cat) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  const c = CAT_COLORS[h % CAT_COLORS.length];
-  return `<span class="q-cat" style="background:${c}1a;border:1px solid ${c}55;color:${c}">${esc(cat)}</span>`;
-}
+// ── Symbole (Strich-SVG, erben die Textfarbe) ──
+const svg = (d, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+export const ICON = {
+  dots: s => svg('<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>', s),
+  check: s => svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', s),
+  x: s => svg('<path d="M6 6l12 12M18 6L6 18"/>', s),
+  chev: s => svg('<path d="M9 6l6 6-6 6"/>', s),
+  back: s => svg('<path d="M15 6l-6 6 6 6"/>', s),
+  clock: s => svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', s),
+  share: s => svg('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>', s),
+  eye: s => svg('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', s),
+  play: s => svg('<path d="M7 5l12 7-12 7z"/>', s),
+  pause: s => svg('<path d="M8 5v14M16 5v14"/>', s),
+  reset: s => svg('<path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/>', s),
+  theme: s => svg('<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/>', s),
+  full: s => svg('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>', s),
+  bug: s => svg('<rect x="7" y="8" width="10" height="12" rx="5"/><path d="M12 8V5M9 5l1.5 2M15 5l-1.5 2M3 13h4M17 13h4M4 19l3-2M20 19l-3-2"/>', s),
+  trash: s => svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>', s),
+  search: s => svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>', s)
+};
 
-export function questionBox(q) {
-  const tag = q.type === "estimate" ? `<div class="type-tag" style="margin-top:10px">Schätzfrage</div>`
-    : q.type === "open" ? `<div class="type-tag" style="margin-top:10px">Freitextfrage</div>` : "";
-  return `<div class="q-box">${catBadge(q.cat)}<div class="q-text">${esc(q.q)}</div>${tag}</div>`;
+// ── Kopfzeile außerhalb des Spiels ──
+export function topBar(title, sub = "", { back = null, connected = true } = {}) {
+  const left = back ? `<button class="icon-btn" data-act="${back}" aria-label="Zurück">${ICON.back()}</button>` : "";
+  return `<div class="top">${left}
+    <div class="top-main"><div class="top-title">${title}</div>${sub ? `<div class="top-sub">${sub}</div>` : ""}</div>
+    ${menuBtn(connected)}</div>`;
 }
+export const menuBtn = (connected = true) =>
+  `<button class="icon-btn" data-act="menu" aria-label="Menü">${ICON.dots()}${connected ? "" : '<span class="badge"></span>'}</button>`;
 
-export function factBox(q) {
-  const fact = q?.fact || q?.erklaerung;
-  if (!fact) return "";
-  return `<div class="fact-box"><div class="label" style="color:rgba(233,196,106,.85);margin-bottom:6px">Hintergrund</div><div class="fact-text">${esc(fact)}</div></div>`;
-}
-
-// Kopfzeile im Spiel: Rolle, Fragennummer, Punkte aller Spieler, Fortschritt
-// Timerzeile: Zahl + Balken werden zwischen den Renders per requestAnimationFrame aktualisiert (ids tnum/tbar)
-function timerRow(room, isMod) {
-  const mode = room.settings?.timerMode || "none";
-  if (mode === "none") return "";
-  const g = room.game || {};
-  const sec = room.settings?.timerSec || 30;
-  const left = timerLeft(room, Date.now());
-  const pct = Math.max(0, Math.min(100, left / sec * 100));
-  const t = g.timer || {};
-  let btns = "";
-  if (isMod && mode === "manual" && g.phase === "answering") {
-    if (t.running) btns = `<button class="btn btn-danger btn-sm" data-act="timerPause">Pause</button>`;
-    else btns = `<button class="btn btn-primary btn-sm" data-act="timerStart">${t.pauseLeft != null ? "Weiter" : "Start"}</button>`;
-    if (t.running || t.pauseLeft != null) btns += `<button class="btn btn-ghost btn-sm" data-act="timerReset">Reset</button>`;
-  }
-  const active = g.phase === "answering";
-  return `<div class="timer-row${active ? "" : " off"}">
-    <span class="t-num" id="tnum">${Math.ceil(left)}s</span>
-    <div class="t-track"><div class="t-fill" id="tbar" style="width:${pct}%"></div></div>
-    ${btns ? `<span class="t-btns">${btns}</span>` : ""}</div>`;
-}
-
-export function gameHeader(room, uid, roleLabel, isMod) {
-  const g = room.game || {};
+// ── Segmentierte Fragenleiste ──
+// Spieler: eigene Ergebnisse grün/rot; Moderator/Zuschauer: alle richtig grün, keiner rot, gemischt gold
+export function segBar(room, uid, own) {
   const total = qCount(room);
+  const g = room.game || {};
+  const qi = g.qIndex ?? 0;
+  const players = activePlayers(room);
+  let html = "";
+  for (let i = 0; i < total; i++) {
+    const r = resultFor(room, i);
+    let cls = "";
+    if (r && (i < qi || (i === qi && g.phase === "revealed") || g.phase === "finished")) {
+      if (own) cls = r.points?.[uid] ? "ok" : "no";
+      else {
+        const n = players.filter(p => r.points?.[p.uid]).length;
+        cls = n === 0 ? "no" : n === players.length ? "ok" : "mix";
+      }
+    } else if (i === qi && g.phase !== "finished") cls = "cur";
+    html += `<span class="seg ${cls}"></span>`;
+  }
+  return `<div class="segs" aria-label="Fortschritt: Frage ${qi + 1} von ${total}">${html}</div>`;
+}
+
+// ── Timer (Zahl/Balken werden per requestAnimationFrame aktualisiert: ids tchip/tnum/tbar) ──
+function timerChip(room) {
+  if ((room.settings?.timerMode || "none") === "none") return "";
+  const left = timerLeft(room, Date.now());
+  const off = room.game?.phase !== "answering";
+  return `<div class="timer-chip${off ? " off" : ""}" id="tchip">${ICON.clock(18)}<span class="t-num" id="tnum">${Math.ceil(left)}s</span></div>`;
+}
+function timerBar(room) {
+  if ((room.settings?.timerMode || "none") === "none") return "";
+  const sec = room.settings?.timerSec || 30;
+  const pct = Math.max(0, Math.min(100, timerLeft(room, Date.now()) / sec * 100));
+  return `<div class="tbar"><div class="tbar-fill" id="tbar" style="width:${pct}%"></div></div>`;
+}
+
+// ── Kopf im Spiel: Frage x/y + Segmente, Timer, Rolle, Menü; darunter Spieler-Chips ──
+export function gameHeader(s, mode) {
+  const room = s.room, uid = s.uid;
+  const g = room.game || {};
+  const qi = g.qIndex ?? 0;
+  const specN = spectatorsOf(room).length;
+  const role = mode === "mod" ? `<span class="role">Moderator</span>`
+    : mode === "spec" ? `<span class="role spec">Zuschauer</span>` : "";
+  const top = `<div class="top">
+    <div class="top-main"><div class="top-title sm">Frage ${qi + 1} / ${qCount(room)}${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div>${segBar(room, uid, mode === "player")}</div>
+    ${timerChip(room)}${role}${menuBtn(s.connected)}</div>`;
+  return top + timerBar(room) + (mode === "mod" ? modChips(room) : playerChips(room, uid));
+}
+
+function playerChips(room, uid) {
+  const g = room.game || {};
   const qi = g.qIndex ?? 0;
   const answers = answersFor(room, qi);
-  const chips = activePlayers(room).map(p => {
-    let state = "";
-    if (g.phase === "answering" || g.phase === "locked") state = answers[p.uid] ? `<span class="chip-state ok">✓</span>` : `<span class="chip-state">…</span>`;
-    if (jokerOf(room, p.uid)?.q === qi && (g.phase === "answering" || g.phase === "locked")) state = `<span class="chip-state" style="color:var(--c3)">50:50</span>` + state;
+  const open = g.phase === "answering" || g.phase === "locked";
+  const lead = speedLead(room)?.leader?.uid;
+  return `<div class="chips">${activePlayers(room).map(p => {
+    let st = "";
+    if (open) st = answers[p.uid] ? `<span class="chip-st ok" aria-label="eingeloggt">${ICON.check(16)}</span>` : `<span class="chip-st">…</span>`;
+    if (open && jokerOf(room, p.uid)?.q === qi) st = `<span class="chip-st gold">50:50</span>` + st;
     return `<div class="chip${p.uid === uid ? " me" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span>
-      <span class="chip-name">${esc(p.name)}</span>${state}
+      <span class="chip-name">${esc(p.name)}${lead === p.uid ? " ⚡" : ""}</span>${st}
       <span class="chip-pts">${scoreOf(room, p.uid)}</span></div>`;
-  }).join("");
-  const pct = total ? ((qi + (g.phase === "revealed" ? 1 : 0)) / total * 100) : 0;
-  const sl = speedLead(room);
-  const lead = sl ? `<div class="speed-lead">⚡ <b>${esc(sl.leader.name)}</b> ist im Schnitt am schnellsten · Δ ${fmtMs(sl.delta)}</div>` : "";
-  return `<div class="g-hdr">
-    <div class="hdr-r1"><div class="hdr-badge${isMod ? " mod" : ""}">${esc(roleLabel)}</div>
-      <div class="hdr-qnum">${spectatorsOf(room).length ? `<span title="Zuschauer">👁 ${spectatorsOf(room).length}</span> · ` : ""}Frage ${qi + 1} / ${total}</div></div>
-    <div class="chips">${chips}</div>
-    ${lead}
-    <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
-    ${timerRow(room, isMod)}
-  </div>`;
+  }).join("")}</div>`;
 }
 
-export function playerList(room, uid, { showReady = true } = {}) {
-  const items = Object.entries(room.players || {}).length ? null : `<div class="muted small">Noch niemand da.</div>`;
-  if (items) return items;
-  const pres = room.presence || {};
-  const all = Object.entries(room.players).map(([id, p]) => ({ uid: id, ...p, online: !!pres[id]?.online }))
-    .sort((a, b) => (a.seat ?? 99) - (b.seat ?? 99));
-  return `<div class="plist">${all.map(p => `
-    <div class="pitem${p.uid === uid ? " me" : ""}">
-      <span class="dot ${p.online ? "on" : "off"}"></span>
-      <span class="pitem-name">${esc(p.name)}${p.uid === uid ? " (du)" : ""}</span>
-      ${p.role === "moderator" ? `<span class="tag mod">Moderator</span>` : p.role === "spectator" ? `<span class="tag">Zuschauer</span>`
-        : showReady ? `<span class="tag${p.ready ? " ok" : ""}">${p.ready ? "Bereit ✓" : "Wartet"}</span>` : ""}
-    </div>`).join("")}</div>`;
+// Moderator: Zeit und Joker direkt in der Karte des Spielers
+function modChips(room) {
+  const g = room.game || {};
+  const qi = g.qIndex ?? 0;
+  const q = room.questions?.[qi];
+  const answers = answersFor(room, qi);
+  const res = resultFor(room, qi);
+  const mcOpen = q && !isOpenType(q) && g.phase === "answering";
+  return `<div class="chips">${activePlayers(room).map(p => {
+    const a = answers[p.uid];
+    const j = jokerOf(room, p.uid);
+    let sub = a ? `${fmtMs(a.ms)} ✓` : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
+    if (a && res?.fastestUid === p.uid) sub = `${fmtMs(a.ms)} ⚡`;
+    let jk = "";
+    if (j && j.q === qi) jk = `<span class="chip-st gold">50:50 aktiv</span>`;
+    else if (mcOpen && !j) jk = `<button class="mini-btn" data-act="joker" data-arg="${p.uid}" ${a ? "disabled" : ""} aria-label="50:50-Joker für ${esc(p.name)}">50:50</button>`;
+    else if (mcOpen && j) jk = `<span class="chip-st">Joker weg</span>`;
+    return `<div class="chip2">
+      <div class="chip2-r"><span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span><span class="chip-pts">${scoreOf(room, p.uid)}</span></div>
+      <div class="chip2-r"><span class="chip2-sub">${sub}</span>${jk}</div></div>`;
+  }).join("")}</div>`;
+}
+
+// ── Frage, Hintergrund, Ergebnis ──
+export function questionCard(q, compact = false) {
+  const type = q.type === "estimate" ? `<span class="q-type">Schätzfrage</span>` : q.type === "open" ? `<span class="q-type">Freitext</span>` : "";
+  const cat = q.cat || type ? `<div class="q-cat">${q.cat ? esc(q.cat) : ""}${type}</div>` : "";
+  return `<div class="q-card${compact ? " compact" : ""}">${cat}<div class="q-text">${esc(q.q)}</div></div>`;
+}
+
+export function factCard(q, open, title = "Hintergrund") {
+  const fact = q?.fact || q?.erklaerung;
+  if (!fact) return "";
+  const long = fact.length > 140;
+  return `<div class="fact"><div class="fact-h">${title}</div>
+    <div class="fact-t${long && !open ? " clamp" : ""}">${esc(fact)}</div>
+    ${long ? `<button class="link-btn" data-act="toggleFact">${open ? "Weniger" : "Weiterlesen"}</button>` : ""}</div>`;
+}
+
+// Zwischenstand in einem Satz
+export function standing(room, uid) {
+  const rk = ranking(room);
+  if (!rk.length) return "";
+  if (rk.length === 1) { const p = rk[0]; return `${p.correct} von ${(room.game?.qIndex ?? 0) + 1} richtig`; }
+  const top = rk[0], second = rk[1];
+  if (top.score === second.score) {
+    const tied = rk.filter(p => p.score === top.score);
+    return tied.length === rk.length ? `Gleichstand ${top.score} : ${second.score}` : `Gleichstand vorne: ${tied.map(p => esc(p.name)).join(" & ")}`;
+  }
+  const pair = `${top.score} : ${second.score}`;
+  return top.uid === uid ? `Du führst ${pair}` : `${esc(top.name)} führt ${pair}`;
+}
+
+export function resultBanner(kind, big, sub) {
+  const ico = kind === "ok" ? ICON.check(20) : kind === "no" ? ICON.x(20) : "–";
+  return `<div class="result ${kind}"><span class="result-ico">${ico}</span>
+    <div style="flex:1;min-width:0"><div class="result-big">${big}</div>${sub ? `<div class="result-sub">${sub}</div>` : ""}</div></div>`;
+}
+
+// ── Lobby: Plätze 2×2 ──
+export function slots(room, uid, max = 4) {
+  const ps = activePlayers(room);
+  let html = ps.map(p => `<div class="slot${p.ready ? " ready" : ""}${p.uid === uid ? " me" : ""}">
+      <span class="dot ${p.online ? "on" : "off"}"></span><span class="slot-name">${esc(p.name)}</span>
+      <span class="slot-tag">${p.ready ? "Bereit ✓" : "wartet"}</span></div>`).join("");
+  for (let i = ps.length; i < max; i++) html += `<div class="slot empty">frei</div>`;
+  return `<div class="slots">${html}</div>`;
+}
+export function spectatorLine(room) {
+  const sp = spectatorsOf(room);
+  if (!sp.length) return "";
+  return `<div class="meta-line">${ICON.eye(16)} ${sp.length === 1 ? "1 Zuschauer" : `${sp.length} Zuschauer`}: ${sp.map(p => esc(p.name)).join(", ")}</div>`;
 }
 
 export const shortName = n => esc(String(n || "").slice(0, 6));

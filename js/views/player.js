@@ -1,100 +1,108 @@
-// Spieleransicht während der Partie
+// Spieler- und Zuschaueransicht während der Partie
 import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor } from "../model.js";
-import { gameHeader, questionBox, factBox, L, shortName, formatValue } from "./common.js";
+import { gameHeader, questionCard, factCard, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
 
 export function playerGameView(s, me) {
   const room = s.room;
   const g = room.game || {};
   const qi = g.qIndex ?? 0;
   const q = room.questions?.[qi];
-  if (!q) return `<div class="page center"><div class="spin"></div><p class="muted" style="text-align:center">Partie startet …</p></div>`;
+  if (!q) return `<div class="screen"><div class="body center"><div class="spin"></div><p class="muted" style="text-align:center">Partie startet …</p></div></div>`;
 
   const phase = g.phase;
   const spectator = me.role === "spectator";
   const mine = spectator ? null : answerOf(room, qi, s.uid);
-  const total = activePlayers(room).length;
+  const players = activePlayers(room);
+  const total = players.length;
   const done = answeredCount(room);
   const pending = s.local.pending?.qi === qi ? s.local.pending.value : null;
   const showOthers = phase === "shown" || phase === "revealed";
   const revealed = phase === "revealed";
   const answers = answersFor(room, qi);
-  const players = activePlayers(room);
+  const factOpen = s.local.factOpen === qi;
 
-  // Statuszeile
-  let status, statusCls = "";
-  if (spectator) {
-    status = phase === "answering" || phase === "locked" ? `Zuschauer · ${done}/${total} eingeloggt`
-      : phase === "shown" ? "Zuschauer · Antworten werden gezeigt" : "Zuschauer · aufgelöst";
-  } else if (phase === "answering" && !mine) status = total > 1 ? `Frage läuft · ${done}/${total} eingeloggt` : "Frage läuft";
-  else if (phase === "locked" && !mine) status = "Zeit abgelaufen – keine Antwort";
-  else if (phase === "answering" || phase === "locked") { status = total > 1 && done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Eingeloggt ✓ · warte auf die Auflösung"; statusCls = "ok"; }
-  else if (phase === "shown") status = isOpenType(q) ? "Antworten werden bewertet …" : "Alle Antworten sind sichtbar";
-  else if (revealed) {
-    const pts = resultFor(room, qi)?.points?.[s.uid];
-    status = pts ? "Richtig! +1 Punkt" : (mine ? "Leider falsch" : "Keine Antwort abgegeben");
-    statusCls = pts ? "ok" : "";
-  }
+  let body = "", actions = "", note = "", noteCls = "";
 
   const mod = moderatorOf(room);
-  const modOff = mod && !mod.online ? `<div class="status-bar" style="color:var(--c5)">Moderator ${esc(mod.name)} ist offline – warte …</div>` : "";
-  let body = `${modOff}<div class="status-bar ${statusCls}">${status}</div>${questionBox(q)}`;
-  let actions = "";
+  if (mod && !mod.online) body += `<div class="notice warn">Moderator ${esc(mod.name)} ist offline – warte …</div>`;
+
+  // Ergebnis der Frage zuerst (nur nach dem Auflösen)
+  if (revealed) {
+    const st = standing(room, s.uid);
+    if (spectator) body += resultBanner("neutral", "Aufgelöst", st);
+    else {
+      const pts = resultFor(room, qi)?.points?.[s.uid];
+      const fast = resultFor(room, qi)?.fastestUid === s.uid && total > 1;
+      body += pts ? resultBanner("ok", "Richtig! +1", `${st}${fast ? " · schnellste Antwort ⚡" : ""}`)
+        : resultBanner("no", mine ? "Leider falsch" : "Keine Antwort", st);
+    }
+  }
+
+  body += questionCard(q, revealed);
 
   if (!isOpenType(q)) {
-    // Multiple Choice
+    // ── Multiple Choice ──
     const canPick = !spectator && phase === "answering" && !mine;
     const hidden = spectator || revealed ? [] : hiddenFor(room, qi, s.uid);
-    if (hidden.length && !mine) status = `50:50-Joker! ${status}`;
-    body = `${modOff}<div class="status-bar ${statusCls}">${status}</div>${questionBox(q)}`;
+    if (hidden.length && !mine && phase === "answering") body += `<div class="notice gold">50:50-Joker: zwei falsche Antworten sind weg</div>`;
     body += `<div class="answers">${q.a.map((txt, i) => {
+      if (hidden.includes(i)) return `<button class="ans gone" disabled><span class="ans-l">${L(i)}</span><span class="ans-txt">${esc(txt)}</span></button>`;
       const cls = ["ans"];
-      const gone = hidden.includes(i);
-      if (gone) return `<button class="ans disabled faded" disabled style="opacity:.12"><span class="ans-l">${L(i)}</span><span class="ans-txt">${esc(txt)}</span></button>`;
-      if (!canPick) cls.push("disabled");
-      if (revealed) {
-        if (i === q.r) cls.push("correct");
-        else if (mine?.value === i) cls.push("wrong");
-        else cls.push("faded");
-      } else if (mine?.value === i || pending === i) cls.push("pending");
+      if (canPick) cls.push("pick");
+      if (revealed) cls.push(i === q.r ? "correct" : mine?.value === i ? "wrong" : "faded");
+      else if (mine?.value === i || pending === i) cls.push("pending");
       let mk = "";
       if (showOthers) {
         const who = players.filter(p => answers[p.uid]?.value === i);
         if (who.length) mk = `<span class="mkrs">${who.map(p => `<span class="mkr${p.uid === s.uid ? " me" : ""}">${shortName(p.name)}</span>`).join("")}</span>`;
       }
-      const letter = revealed && i === q.r ? "✓" : L(i);
+      const letter = revealed && i === q.r ? ICON.check(18) : L(i);
       return `<button class="${cls.join(" ")}" ${canPick ? `data-act="pick" data-arg="${i}"` : "disabled"}>
         <span class="ans-l">${letter}</span><span class="ans-txt">${esc(txt)}</span>${mk}</button>`;
     }).join("")}</div>`;
-    if (canPick) actions = `<button class="btn btn-blue btn-full btn-lg" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen ✓</button>`;
+    if (canPick) actions = `<button class="btn btn-blue" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen</button>`;
   } else {
-    // Schätzen / Freitext
+    // ── Schätzen / Freitext ──
     if (!spectator && phase === "answering" && !mine) {
       const draft = s.local.draft?.qi === qi ? s.local.draft.value : "";
-      body += `<input class="inp ans-input" id="in-answer" data-input="draft" ${q.type === "estimate" ? 'inputmode="decimal"' : ""}
+      body += `<input class="ans-input" id="in-answer" data-input="draft" ${q.type === "estimate" ? 'inputmode="decimal"' : ""} aria-label="Deine Antwort"
         placeholder="${q.type === "estimate" ? "Deine Schätzung" : "Deine Antwort"}" value="${esc(draft)}" autocomplete="off">`;
-      actions = `<button class="btn btn-blue btn-full btn-lg" data-act="commitDraft" ${draft.trim() ? "" : "disabled"}>Einloggen ✓</button>`;
+      actions = `<button class="btn btn-blue" data-act="commitDraft" ${draft.trim() ? "" : "disabled"}>Einloggen</button>`;
     } else if (mine && !showOthers) {
-      body += `<div class="submitted">Deine Antwort: ${formatValue(q, mine.value)}</div>`;
+      body += `<div class="my-answer">Deine Antwort: ${formatValue(q, mine.value)}</div>`;
     }
     if (showOthers) {
-      if (revealed && q.answer != null) body += `<div class="hint"><strong>Richtige Antwort:</strong> ${formatValue(q, q.answer)}</div>`;
+      if (revealed && q.answer != null) body += `<div class="solution"><b>Richtig:</b> ${formatValue(q, q.answer)}</div>`;
       body += players.map(p => {
         const a = answers[p.uid];
         const j = revealed ? judgmentOf(room, qi, p.uid) : null;
-        return `<div class="pans ${j || ""}">
-          <div class="pans-name"><span>${esc(p.name)}${p.uid === s.uid ? " (du)" : ""}</span><span>${j === "correct" ? "✓ richtig" : j === "wrong" ? "✗ falsch" : ""}</span></div>
-          ${a ? `<div class="pans-val">${formatValue(q, a.value)}</div>` : `<div class="pans-none">Keine Antwort</div>`}</div>`;
+        return `<div class="prow ${j || ""}"><span class="prow-name">${esc(p.name)}${p.uid === s.uid ? " (du)" : ""}</span>
+          ${a ? `<span class="prow-val">${formatValue(q, a.value)}</span>` : `<span class="prow-val none">keine Antwort</span>`}
+          ${j ? `<span class="chip-st ${j === "correct" ? "ok" : ""}" style="${j === "wrong" ? "color:var(--c5)" : ""}">${j === "correct" ? ICON.check(18) : ICON.x(18)}</span>` : ""}</div>`;
       }).join("");
     }
   }
 
-  if (revealed) body += factBox(q);
-  if (spectator) actions = (moderatorAway(room, s.now || Date.now()) ? `<button class="btn btn-gold btn-full" data-act="takeover">Moderation übernehmen</button>` : "")
-    + `<button class="btn btn-ghost btn-full" data-act="leave">Zuschauen beenden</button>`;
+  if (revealed) body += factCard(q, factOpen);
 
-  return `<div class="game">
-    ${gameHeader(room, s.uid, spectator ? "Zuschauer" : me.name, false)}
-    <div class="g-body">${body}</div>
-    ${actions ? `<div class="g-actions">${actions}</div>` : ""}
+  // Hinweiszeile über dem Knopf
+  if (spectator) note = phase === "answering" || phase === "locked" ? `${done} von ${total} eingeloggt` : phase === "shown" ? "Antworten werden gezeigt" : "";
+  else if (phase === "answering" && !mine) {
+    const others = players.filter(p => p.uid !== s.uid && answers[p.uid]).map(p => esc(p.name));
+    note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} eingeloggt` : (total > 1 ? "Noch niemand eingeloggt" : "");
+  } else if (phase === "locked" && !mine) note = "Zeit abgelaufen – keine Antwort";
+  else if (phase === "answering" || phase === "locked") { note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Eingeloggt ✓ · gleich wird aufgelöst"; noteCls = "ok"; }
+  else if (phase === "shown") note = isOpenType(q) ? "Der Moderator bewertet die Antworten …" : "Gleich wird aufgelöst …";
+  else if (revealed) note = "Warte auf die nächste Frage …";
+
+  if (spectator) {
+    actions = (moderatorAway(room, Date.now()) ? `<button class="btn btn-gold" data-act="takeover">Moderation übernehmen</button>` : "")
+      + `<button class="btn btn-text" data-act="leave">Zuschauen beenden</button>`;
+  }
+
+  return `<div class="screen">
+    ${gameHeader(s, spectator ? "spec" : "player")}
+    <div class="body">${body}<div class="spacer"></div></div>
+    <div class="actions"><div class="foot-note ${noteCls}">${note}</div>${actions}</div>
   </div>`;
 }

@@ -6,6 +6,7 @@ import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
 import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft } from "./model.js";
+import { ICON } from "./views/common.js";
 import { vibrate, keepAwake, share, initNative, isApp, setBarStyle } from "./native.js";
 import { homeView } from "./views/home.js";
 import { modLobbyView, playerLobbyView, spectatorLobbyView } from "./views/lobby.js";
@@ -14,12 +15,12 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.2.1";
+export const VERSION = "v4.3.0";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
 function pickView(s) {
-  if (!s.loaded) return { key: "loading", html: `<div class="page center"><div class="spin"></div></div>` };
+  if (!s.loaded) return { key: "loading", html: `<div class="screen"><div class="body center"><div class="spin"></div></div></div>` };
   const room = s.room;
   const status = room?.meta?.status || "none";
   const me = meIn(room, s.uid);
@@ -40,22 +41,21 @@ function render(s) {
   // Fokus und Cursor eines Eingabefelds über das Neuzeichnen retten
   const ae = document.activeElement;
   const focus = ae && ae.id && ae.tagName === "INPUT" ? { id: ae.id, start: ae.selectionStart, end: ae.selectionEnd, value: ae.value } : null;
-  const scroller = document.querySelector("#app .g-body, #app .page");
+  const scroller = document.querySelector("#app .body");
   const scrollTop = scroller?.scrollTop || 0;
 
   const v = pickView(s);
-  const html = banners(s) + v.html + (v.key === "plGame" ? overlay(s) : "");
+  const html = banners(s) + v.html + (s.local.menu ? menuSheet(s) : "");
   // Unverändertes HTML nicht neu setzen: sonst gehen Taps verloren, die genau während eines Updates passieren
-  if (html === lastHtml) { $("conn-dot").className = "dot " + (s.connected ? "on" : "off"); afterRender(s, v.key); return; }
+  if (html === lastHtml) { afterRender(s, v.key); return; }
   lastHtml = html;
   $("app").innerHTML = html;
 
-  if (v.key === lastView) { const sc = document.querySelector("#app .g-body, #app .page"); if (sc) sc.scrollTop = scrollTop; }
+  if (v.key === lastView) { const sc = document.querySelector("#app .body"); if (sc) sc.scrollTop = scrollTop; }
   if (v.key !== lastView) DBG.log("Ansicht", v.key);
   lastView = v.key;
   if (focus) { const el = $(focus.id); if (el) { el.value = focus.value; el.focus(); try { el.setSelectionRange(focus.start, focus.end); } catch {} } }
 
-  $("conn-dot").className = "dot " + (s.connected ? "on" : "off");
   afterRender(s, v.key);
 }
 
@@ -66,15 +66,20 @@ function banners(s) {
   return h;
 }
 
-// Kurze Einblendung „Richtig/Falsch“ beim Auflösen, einmal pro Frage
-let overlayShownFor = null, overlayTimer = null, overlayVisible = false;
-function overlay(s) {
-  if (!overlayVisible || s.room?.game?.phase !== "revealed") return "";
-  const qi = s.room?.game?.qIndex;
-  const ok = resultFor(s.room, qi)?.points?.[s.uid];
-  return `<div class="overlay"><div class="overlay-big" style="color:${ok ? "var(--c2)" : "var(--c5)"}">${ok ? "Richtig!" : "Leider falsch"}</div></div>`;
+// Menü als Blatt von unten: Design, Vollbild, Debug, Raum zurücksetzen
+function menuSheet(s) {
+  const light = document.documentElement.getAttribute("data-theme") === "light";
+  return `<div class="sheet-bg" data-act="closeMenu"><div class="sheet" role="dialog" aria-label="Menü">
+    <div class="sheet-grip"></div>
+    <button class="sheet-item" data-act="theme">${ICON.theme()}${light ? "Dunkles Design" : "Helles Design"}</button>
+    <button class="sheet-item browser-only" data-act="fullscreen">${ICON.full()}Vollbild</button>
+    <button class="sheet-item" data-act="debug">${ICON.bug()}Debug-Log</button>
+    <button class="sheet-item danger" data-act="resetAll">${ICON.trash()}Raum zurücksetzen</button>
+    <div class="sheet-info"><span class="dot ${s.connected ? "on" : "off"}"></span>${s.connected ? "Verbunden" : "Keine Verbindung"} · Raum ${esc(ROOM_ID)} · ${VERSION}</div>
+  </div></div>`;
 }
 
+let revealVibed = null;
 let lockRequested = null, abandonChecked = null;
 function afterRender(s, key) {
   syncPresence(s);
@@ -87,14 +92,12 @@ function afterRender(s, key) {
     const k = `${room.meta?.createdAt}`;
     if (abandonChecked !== k) { abandonChecked = k; A.markAbandoned(); }
   }
+  // Spieler: kurze Vibration beim Auflösen (richtig: einmal, falsch: doppelt)
   if (key === "plGame" && g?.phase === "revealed" && meIn(room, s.uid)?.role === "player") {
     const k = `${room.meta?.createdAt}:${g.qIndex}`;
-    if (overlayShownFor !== k && resultFor(room, g.qIndex)) {
-      overlayShownFor = k; overlayVisible = true;
+    if (revealVibed !== k && resultFor(room, g.qIndex)) {
+      revealVibed = k;
       vibrate(resultFor(room, g.qIndex)?.points?.[s.uid] ? 80 : [60, 80, 60]);
-      clearTimeout(overlayTimer);
-      overlayTimer = setTimeout(() => { overlayVisible = false; rerender(); }, 2500);
-      rerender();
     }
   }
   if (key === "modGame" || key === "modLobby" || key === "results") {
@@ -125,7 +128,8 @@ function tick() {
     const left = timerLeft(room, serverNow());
     if (left != null) {
       el.textContent = Math.ceil(left) + "s";
-      el.className = "t-num" + (g.phase === "answering" && g.timer?.running ? (left <= 5 ? " urgent" : left <= 10 ? " warn" : "") : "");
+      const chip = $("tchip");
+      if (chip) chip.className = "timer-chip" + (g.phase !== "answering" ? " off" : g.timer?.running ? (left <= 5 ? " urgent" : left <= 10 ? " warn" : "") : "");
       const bar = $("tbar");
       if (bar) { bar.style.width = Math.max(0, left / sec * 100) + "%"; bar.style.background = left <= 5 ? "var(--c5)" : left <= 10 ? "var(--c4)" : "var(--c2)"; }
       if (left <= 0 && g.phase === "answering" && g.timer?.running && meIn(room, s.uid)?.role === "moderator") {
@@ -194,15 +198,19 @@ const handlers = {
   reveal: () => A.reveal(store.room.game.qIndex),
   next: () => A.nextQuestion(store.room.game.qIndex),
   judge: (el) => A.judge(store.room.game.qIndex, el.dataset.arg, el.dataset.val === "1"),
-  resetAll: () => { if (confirm(`Raum „${ROOM_ID}“ komplett zurücksetzen? Eine laufende Partie geht verloren.`)) A.resetRoom(); },
+  resetAll: () => { setLocal({ menu: false }); if (confirm(`Raum „${ROOM_ID}“ komplett zurücksetzen? Eine laufende Partie geht verloren.`)) A.resetRoom(); },
   theme: () => {
     const d = document.documentElement, light = d.getAttribute("data-theme") === "light";
     d.setAttribute("data-theme", light ? "dark" : "light");
     setBarStyle(!light);
+    lastHtml = ""; rerender();
     try { localStorage.setItem("quiz.v4.theme", light ? "dark" : "light"); } catch {}
   },
   fullscreen: () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); },
-  debug: () => DBG.toggle(),
+  debug: () => { setLocal({ menu: false }); DBG.toggle(); },
+  menu: () => setLocal({ menu: true }),
+  closeMenu: (el, e) => { if (e.target === el) setLocal({ menu: false }); },
+  toggleFact: () => { const qi = store.room?.game?.qIndex; setLocal({ factOpen: store.local.factOpen === qi ? null : qi }); },
   invite: async () => {
     const url = "https://erhas93.github.io/Quiz-app/" + (ROOM_ID !== "main" ? `?room=${ROOM_ID}` : "");
     const r = await share(`Komm in die Quiz-Lobby von ${store.local.name || "uns"}!`, url);
@@ -214,7 +222,7 @@ document.addEventListener("click", e => {
   const el = e.target.closest("[data-act]");
   if (!el || el.disabled) return;
   const h = handlers[el.dataset.act];
-  if (h) { DBG.log("Klick", el.dataset.act); h(el); }
+  if (h) { DBG.log("Klick", el.dataset.act); h(el, e); }
 });
 
 document.addEventListener("input", e => {
@@ -243,7 +251,6 @@ document.addEventListener("keydown", e => {
 // ── Start ──────────────────────────────────────────────────────────────────
 (async function main() {
   try { const t = localStorage.getItem("quiz.v4.theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch {}
-  $("vtag").textContent = `${VERSION} · Raum ${ROOM_ID}`;
   onRender(render);
   rerender();
   const id = await initIdentity();
@@ -255,6 +262,7 @@ document.addEventListener("keydown", e => {
   // Android-App: Zurück-Taste schließt erst Overlays, sonst App minimieren; Rückkehr frischt auf
   initNative({
     onBack: () => {
+      if (store.local.menu) { setLocal({ menu: false }); return true; }
       if (store.local.picker) { setLocal({ picker: null }); return true; }
       const dbg = $("dbg-panel"); if (dbg && dbg.style.display !== "none") { DBG.toggle(); return true; }
       if (store.local.error) { setLocal({ error: null }); return true; }

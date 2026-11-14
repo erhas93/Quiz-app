@@ -12,7 +12,7 @@ export const DBG = {
   render(p) {
     const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     p.innerHTML = `<div class="dbg-head"><b>Debug-Log</b><span>
-      <button onclick="DBG.copy()">Kopieren</button><button onclick="DBG.clear()">Leeren</button></span></div>`
+      <button onclick="DBG.copy()">Kopieren</button><button onclick="DBG.clear()">Leeren</button><button onclick="DBG.toggle()">Schließen</button></span></div>`
       + this.logs.slice(-60).reverse().map(e =>
         `<div class="dbg-row"><span class="dbg-t">${e.t}</span> ${esc(e.msg)}${e.data !== undefined ? ` <span class="dbg-d">${esc(JSON.stringify(e.data)).slice(0, 220)}</span>` : ""}</div>`
       ).join("");

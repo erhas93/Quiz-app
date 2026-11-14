@@ -1,13 +1,13 @@
 // Moderatoransicht während der Partie
-import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, resultFor, jokerOf } from "../model.js";
-import { gameHeader, questionBox, factBox, L, shortName, formatValue } from "./common.js";
+import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs } from "../model.js";
+import { gameHeader, questionCard, factCard, L, shortName, formatValue, standing, ICON } from "./common.js";
 
 export function modGameView(s, me) {
   const room = s.room;
   const g = room.game || {};
   const qi = g.qIndex ?? 0;
   const q = room.questions?.[qi];
-  if (!q) return `<div class="page center"><div class="spin"></div></div>`;
+  if (!q) return `<div class="screen"><div class="body center"><div class="spin"></div></div></div>`;
 
   const phase = g.phase;
   const players = activePlayers(room);
@@ -15,88 +15,66 @@ export function modGameView(s, me) {
   const done = answeredCount(room);
   const total = players.length;
   const revealed = phase === "revealed";
-  const res = resultFor(room, qi);
+  const factOpen = s.local.factOpen === qi;
 
-  let body = questionBox(q);
+  let body = questionCard(q);
 
   if (!isOpenType(q)) {
+    // Markierungen zeigen live, wer was gewählt hat
     body += `<div class="answers">${q.a.map((txt, i) => {
       const who = players.filter(p => answers[p.uid]?.value === i);
-      const cls = ["ans", "disabled"];
-      if (i === q.r) cls.push("correct"); else if (who.length) cls.push("wrong");
+      const cls = ["ans", i === q.r ? "correct" : who.length ? "wrong" : ""];
       const mk = who.length ? `<span class="mkrs">${who.map(p => `<span class="mkr">${shortName(p.name)}</span>`).join("")}</span>` : "";
-      return `<div class="${cls.join(" ")}"><span class="ans-l">${i === q.r ? "✓" : L(i)}</span><span class="ans-txt">${esc(txt)}</span>${mk}</div>`;
+      return `<button class="${cls.join(" ")}" disabled><span class="ans-l">${i === q.r ? ICON.check(18) : L(i)}</span><span class="ans-txt">${esc(txt)}</span>${mk}</button>`;
     }).join("")}</div>`;
   } else {
-    // Erwartete Antwort und ggf. Abstände bei Schätzfragen
-    let hint = `<strong>Richtige Antwort:</strong> ${q.answer != null ? formatValue(q, q.answer) : "–"}`;
+    // Lösung, bei Schätzfragen mit Abständen
+    let sol = `<b>Richtig:</b> ${q.answer != null ? formatValue(q, q.answer) : "–"}`;
     if (q.type === "estimate" && q.answer != null) {
       const correct = parseFloat(q.answer);
-      const diffs = players.map(p => {
-        const v = answers[p.uid]?.value;
-        return { p, d: typeof v === "number" ? Math.abs(v - correct) : null };
-      }).filter(x => x.d != null).sort((a, b) => a.d - b.d);
-      if (diffs.length) {
-        hint += `<br>${diffs.map(x => `${esc(x.p.name)}: Abstand ${x.d.toLocaleString("de-DE")}`).join("<br>")}`;
-        if (diffs.length > 1) {
-          const best = diffs.filter(x => x.d === diffs[0].d).map(x => esc(x.p.name)).join(" & ");
-          hint += `<br><strong>Am nächsten: ${best}</strong>`;
-        }
-      }
+      const diffs = players.map(p => { const v = answers[p.uid]?.value; return { p, d: typeof v === "number" ? Math.abs(v - correct) : null }; })
+        .filter(x => x.d != null).sort((a, b) => a.d - b.d);
+      if (diffs.length > 1) sol += `<div class="small">Am nächsten: <b>${diffs.filter(x => x.d === diffs[0].d).map(x => esc(x.p.name)).join(" & ")}</b> (Abstand ${diffs[0].d.toLocaleString("de-DE")})</div>`;
     }
-    body += `<div class="hint">${hint}</div>`;
+    body += `<div class="solution">${sol}</div>`;
     body += players.map(p => {
       const a = answers[p.uid];
       const j = judgmentOf(room, qi, p.uid);
       const canJudge = a && phase === "shown";
-      return `<div class="pans ${j || ""}">
-        <div class="pans-name"><span>${esc(p.name)}</span><span>${a ? fmtMs(a.ms) : ""}</span></div>
-        ${a ? `<div class="pans-val">${formatValue(q, a.value)}</div>` : `<div class="pans-none">${phase === "answering" ? "Noch keine Antwort" : "Keine Antwort"}</div>`}
-        ${canJudge ? `<div class="judge-row">
-          <button class="judge-btn judge-c${j === "correct" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="1">Richtig ✓</button>
-          <button class="judge-btn judge-w${j === "wrong" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="0">Falsch ✗</button>
-        </div>` : ""}</div>`;
+      let meta = a ? fmtMs(a.ms) : "";
+      if (q.type === "estimate" && a && typeof a.value === "number" && q.answer != null) meta = `Δ ${Math.abs(a.value - parseFloat(q.answer)).toLocaleString("de-DE")}`;
+      return `<div class="prow ${j || ""}"><span class="prow-name">${esc(p.name)}</span>
+        ${a ? `<span class="prow-val">${phase === "answering" ? "eingeloggt ✓" : formatValue(q, a.value)}</span>` : `<span class="prow-val none">${phase === "answering" ? "denkt nach …" : "keine Antwort"}</span>`}
+        ${canJudge ? `<button class="judge c${j === "correct" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="1" aria-label="${esc(p.name)} richtig">${ICON.check(20)}</button>
+          <button class="judge w${j === "wrong" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="0" aria-label="${esc(p.name)} falsch">${ICON.x(20)}</button>` : `<span class="prow-meta">${phase === "answering" ? "" : meta}</span>`}</div>`;
     }).join("");
   }
 
-  // Antwortzeiten
-  const timed = players.filter(p => answers[p.uid]);
-  if (timed.length) {
-    const fastest = timed.reduce((a, b) => (answers[a.uid].ms <= answers[b.uid].ms ? a : b));
-    body += `<div class="speed"><div class="label" style="margin-bottom:2px">Antwortzeiten</div>
-      ${timed.sort((a, b) => answers[a.uid].ms - answers[b.uid].ms).map(p => `<div class="row"><span>${esc(p.name)}${res?.fastestUid === p.uid ? " ⚡" : ""}</span><b>${fmtMs(answers[p.uid].ms)}</b></div>`).join("")}
-      ${timed.length > 1 && !revealed ? `<div class="muted small">Am schnellsten: ${esc(fastest.name)}</div>` : ""}
-    </div>`;
-  }
+  if (phase === "shown" || revealed) body += factCard(q, factOpen, "Hintergrund · zum Vorlesen");
 
-  // 50:50-Joker (einmal pro Spieler und Partie)
-  if (!isOpenType(q) && phase === "answering") {
-    body += `<div class="card" style="padding:12px 14px"><div class="label" style="margin-bottom:8px">50:50-Joker vergeben</div>
-      <div class="pills">${players.map(p => {
-        const j = jokerOf(room, p.uid);
-        const off = !!j || !!answers[p.uid];
-        const lbl = j ? (j.q === qi ? "aktiv" : `verbraucht (F${j.q + 1})`) : answers[p.uid] ? "eingeloggt" : "vergeben";
-        return `<button class="pill" data-act="joker" data-arg="${p.uid}" ${off ? "disabled" : ""}>${esc(p.name)} · ${lbl}</button>`;
-      }).join("")}</div></div>`;
-  }
-
-  if (phase === "shown" || revealed) body += factBox(q);
-
-  // Aktionsknopf
-  let action;
-  if (phase === "answering") action = `<button class="btn btn-ghost btn-full btn-lg" data-act="showAnswers">Antworten zeigen${total > 1 || done < total ? ` (${done}/${total} eingeloggt)` : ""}</button>`;
-  else if (phase === "locked") action = `<button class="btn btn-primary btn-full btn-lg" data-act="showAnswers">Antworten zeigen</button>`;
+  // Hinweiszeile + Aktionsknopf (+ Timer-Steuerung bei manuellem Timer)
+  let note = "", action = "";
+  if (phase === "answering") { note = total ? `${done} von ${total} eingeloggt` : ""; action = `<button class="btn btn-ghost" data-act="showAnswers">Antworten zeigen</button>`; }
+  else if (phase === "locked") { note = "Alle eingeloggt"; action = `<button class="btn btn-primary" data-act="showAnswers">Antworten zeigen</button>`; }
   else if (phase === "shown") {
     const open = unjudgedCount(room);
-    action = `<button class="btn btn-gold btn-full btn-lg" data-act="reveal">Auflösen${open ? ` (${open} unbewertet = falsch)` : ""}</button>`;
+    note = open ? `${open} noch nicht bewertet – zählt sonst als falsch` : "";
+    action = `<button class="btn btn-gold" data-act="reveal">Auflösen</button>`;
   } else if (revealed) {
-    const last = qi + 1 >= qCount(room);
-    action = `<button class="btn btn-primary btn-full btn-lg" data-act="next">${last ? "Zum Ergebnis" : "Nächste Frage"}</button>`;
+    note = standing(room, null);
+    action = `<button class="btn btn-primary" data-act="next">${qi + 1 >= qCount(room) ? "Zum Ergebnis" : "Nächste Frage"}</button>`;
+  }
+  let timerBtns = "";
+  if (room.settings?.timerMode === "manual" && phase === "answering") {
+    const t = g.timer || {};
+    timerBtns = t.running ? `<button class="btn-sq" data-act="timerPause" aria-label="Timer anhalten">${ICON.pause()}</button>`
+      : `<button class="btn-sq" data-act="timerStart" aria-label="Timer starten">${ICON.play()}</button>`
+        + (t.pauseLeft != null ? `<button class="btn-sq" data-act="timerReset" aria-label="Timer zurücksetzen">${ICON.reset()}</button>` : "");
   }
 
-  return `<div class="game">
-    ${gameHeader(room, s.uid, "Moderator", true)}
-    <div class="g-body">${body}</div>
-    <div class="g-actions">${action || ""}</div>
+  return `<div class="screen">
+    ${gameHeader(s, "mod")}
+    <div class="body">${body}<div class="spacer"></div></div>
+    <div class="actions"><div class="foot-note">${note}</div><div class="actions-row">${timerBtns}${action}</div></div>
   </div>`;
 }

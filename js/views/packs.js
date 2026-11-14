@@ -1,5 +1,6 @@
 // Pack-Auswahl als eigene Ansicht: Suche, Filter, Favoriten, Ausblenden, "gespielt am"
 import { esc } from "../model.js";
+import { topBar } from "./common.js";
 
 // Spielstatistik je Pack aus /history
 export function playStats(history) {
@@ -40,31 +41,31 @@ export function packPickerView(s) {
     || ((stats[a.id]?.last || 0) - (stats[b.id]?.last || 0))
     || a.name.localeCompare(b.name, "de"));
 
-  const tabs = [["all", "Alle"], ["fav", "★ Favoriten"], ["new", "Neu für euch"]];
+  const tabs = [["all", "Alle"], ["fav", "★ Favoriten"], ["new", "Neu"]];
   const items = packs === null ? `<div class="spin"></div>`
     : packs?.error ? `<div class="muted">${esc(packs.error)}</div>`
     : !list.length ? `<div class="muted small" style="text-align:center;padding:16px">Keine Packs gefunden.</div>`
     : list.map(p => {
       const pr = prefs[p.id] || {};
       return `<div class="pk${p.id === sel ? " on" : ""}${pr.hidden ? " hid" : ""}">
-        <button class="pk-main" data-act="pickPack" data-arg="${esc(p.id)}">
-          <span class="pk-emoji">${esc(p.emoji || "❓")}</span>
-          <span class="pk-txt"><span class="pk-name">${esc(p.name)}</span>
-            <span class="pk-sub">${p.count} Fragen · ${packLine(p, stats)}</span></span>
+        <button class="pack-row" data-act="pickPack" data-arg="${esc(p.id)}">
+          <span class="pack-ico">${esc(p.emoji || "❓")}</span>
+          <span class="pack-txt"><span class="pack-name">${esc(p.name)}</span>
+            <span class="pack-sub">${p.count} Fragen · ${packLine(p, stats)}</span></span>
         </button>
-        <button class="pk-icon${pr.fav ? " fav" : ""}" data-act="packFav" data-arg="${esc(p.id)}" title="Favorit">${pr.fav ? "★" : "☆"}</button>
-        <button class="pk-icon" data-act="packHide" data-arg="${esc(p.id)}" title="${pr.hidden ? "Einblenden" : "Ausblenden"}">${pr.hidden ? "↺" : "✕"}</button>
+        <button class="pk-icon${pr.fav ? " fav" : ""}" data-act="packFav" data-arg="${esc(p.id)}" aria-label="${pr.fav ? "Favorit entfernen" : "Als Favorit merken"}">${pr.fav ? "★" : "☆"}</button>
+        <button class="pk-icon" data-act="packHide" data-arg="${esc(p.id)}" aria-label="${pr.hidden ? "Einblenden" : "Ausblenden"}">${pr.hidden ? "↺" : "✕"}</button>
       </div>`;
     }).join("");
 
-  return `<div class="game">
-    <div class="g-hdr">
-      <div class="hdr-r1"><h2>Fragenpaket wählen</h2><button class="btn btn-ghost btn-sm" data-act="closePicker">Zurück</button></div>
-      <input class="inp" id="in-packsearch" data-input="packSearch" placeholder="Suchen …" value="${esc(pk.q || "")}" autocomplete="off">
-      <div class="seg">${tabs.map(([k, l]) => `<button class="seg-btn${k === filter ? " on" : ""}" data-act="packFilter" data-arg="${k}">${l}</button>`).join("")}</div>
+  return `<div class="screen">
+    ${topBar("Fragenpaket", Array.isArray(packs) ? `${packs.length} Packs` : "", { back: "closePicker", connected: s.connected })}
+    <div class="search">
+      <input class="inp" id="in-packsearch" data-input="packSearch" placeholder="Suchen …" aria-label="Packs durchsuchen" value="${esc(pk.q || "")}" autocomplete="off">
+      <div class="seg3">${tabs.map(([k, l]) => `<button class="${k === filter ? "on" : ""}" data-act="packFilter" data-arg="${k}">${l}</button>`).join("")}</div>
     </div>
-    <div class="g-body">${items}
-      ${hiddenCount ? `<button class="btn btn-ghost btn-sm" data-act="toggleHidden" style="align-self:center">${pk.showHidden ? "Ausgeblendete verbergen" : `${hiddenCount} ausgeblendete anzeigen`}</button>` : ""}
+    <div class="body">${items}
+      ${hiddenCount ? `<button class="btn btn-text" data-act="toggleHidden">${pk.showHidden ? "Ausgeblendete verbergen" : `${hiddenCount} ausgeblendete anzeigen`}</button>` : ""}
     </div>
   </div>`;
 }
