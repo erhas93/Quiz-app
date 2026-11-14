@@ -1,5 +1,5 @@
 // Spieleransicht während der Partie
-import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway } from "../model.js";
+import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor } from "../model.js";
 import { gameHeader, questionBox, factBox, L, shortName, formatValue } from "./common.js";
 
 export function playerGameView(s, me) {
@@ -26,6 +26,7 @@ export function playerGameView(s, me) {
     status = phase === "answering" || phase === "locked" ? `Zuschauer · ${done}/${total} eingeloggt`
       : phase === "shown" ? "Zuschauer · Antworten werden gezeigt" : "Zuschauer · aufgelöst";
   } else if (phase === "answering" && !mine) status = total > 1 ? `Frage läuft · ${done}/${total} eingeloggt` : "Frage läuft";
+  else if (phase === "locked" && !mine) status = "Zeit abgelaufen – keine Antwort";
   else if (phase === "answering" || phase === "locked") { status = total > 1 && done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Eingeloggt ✓ · warte auf die Auflösung"; statusCls = "ok"; }
   else if (phase === "shown") status = isOpenType(q) ? "Antworten werden bewertet …" : "Alle Antworten sind sichtbar";
   else if (revealed) {
@@ -42,8 +43,13 @@ export function playerGameView(s, me) {
   if (!isOpenType(q)) {
     // Multiple Choice
     const canPick = !spectator && phase === "answering" && !mine;
+    const hidden = spectator || revealed ? [] : hiddenFor(room, qi, s.uid);
+    if (hidden.length && !mine) status = `50:50-Joker! ${status}`;
+    body = `${modOff}<div class="status-bar ${statusCls}">${status}</div>${questionBox(q)}`;
     body += `<div class="answers">${q.a.map((txt, i) => {
       const cls = ["ans"];
+      const gone = hidden.includes(i);
+      if (gone) return `<button class="ans disabled faded" disabled style="opacity:.12"><span class="ans-l">${L(i)}</span><span class="ans-txt">${esc(txt)}</span></button>`;
       if (!canPick) cls.push("disabled");
       if (revealed) {
         if (i === q.r) cls.push("correct");

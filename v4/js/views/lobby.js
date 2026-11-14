@@ -31,6 +31,7 @@ export function modLobbyView(s) {
       <div class="muted small" style="margin-top:10px">Spieler öffnen die App und tippen auf „Als Spieler beitreten“. 1 bis 4 Spieler.</div>
     </div>
     <div class="card"><div class="label">Fragenpaket</div>${packHtml}</div>
+    ${timerCard(room)}
     <button class="btn btn-primary btn-full btn-lg" data-act="startGame" ${startDisabled ? "disabled" : ""}>${startLabel}</button>
     <button class="btn btn-danger btn-full" data-act="closeRoom">Partie auflösen</button>
   </div>`;
@@ -66,5 +67,18 @@ export function spectatorLobbyView(s, me) {
     </div>
     ${full ? `<div class="status-bar">Die Lobby ist voll.</div>` : `<button class="btn btn-primary btn-full btn-lg" data-act="joinPlayer">Doch mitspielen</button>`}
     <button class="btn btn-ghost btn-full" data-act="leave">Zuschauen beenden</button>
+  </div>`;
+}
+
+function timerCard(room) {
+  const mode = room.settings?.timerMode || "none";
+  const sec = room.settings?.timerSec || 30;
+  const modes = [["none", "Kein Timer"], ["auto", "Auto"], ["manual", "Manuell"]];
+  const presets = [10, 20, 30, 45, 60];
+  return `<div class="card"><div class="label">Timer</div>
+    <div class="seg">${modes.map(([m, l]) => `<button class="seg-btn${m === mode ? " on" : ""}" data-act="timerMode" data-arg="${m}">${l}</button>`).join("")}</div>
+    ${mode === "none" ? "" : `<div class="pills" style="margin-top:10px">${presets.map(p => `<button class="pill${p === sec ? " on" : ""}" data-act="timerSec" data-arg="${p}">${p} s</button>`).join("")}
+      <input class="inp pill-inp" id="in-timersec" type="number" min="5" max="300" inputmode="numeric" placeholder="eigene" data-commit="timerSec" value="${presets.includes(sec) ? "" : sec}"></div>
+      <div class="muted small" style="margin-top:8px">${mode === "auto" ? "Startet bei jeder Frage automatisch." : "Du startest, pausierst und setzt den Timer pro Frage selbst."} Läuft er ab, wird die Frage gesperrt.</div>`}
   </div>`;
 }

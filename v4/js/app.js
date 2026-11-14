@@ -5,7 +5,7 @@ import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft } from "./model.js";
 import { vibrate, keepAwake } from "./native.js";
 import { homeView } from "./views/home.js";
 import { modLobbyView, playerLobbyView, spectatorLobbyView } from "./views/lobby.js";
@@ -13,7 +13,7 @@ import { playerGameView } from "./views/player.js";
 import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 
-export const VERSION = "v4.0.0-alpha.3";
+export const VERSION = "v4.0.0-beta.1";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -64,7 +64,7 @@ function banners(s) {
 // Kurze Einblendung „Richtig/Falsch“ beim Auflösen, einmal pro Frage
 let overlayShownFor = null, overlayTimer = null, overlayVisible = false;
 function overlay(s) {
-  if (!overlayVisible) return "";
+  if (!overlayVisible || s.room?.game?.phase !== "revealed") return "";
   const qi = s.room?.game?.qIndex;
   const ok = resultFor(s.room, qi)?.points?.[s.uid];
   return `<div class="overlay"><div class="overlay-big" style="color:${ok ? "var(--c2)" : "var(--c5)"}">${ok ? "Richtig!" : "Leider falsch"}</div></div>`;
@@ -109,6 +109,29 @@ function afterRender(s, key) {
 }
 let packsLoading = false;
 
+// ── Timer-Anzeige: läuft zwischen den Renders, Moderator sperrt bei Ablauf ──
+let expiredFor = null;
+function tick() {
+  const s = store, room = s.room, g = room?.game;
+  const el = $("tnum");
+  if (el && g && room?.meta?.status === "running") {
+    const sec = room.settings?.timerSec || 30;
+    const left = timerLeft(room, serverNow());
+    if (left != null) {
+      el.textContent = Math.ceil(left) + "s";
+      el.className = "t-num" + (g.phase === "answering" && g.timer?.running ? (left <= 5 ? " urgent" : left <= 10 ? " warn" : "") : "");
+      const bar = $("tbar");
+      if (bar) { bar.style.width = Math.max(0, left / sec * 100) + "%"; bar.style.background = left <= 5 ? "var(--c5)" : left <= 10 ? "var(--c4)" : "var(--c2)"; }
+      if (left <= 0 && g.phase === "answering" && g.timer?.running && meIn(room, s.uid)?.role === "moderator") {
+        const k = `${room.meta?.createdAt}:${g.qIndex}:${g.timer.startAt}`;
+        if (expiredFor !== k) { expiredFor = k; A.timerExpired(g.qIndex); vibrate(200); }
+      }
+    }
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
 // ── Eingaben ───────────────────────────────────────────────────────────────
 function parseEstimate(raw) {
   let t = raw.trim().replace(/\s/g, "");
@@ -135,6 +158,13 @@ const handlers = {
   startGame: (el) => { el.disabled = true; A.startGame(); },
   closeRoom: () => { if (confirm("Partie für alle beenden und den Raum leeren?")) A.resetRoom(); },
   newRound: () => A.newRound(),
+  timerMode: (el) => A.setTimer(el.dataset.arg),
+  timerSec: (el) => A.setTimer(null, Number(el.dataset.arg)),
+  timerStart: () => A.timerStart(),
+  timerPause: () => A.timerPause(),
+  timerReset: () => A.timerReset(),
+  joker: (el) => A.grantJoker(el.dataset.arg),
+  bonus: (el) => A.setBonus(el.dataset.arg || null),
   pick: (el) => { const qi = store.room?.game?.qIndex; setLocal({ pending: { qi, value: Number(el.dataset.arg) } }); vibrate(15); },
   commitPick: async (el) => {
     const p = store.local.pending; if (!p) return;
@@ -180,6 +210,7 @@ document.addEventListener("input", e => {
 });
 document.addEventListener("change", e => {
   if (e.target.dataset?.commit === "setName") A.setName(e.target.value);
+  if (e.target.dataset?.commit === "timerSec") { const v = Number(e.target.value); if (v >= 5 && v <= 300) A.setTimer(null, v); }
 });
 document.addEventListener("keydown", e => {
   if (e.key !== "Enter" || e.target.tagName !== "INPUT") return;

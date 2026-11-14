@@ -162,3 +162,23 @@ h2{font-size:var(--fs-lg);font-weight:800}
 .ttable th{color:var(--text2);font-weight:700}
 .ttable td.ok{color:var(--c2)}.ttable td.no{color:var(--c5)}
 .ttable td.fast{font-weight:900}
+
+/* ── TIMER / PILLS (Phase 3) ── */
+.timer-row{display:flex;align-items:center;gap:8px;min-height:24px}
+.timer-row.off{opacity:.45}
+.t-num{font-size:var(--fs-lg);font-weight:900;min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+.t-num.warn{color:var(--c4)}.t-num.urgent{color:var(--c5);animation:pulse .5s infinite alternate}
+@keyframes pulse{from{opacity:1}to{opacity:.35}}
+.t-track{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden}
+.t-fill{height:100%;border-radius:99px;background:var(--c2);transition:width .25s linear,background .5s}
+.t-btns{display:flex;gap:6px;flex-shrink:0}
+.speed-lead{text-align:center;font-size:.75rem;color:var(--text2)}
+.speed-lead b{color:var(--c3)}
+.seg{display:flex;gap:6px}
+.seg-btn{flex:1;padding:9px;border-radius:var(--r-sm);border:1.5px solid var(--card-b);background:var(--bg3);color:var(--text2);font-weight:600;cursor:pointer}
+.seg-btn.on{border-color:var(--c2);background:rgba(42,157,143,.15);color:var(--c2)}
+.pills{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pill{padding:7px 13px;border-radius:99px;border:1.5px solid var(--card-b);background:var(--bg3);color:var(--text2);font-weight:600;cursor:pointer;font-size:.9rem}
+.pill.on{border-color:var(--c3);background:rgba(233,196,106,.12);color:var(--c3)}
+.pill:disabled{opacity:.4;cursor:default}
+.pill-inp{width:90px;padding:7px 10px;border-radius:99px;text-align:center}

@@ -30,7 +30,7 @@ export function resultsView(s, me) {
       ${rk.map(p => `<div class="rank${p.rank === 1 ? " first" : ""}">
         <span class="rank-pos">${p.rank}</span>
         <span class="rank-name">${esc(p.name)}${p.uid === s.uid ? " (du)" : ""}<div class="muted small">${p.correct}/${qs.length} richtig · Ø ${fmtMs(p.avgMs)}</div></span>
-        <span class="rank-pts">${p.score}</span></div>`).join("")}
+        <span class="rank-pts">${p.score}${p.uid === room.bonus?.uid ? `<div class="muted small" style="text-align:right">inkl. Bonus</div>` : ""}</span></div>`).join("")}
       </div></div>`;
   }
 
@@ -47,11 +47,18 @@ export function resultsView(s, me) {
       }).join("")}</tr>`;
     }).join("")}</tbody></table></div>`;
 
+  // Bonuspunkt (z. B. für Geschwindigkeit), vom Moderator vergeben
+  const bonusUid = room.bonus?.uid || null;
+  const bonus = isMod ? `<div class="card"><div class="label">Bonuspunkt vergeben</div>
+      <div class="pills">${rk.map(p => `<button class="pill${p.uid === bonusUid ? " on" : ""}" data-act="bonus" data-arg="${p.uid}">${esc(p.name)}${p.uid === bonusUid ? " +1 ✓" : ""}</button>`).join("")}
+      <button class="pill${!bonusUid ? " on" : ""}" data-act="bonus" data-arg="">Keiner</button></div></div>`
+    : bonusUid ? `<div class="status-bar">Bonuspunkt für ${esc(room.players?.[bonusUid]?.name || "–")}</div>` : "";
+
   const actions = isMod
     ? `<button class="btn btn-primary btn-full btn-lg" data-act="newRound">Neue Runde mit denselben Spielern</button>
        <button class="btn btn-danger btn-full" data-act="closeRoom">Partie beenden</button>`
     : `<div class="status-bar">Der Moderator kann eine neue Runde starten.</div>
        <button class="btn btn-ghost btn-full" data-act="dismiss">Zurück zum Start</button>`;
 
-  return `<div class="page">${head}${table}${actions}</div>`;
+  return `<div class="page">${head}${bonus}${table}${actions}</div>`;
 }

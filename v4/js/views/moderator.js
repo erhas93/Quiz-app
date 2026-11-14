@@ -1,5 +1,5 @@
 // Moderatoransicht während der Partie
-import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, resultFor } from "../model.js";
+import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, resultFor, jokerOf } from "../model.js";
 import { gameHeader, questionBox, factBox, L, shortName, formatValue } from "./common.js";
 
 export function modGameView(s, me) {
@@ -67,6 +67,17 @@ export function modGameView(s, me) {
       ${timed.sort((a, b) => answers[a.uid].ms - answers[b.uid].ms).map(p => `<div class="row"><span>${esc(p.name)}${res?.fastestUid === p.uid ? " ⚡" : ""}</span><b>${fmtMs(answers[p.uid].ms)}</b></div>`).join("")}
       ${timed.length > 1 && !revealed ? `<div class="muted small">Am schnellsten: ${esc(fastest.name)}</div>` : ""}
     </div>`;
+  }
+
+  // 50:50-Joker (einmal pro Spieler und Partie)
+  if (!isOpenType(q) && phase === "answering") {
+    body += `<div class="card" style="padding:12px 14px"><div class="label" style="margin-bottom:8px">50:50-Joker vergeben</div>
+      <div class="pills">${players.map(p => {
+        const j = jokerOf(room, p.uid);
+        const off = !!j || !!answers[p.uid];
+        const lbl = j ? (j.q === qi ? "aktiv" : `verbraucht (F${j.q + 1})`) : answers[p.uid] ? "eingeloggt" : "vergeben";
+        return `<button class="pill" data-act="joker" data-arg="${p.uid}" ${off ? "disabled" : ""}>${esc(p.name)} · ${lbl}</button>`;
+      }).join("")}</div></div>`;
   }
 
   if (phase === "shown" || revealed) body += factBox(q);

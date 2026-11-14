@@ -156,8 +156,8 @@ export async function startGame() {
     const now = serverNow();
     await update(roomRef(), {
       questions,
-      game: { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now },
-      answers: null, judgments: null, results: null,
+      game: { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now) },
+      answers: null, judgments: null, results: null, jokers: null, bonus: null,
       "settings/packName": pack.name
     });
     // 2. Lobby → läuft, nur wenn noch Lobby
@@ -168,6 +168,11 @@ export async function startGame() {
     DBG.log("startGame", { committed: res.committed, fragen: questions.length });
     return res.committed;
   } catch (e) { return fail("Start fehlgeschlagen", e); }
+}
+
+// Timer zu Beginn einer Frage: bei "auto" läuft er sofort, sonst steht er
+function freshTimer(room, now) {
+  return room?.settings?.timerMode === "auto" ? { running: true, startAt: now } : { running: false };
 }
 
 async function transition(fromPhases, expectedQ, patch, label) {
@@ -181,8 +186,10 @@ async function transition(fromPhases, expectedQ, patch, label) {
   } catch (e) { return fail(`Phasenwechsel (${label}) fehlgeschlagen`, e); }
 }
 
-export const lockAnswers = qi => transition(["answering"], qi, { phase: "locked" }, "gesperrt");
-export const showAnswers = qi => transition(["answering", "locked"], qi, { phase: "shown" }, "gezeigt");
+const STOPPED = { running: false, pauseLeft: 0 };
+export const lockAnswers = qi => transition(["answering"], qi, { phase: "locked", timer: STOPPED }, "gesperrt");
+export const showAnswers = qi => transition(["answering", "locked"], qi, { phase: "shown", timer: STOPPED }, "gezeigt");
+export const timerExpired = qi => transition(["answering"], qi, { phase: "locked", timer: STOPPED }, "Zeit abgelaufen");
 
 export async function reveal(qi) {
   const room = store.room;
@@ -199,7 +206,7 @@ export async function nextQuestion(qi) {
   const total = qCount(room);
   if (qi + 1 >= total) return finishGame(qi);
   const now = serverNow();
-  return transition(["revealed"], qi, { phase: "answering", qIndex: qi + 1, questionStartAt: now }, "nächste Frage");
+  return transition(["revealed"], qi, { phase: "answering", qIndex: qi + 1, questionStartAt: now, timer: freshTimer(room, now) }, "nächste Frage");
 }
 
 async function finishGame(qi) {
@@ -208,23 +215,27 @@ async function finishGame(qi) {
   const room = store.room;
   try {
     await update(roomRef("meta"), { status: "finished", finishedAt: serverNow(), updatedAt: serverNow() });
-    // Kurzfassung für die Statistik
-    const rk = ranking(room);
-    const gameId = `${ROOM_ID}_${room.meta?.createdAt || Date.now()}`;
-    await set(ref(db, `history/${gameId}`), {
-      at: serverNow(), packId: room.settings?.packId || null, packName: room.settings?.packName || null,
-      players: rk.map(p => ({ name: p.name, score: p.score, correct: p.correct, avgMs: p.avgMs ? Math.round(p.avgMs) : null })),
-      moderator: moderatorOf(room)?.name || null, questions: qCount(room)
-    });
+    await writeHistory(store.room);
   } catch (e) { fail("Abschluss nicht vollständig gespeichert", e); }
   return true;
+}
+
+// Kurzfassung für die Statistik (wird bei Bonus-Änderung neu geschrieben)
+async function writeHistory(room) {
+  const rk = ranking(room);
+  const gameId = `${ROOM_ID}_${room.meta?.createdAt || 0}_${room.meta?.startedAt || 0}`;
+  await set(ref(db, `history/${gameId}`), {
+    at: room.meta?.finishedAt || serverNow(), packId: room.settings?.packId || null, packName: room.settings?.packName || null,
+    players: rk.map(p => ({ name: p.name, score: p.score, correct: p.correct, avgMs: p.avgMs ? Math.round(p.avgMs) : null })),
+    moderator: moderatorOf(room)?.name || null, questions: qCount(room), bonus: room.bonus?.uid ? (room.players?.[room.bonus.uid]?.name || null) : null
+  });
 }
 
 // Neue Runde mit denselben Leuten
 export async function newRound() {
   const patch = {
     "meta/status": "lobby", "meta/updatedAt": serverNow(), "meta/startedAt": null, "meta/finishedAt": null,
-    game: null, questions: null, answers: null, judgments: null, results: null
+    game: null, questions: null, answers: null, judgments: null, results: null, jokers: null, bonus: null
   };
   for (const p of activePlayers(store.room)) patch[`players/${p.uid}/ready`] = false;
   try { await update(roomRef(), patch); DBG.log("newRound"); } catch (e) { fail("Neue Runde fehlgeschlagen", e); }
@@ -235,6 +246,55 @@ export async function judge(qi, playerUid, correct) {
     await set(roomRef(`judgments/${qi}/${playerUid}`), { v: correct ? "correct" : "wrong", by: uid() });
     DBG.log("judge", { qi, correct });
   } catch (e) { fail("Bewertung nicht gespeichert", e); }
+}
+
+// ── Timer, Joker, Bonus (Moderator) ────────────────────────────────────────
+export async function setTimer(mode, sec) {
+  const patch = {};
+  if (mode) patch.timerMode = mode;
+  if (sec) patch.timerSec = Math.min(300, Math.max(5, Math.round(sec)));
+  try { await update(roomRef("settings"), patch); DBG.log("setTimer", patch); } catch (e) { fail("Timer nicht gespeichert", e); }
+}
+
+async function timerTx(fn, label) {
+  try {
+    const res = await runTransaction(roomRef("game"), g => {
+      if (!g || g.phase !== "answering") return;
+      const t = fn(g.timer || {}, store.room?.settings?.timerSec || 30, serverNow());
+      if (!t) return;
+      return { ...g, timer: t };
+    });
+    DBG.log(`Timer: ${label}`, { committed: res.committed });
+  } catch (e) { fail("Timer-Aktion fehlgeschlagen", e); }
+}
+export const timerStart = () => timerTx((t, sec, now) => t.running ? null
+  : { running: true, startAt: t.pauseLeft != null ? now - (sec - t.pauseLeft) * 1000 : now }, "Start");
+export const timerPause = () => timerTx((t, sec, now) => !t.running ? null
+  : { running: false, pauseLeft: Math.max(0, sec - (now - t.startAt) / 1000) }, "Pause");
+export const timerReset = () => timerTx(() => ({ running: false }), "Reset");
+
+export async function grantJoker(playerUid) {
+  const room = store.room;
+  const g = room?.game;
+  const q = room?.questions?.[g?.qIndex];
+  if (!g || g.phase !== "answering" || !q || q.type === "estimate" || q.type === "open") return fail("Joker nur bei offener Multiple-Choice-Frage");
+  if (room.answers?.[g.qIndex]?.[playerUid]) return fail("Der Spieler hat schon eingeloggt");
+  const wrongs = q.a.map((_, i) => i).filter(i => i !== q.r);
+  for (let i = wrongs.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [wrongs[i], wrongs[j]] = [wrongs[j], wrongs[i]]; }
+  try {
+    const res = await runTransaction(roomRef(`jokers/${playerUid}`), cur => cur ? undefined : { q: g.qIndex, hidden: wrongs.slice(0, 2).sort() });
+    DBG.log("grantJoker", { committed: res.committed });
+    if (!res.committed) fail("Joker wurde schon verbraucht");
+  } catch (e) { fail("Joker nicht vergeben", e); }
+}
+
+export async function setBonus(playerUid) {
+  try {
+    await set(roomRef("bonus"), playerUid ? { uid: playerUid } : null);
+    DBG.log("setBonus", playerUid);
+    // Store ist nach set() lokal aktualisiert → Statistik mit Bonus neu schreiben
+    setTimeout(() => writeHistory(store.room).catch(() => {}), 300);
+  } catch (e) { fail("Bonus nicht gespeichert", e); }
 }
 
 // ── Antworten (Spieler) ────────────────────────────────────────────────────

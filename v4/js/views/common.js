@@ -1,5 +1,5 @@
 // Gemeinsame Bausteine der Ansichten
-import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType } from "../model.js";
+import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf } from "../model.js";
 
 export const L = i => String.fromCharCode(65 + i);
 
@@ -24,6 +24,28 @@ export function factBox(q) {
 }
 
 // Kopfzeile im Spiel: Rolle, Fragennummer, Punkte aller Spieler, Fortschritt
+// Timerzeile: Zahl + Balken werden zwischen den Renders per requestAnimationFrame aktualisiert (ids tnum/tbar)
+function timerRow(room, isMod) {
+  const mode = room.settings?.timerMode || "none";
+  if (mode === "none") return "";
+  const g = room.game || {};
+  const sec = room.settings?.timerSec || 30;
+  const left = timerLeft(room, Date.now());
+  const pct = Math.max(0, Math.min(100, left / sec * 100));
+  const t = g.timer || {};
+  let btns = "";
+  if (isMod && mode === "manual" && g.phase === "answering") {
+    if (t.running) btns = `<button class="btn btn-danger btn-sm" data-act="timerPause">Pause</button>`;
+    else btns = `<button class="btn btn-primary btn-sm" data-act="timerStart">${t.pauseLeft != null ? "Weiter" : "Start"}</button>`;
+    if (t.running || t.pauseLeft != null) btns += `<button class="btn btn-ghost btn-sm" data-act="timerReset">Reset</button>`;
+  }
+  const active = g.phase === "answering";
+  return `<div class="timer-row${active ? "" : " off"}">
+    <span class="t-num" id="tnum">${Math.ceil(left)}s</span>
+    <div class="t-track"><div class="t-fill" id="tbar" style="width:${pct}%"></div></div>
+    ${btns ? `<span class="t-btns">${btns}</span>` : ""}</div>`;
+}
+
 export function gameHeader(room, uid, roleLabel, isMod) {
   const g = room.game || {};
   const total = qCount(room);
@@ -32,17 +54,22 @@ export function gameHeader(room, uid, roleLabel, isMod) {
   const chips = activePlayers(room).map(p => {
     let state = "";
     if (g.phase === "answering" || g.phase === "locked") state = answers[p.uid] ? `<span class="chip-state ok">✓</span>` : `<span class="chip-state">…</span>`;
+    if (jokerOf(room, p.uid)?.q === qi && (g.phase === "answering" || g.phase === "locked")) state = `<span class="chip-state" style="color:var(--c3)">50:50</span>` + state;
     return `<div class="chip${p.uid === uid ? " me" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span>
       <span class="chip-name">${esc(p.name)}</span>${state}
       <span class="chip-pts">${scoreOf(room, p.uid)}</span></div>`;
   }).join("");
   const pct = total ? ((qi + (g.phase === "revealed" ? 1 : 0)) / total * 100) : 0;
+  const sl = speedLead(room);
+  const lead = sl ? `<div class="speed-lead">⚡ <b>${esc(sl.leader.name)}</b> ist im Schnitt am schnellsten · Δ ${fmtMs(sl.delta)}</div>` : "";
   return `<div class="g-hdr">
     <div class="hdr-r1"><div class="hdr-badge${isMod ? " mod" : ""}">${esc(roleLabel)}</div>
       <div class="hdr-qnum">${spectatorsOf(room).length ? `<span title="Zuschauer">👁 ${spectatorsOf(room).length}</span> · ` : ""}Frage ${qi + 1} / ${total}</div></div>
     <div class="chips">${chips}</div>
+    ${lead}
     <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
+    ${timerRow(room, isMod)}
   </div>`;
 }
 

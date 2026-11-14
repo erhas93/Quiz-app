@@ -93,7 +93,37 @@ export const resultFor = (room, qi) => room?.results?.[qi] || null;
 export function scoreOf(room, uid) {
   let s = 0;
   for (const r of vals(room?.results)) s += r?.points?.[uid] || 0;
+  if (room?.bonus?.uid === uid) s += 1;
   return s;
+}
+
+// 50:50-Joker: einmal pro Partie und Spieler, vom Moderator vergeben
+export const jokerOf = (room, uid) => room?.jokers?.[uid] || null;
+export function hiddenFor(room, qi, uid) {
+  const j = jokerOf(room, uid);
+  return j && j.q === qi ? vals(j.hidden) : [];
+}
+
+// Timer: verbleibende Sekunden oder null (kein Timer)
+export function timerLeft(room, now) {
+  const mode = room?.settings?.timerMode || "none";
+  if (mode === "none") return null;
+  const sec = room?.settings?.timerSec || 30;
+  const t = room?.game?.timer || {};
+  if (t.running && t.startAt) return Math.max(0, sec - (now - t.startAt) / 1000);
+  if (t.pauseLeft != null) return Math.max(0, t.pauseLeft);
+  return sec;
+}
+
+// Geschwindigkeitsführung: Ø-Antwortzeit über alle bisherigen Antworten
+export function speedLead(room) {
+  const list = activePlayers(room).map(p => {
+    const ts = [];
+    for (const a of vals(room?.answers)) if (a?.[p.uid] && typeof a[p.uid].ms === "number") ts.push(a[p.uid].ms);
+    return { p, n: ts.length, avg: ts.length ? ts.reduce((x, y) => x + y, 0) / ts.length : null };
+  }).filter(x => x.avg != null).sort((a, b) => a.avg - b.avg);
+  if (list.length < 2) return null;
+  return { leader: list[0].p, delta: list[1].avg - list[0].avg };
 }
 
 // Unbewertete Schätz-/Freitextantworten der aktuellen Frage
