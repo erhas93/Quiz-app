@@ -30,7 +30,9 @@ export function modLobbyView(s) {
     <div class="card">
       <div class="label">Teilnehmer</div>
       ${playerList(room, s.uid)}
-      <div class="muted small" style="margin-top:10px">Spieler öffnen die App und tippen auf „Als Spieler beitreten“. 1 bis 4 Spieler.</div>
+      <div class="row" style="margin-top:10px">
+        <div class="muted small">Spieler öffnen die App und tippen auf „Als Spieler beitreten“. 1 bis 4 Spieler.</div>
+        <button class="btn btn-ghost btn-sm" data-act="invite" style="flex-shrink:0">Einladen</button></div>
     </div>
     <div class="card"><div class="label">Fragenpaket</div>${packHtml}</div>
     ${timerCard(room)}

@@ -6,7 +6,7 @@ import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
 import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft } from "./model.js";
-import { vibrate, keepAwake } from "./native.js";
+import { vibrate, keepAwake, share, initNative, isApp } from "./native.js";
 import { homeView } from "./views/home.js";
 import { modLobbyView, playerLobbyView, spectatorLobbyView } from "./views/lobby.js";
 import { playerGameView } from "./views/player.js";
@@ -14,7 +14,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.1.1";
+export const VERSION = "v4.2.0";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -201,7 +201,12 @@ const handlers = {
     try { localStorage.setItem("quiz.v4.theme", light ? "dark" : "light"); } catch {}
   },
   fullscreen: () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); },
-  debug: () => DBG.toggle()
+  debug: () => DBG.toggle(),
+  invite: async () => {
+    const url = "https://erhas93.github.io/Quiz-app/" + (ROOM_ID !== "main" ? `?room=${ROOM_ID}` : "");
+    const r = await share(`Komm in die Quiz-Lobby von ${store.local.name || "uns"}!`, url);
+    if (r === "kopiert") setLocal({ error: "Link kopiert – einfach verschicken." });
+  }
 };
 
 document.addEventListener("click", e => {
@@ -246,6 +251,17 @@ document.addEventListener("keydown", e => {
   DBG.log("Start", { version: VERSION, room: ROOM_ID, auth: id.mode });
   subscribe();
   watchVisibility(store, rerender);
+  // Android-App: Zurück-Taste schließt erst Overlays, sonst App minimieren; Rückkehr frischt auf
+  initNative({
+    onBack: () => {
+      if (store.local.picker) { setLocal({ picker: null }); return true; }
+      const dbg = $("dbg-panel"); if (dbg && dbg.style.display !== "none") { DBG.toggle(); return true; }
+      if (store.local.error) { setLocal({ error: null }); return true; }
+      return false;
+    },
+    onResume: () => { DBG.log("App wieder im Vordergrund"); rerender(); }
+  });
+  if (isApp()) DBG.log("läuft in der Android-App");
   // Zeitabhängige Anzeigen (offline seit …, abgebrochen) regelmäßig auffrischen
   setInterval(rerender, 15000);
 })();
