@@ -31,11 +31,11 @@ jobs:
         run: node tools/check-packs.mjs
 
       - name: Katalog erzeugen
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: node tools/check-packs.mjs --write
 
       - name: Katalog committen
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
           if git diff --quiet -- packs/index.json packs/catalog.json; then
             echo "Katalog unverändert."
