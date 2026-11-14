@@ -6,7 +6,7 @@ import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
 import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft } from "./model.js";
-import { vibrate, keepAwake, share, initNative, isApp } from "./native.js";
+import { vibrate, keepAwake, share, initNative, isApp, setBarStyle } from "./native.js";
 import { homeView } from "./views/home.js";
 import { modLobbyView, playerLobbyView, spectatorLobbyView } from "./views/lobby.js";
 import { playerGameView } from "./views/player.js";
@@ -14,7 +14,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.2.0";
+export const VERSION = "v4.2.1";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -198,6 +198,7 @@ const handlers = {
   theme: () => {
     const d = document.documentElement, light = d.getAttribute("data-theme") === "light";
     d.setAttribute("data-theme", light ? "dark" : "light");
+    setBarStyle(!light);
     try { localStorage.setItem("quiz.v4.theme", light ? "dark" : "light"); } catch {}
   },
   fullscreen: () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); },
@@ -261,7 +262,7 @@ document.addEventListener("keydown", e => {
     },
     onResume: () => { DBG.log("App wieder im Vordergrund"); rerender(); }
   });
-  if (isApp()) DBG.log("läuft in der Android-App");
+  if (isApp()) { DBG.log("läuft in der Android-App"); setBarStyle(document.documentElement.getAttribute("data-theme") === "light"); }
   // Zeitabhängige Anzeigen (offline seit …, abgebrochen) regelmäßig auffrischen
   setInterval(rerender, 15000);
 })();

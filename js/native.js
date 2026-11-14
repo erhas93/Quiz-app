@@ -52,3 +52,8 @@ export function initNative({ onBack, onResume }) {
   c.addListener("App", "resume", () => onResume());
   document.documentElement.classList.add("in-app");
 }
+
+// Statusleisten-Symbole passend zum Design: helles Design → dunkle Symbole
+export function setBarStyle(light) {
+  if (cap()) call("SystemBars", "setStyle", { style: light ? "LIGHT" : "DARK" }).catch(() => {});
+}
