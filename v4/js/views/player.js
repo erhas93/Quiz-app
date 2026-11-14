@@ -1,5 +1,5 @@
 // Spieleransicht während der Partie
-import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor } from "../model.js";
+import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway } from "../model.js";
 import { gameHeader, questionBox, factBox, L, shortName, formatValue } from "./common.js";
 
 export function playerGameView(s, me) {
@@ -10,7 +10,8 @@ export function playerGameView(s, me) {
   if (!q) return `<div class="page center"><div class="spin"></div><p class="muted" style="text-align:center">Partie startet …</p></div>`;
 
   const phase = g.phase;
-  const mine = answerOf(room, qi, s.uid);
+  const spectator = me.role === "spectator";
+  const mine = spectator ? null : answerOf(room, qi, s.uid);
   const total = activePlayers(room).length;
   const done = answeredCount(room);
   const pending = s.local.pending?.qi === qi ? s.local.pending.value : null;
@@ -21,7 +22,10 @@ export function playerGameView(s, me) {
 
   // Statuszeile
   let status, statusCls = "";
-  if (phase === "answering" && !mine) status = total > 1 ? `Frage läuft · ${done}/${total} eingeloggt` : "Frage läuft";
+  if (spectator) {
+    status = phase === "answering" || phase === "locked" ? `Zuschauer · ${done}/${total} eingeloggt`
+      : phase === "shown" ? "Zuschauer · Antworten werden gezeigt" : "Zuschauer · aufgelöst";
+  } else if (phase === "answering" && !mine) status = total > 1 ? `Frage läuft · ${done}/${total} eingeloggt` : "Frage läuft";
   else if (phase === "answering" || phase === "locked") { status = total > 1 && done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Eingeloggt ✓ · warte auf die Auflösung"; statusCls = "ok"; }
   else if (phase === "shown") status = isOpenType(q) ? "Antworten werden bewertet …" : "Alle Antworten sind sichtbar";
   else if (revealed) {
@@ -30,12 +34,14 @@ export function playerGameView(s, me) {
     statusCls = pts ? "ok" : "";
   }
 
-  let body = `<div class="status-bar ${statusCls}">${status}</div>${questionBox(q)}`;
+  const mod = moderatorOf(room);
+  const modOff = mod && !mod.online ? `<div class="status-bar" style="color:var(--c5)">Moderator ${esc(mod.name)} ist offline – warte …</div>` : "";
+  let body = `${modOff}<div class="status-bar ${statusCls}">${status}</div>${questionBox(q)}`;
   let actions = "";
 
   if (!isOpenType(q)) {
     // Multiple Choice
-    const canPick = phase === "answering" && !mine;
+    const canPick = !spectator && phase === "answering" && !mine;
     body += `<div class="answers">${q.a.map((txt, i) => {
       const cls = ["ans"];
       if (!canPick) cls.push("disabled");
@@ -56,7 +62,7 @@ export function playerGameView(s, me) {
     if (canPick) actions = `<button class="btn btn-blue btn-full btn-lg" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen ✓</button>`;
   } else {
     // Schätzen / Freitext
-    if (phase === "answering" && !mine) {
+    if (!spectator && phase === "answering" && !mine) {
       const draft = s.local.draft?.qi === qi ? s.local.draft.value : "";
       body += `<input class="inp ans-input" id="in-answer" data-input="draft" ${q.type === "estimate" ? 'inputmode="decimal"' : ""}
         placeholder="${q.type === "estimate" ? "Deine Schätzung" : "Deine Antwort"}" value="${esc(draft)}" autocomplete="off">`;
@@ -77,9 +83,11 @@ export function playerGameView(s, me) {
   }
 
   if (revealed) body += factBox(q);
+  if (spectator) actions = (moderatorAway(room, s.now || Date.now()) ? `<button class="btn btn-gold btn-full" data-act="takeover">Moderation übernehmen</button>` : "")
+    + `<button class="btn btn-ghost btn-full" data-act="leave">Zuschauen beenden</button>`;
 
   return `<div class="game">
-    ${gameHeader(room, s.uid, me.name, false)}
+    ${gameHeader(room, s.uid, spectator ? "Zuschauer" : me.name, false)}
     <div class="g-body">${body}</div>
     ${actions ? `<div class="g-actions">${actions}</div>` : ""}
   </div>`;

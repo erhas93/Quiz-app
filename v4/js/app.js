@@ -1,19 +1,19 @@
 // Einstieg: Identität, Abo auf den Raum, Rendern, Ereignisse
-import { initIdentity, ROOM_ID } from "./firebase.js";
+import { initIdentity, ROOM_ID, serverNow } from "./firebase.js";
 import { store, subscribe, onRender, rerender, setLocal } from "./store.js";
 import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway } from "./model.js";
 import { vibrate, keepAwake } from "./native.js";
 import { homeView } from "./views/home.js";
-import { modLobbyView, playerLobbyView } from "./views/lobby.js";
+import { modLobbyView, playerLobbyView, spectatorLobbyView } from "./views/lobby.js";
 import { playerGameView } from "./views/player.js";
 import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 
-export const VERSION = "v4.0.0-alpha.2";
+export const VERSION = "v4.0.0-alpha.3";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -23,11 +23,15 @@ function pickView(s) {
   const status = room?.meta?.status || "none";
   const me = meIn(room, s.uid);
   const dismissed = s.local.dismissed && s.local.dismissed === `${room?.meta?.createdAt}:${room?.meta?.finishedAt}`;
-  if (!me || status === "none" || status === "abandoned" || (status === "finished" && dismissed)) return { key: "home", html: homeView(s) };
-  if (status === "lobby") return me.role === "moderator" ? { key: "modLobby", html: modLobbyView(s, me) } : { key: "plLobby", html: playerLobbyView(s, me) };
+  if (!me || status === "none" || status === "abandoned" || (status === "finished" && dismissed)) return { key: "home", html: homeView(s, serverNow()) };
+  if (status === "lobby") {
+    if (me.role === "moderator") return { key: "modLobby", html: modLobbyView(s, me) };
+    if (me.role === "spectator") return { key: "specLobby", html: spectatorLobbyView(s, me) };
+    return { key: "plLobby", html: playerLobbyView(s, me) };
+  }
   if (status === "running") return me.role === "moderator" ? { key: "modGame", html: modGameView(s, me) } : { key: "plGame", html: playerGameView(s, me) };
   if (status === "finished") return { key: "results", html: resultsView(s, me) };
-  return { key: "home", html: homeView(s) };
+  return { key: "home", html: homeView(s, serverNow()) };
 }
 
 let lastView = "";
@@ -66,14 +70,19 @@ function overlay(s) {
   return `<div class="overlay"><div class="overlay-big" style="color:${ok ? "var(--c2)" : "var(--c5)"}">${ok ? "Richtig!" : "Leider falsch"}</div></div>`;
 }
 
-let lockRequested = null;
+let lockRequested = null, abandonChecked = null;
 function afterRender(s, key) {
   syncPresence(s);
   const room = s.room;
   const g = room?.game;
   keepAwake(key === "modGame" || key === "plGame");
 
-  if (key === "plGame" && g?.phase === "revealed") {
+  // Verlassene Partie (alle seit 10 min offline) als abgebrochen markieren – einmal pro Raum
+  if (isStale(room, serverNow())) {
+    const k = `${room.meta?.createdAt}`;
+    if (abandonChecked !== k) { abandonChecked = k; A.markAbandoned(); }
+  }
+  if (key === "plGame" && g?.phase === "revealed" && meIn(room, s.uid)?.role === "player") {
     const k = `${room.meta?.createdAt}:${g.qIndex}`;
     if (overlayShownFor !== k && resultFor(room, g.qIndex)) {
       overlayShownFor = k; overlayVisible = true;
@@ -114,6 +123,11 @@ const handlers = {
   createRoom: () => A.createRoom(store.local.name),
   joinPlayer: () => A.joinAsPlayer(store.local.name),
   joinModerator: () => A.joinAsModerator(store.local.name),
+  watch: () => A.joinAsSpectator(store.local.name),
+  takeover: () => {
+    if (!moderatorAway(store.room, serverNow())) return setLocal({ error: "Der Moderator ist wieder online." });
+    if (confirm("Moderation übernehmen? Der bisherige Moderator wird zum Zuschauer.")) A.joinAsModerator(store.local.name, true);
+  },
   leave: () => A.leaveRoom(),
   dismiss: () => setLocal({ dismissed: `${store.room?.meta?.createdAt}:${store.room?.meta?.finishedAt}` }),
   toggleReady: () => A.setReady(!store.room?.players?.[store.uid]?.ready),
@@ -187,4 +201,6 @@ document.addEventListener("keydown", e => {
   DBG.log("Start", { version: VERSION, room: ROOM_ID, auth: id.mode });
   subscribe();
   watchVisibility(store, rerender);
+  // Zeitabhängige Anzeigen (offline seit …, abgebrochen) regelmäßig auffrischen
+  setInterval(rerender, 15000);
 })();

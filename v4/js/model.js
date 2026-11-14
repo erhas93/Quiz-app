@@ -13,6 +13,34 @@ export function playersOf(room) {
     .sort((a, b) => (a.seat ?? 99) - (b.seat ?? 99) || (a.joinedAt || 0) - (b.joinedAt || 0));
 }
 export const activePlayers = room => playersOf(room).filter(p => p.role === "player");
+export const spectatorsOf = room => playersOf(room).filter(p => p.role === "spectator");
+
+// Zeitgrenzen
+export const ABANDON_MS = 10 * 60 * 1000;   // alle offline → Partie gilt als abgebrochen
+export const MOD_AWAY_MS = 60 * 1000;       // Moderator offline → Übernahme möglich
+
+// Letzte bekannte Aktivität im Raum
+export function lastActivity(room) {
+  let t = Math.max(room?.meta?.updatedAt || 0, room?.meta?.createdAt || 0, room?.game?.phaseAt || 0);
+  for (const p of Object.values(room?.presence || {})) if (p?.lastSeen) t = Math.max(t, p.lastSeen);
+  return t;
+}
+export const anyoneOnline = room => Object.values(room?.presence || {}).some(p => p?.online);
+
+// Laufende oder offene Partie, in der seit ABANDON_MS niemand mehr online war
+export function isStale(room, now) {
+  const st = room?.meta?.status;
+  if (st !== "lobby" && st !== "running") return false;
+  return !anyoneOnline(room) && now - lastActivity(room) > ABANDON_MS;
+}
+
+// Moderator ist eingetragen, aber länger offline
+export function moderatorAway(room, now) {
+  const m = moderatorOf(room);
+  if (!m || m.online) return false;
+  const since = m.lastSeen || lastActivity(room);
+  return now - since > MOD_AWAY_MS;
+}
 export const moderatorOf = room => playersOf(room).find(p => p.role === "moderator") || null;
 export const meIn = (room, uid) => (uid && room?.players?.[uid]) ? { uid, ...room.players[uid] } : null;
 

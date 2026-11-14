@@ -53,3 +53,18 @@ export function playerLobbyView(s, me) {
     <button class="btn btn-ghost btn-full" data-act="leave">Lobby verlassen</button>
   </div>`;
 }
+
+export function spectatorLobbyView(s, me) {
+  const room = s.room;
+  const full = activePlayers(room).length >= 4;
+  return `<div class="page">
+    <h2>Lobby · Zuschauer</h2>
+    <div class="card">
+      <div class="label">Teilnehmer</div>
+      ${playerList(room, s.uid)}
+      <div class="muted small" style="margin-top:10px">${room.settings?.packName ? `Fragenpaket: ${esc(room.settings.packName)}` : "Der Moderator wählt noch das Fragenpaket."}</div>
+    </div>
+    ${full ? `<div class="status-bar">Die Lobby ist voll.</div>` : `<button class="btn btn-primary btn-full btn-lg" data-act="joinPlayer">Doch mitspielen</button>`}
+    <button class="btn btn-ghost btn-full" data-act="leave">Zuschauen beenden</button>
+  </div>`;
+}

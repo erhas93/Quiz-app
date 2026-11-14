@@ -1,5 +1,5 @@
 // Gemeinsame Bausteine der Ansichten
-import { esc, activePlayers, scoreOf, answersFor, qCount, isOpenType } from "../model.js";
+import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType } from "../model.js";
 
 export const L = i => String.fromCharCode(65 + i);
 
@@ -40,7 +40,7 @@ export function gameHeader(room, uid, roleLabel, isMod) {
   const pct = total ? ((qi + (g.phase === "revealed" ? 1 : 0)) / total * 100) : 0;
   return `<div class="g-hdr">
     <div class="hdr-r1"><div class="hdr-badge${isMod ? " mod" : ""}">${esc(roleLabel)}</div>
-      <div class="hdr-qnum">Frage ${qi + 1} / ${total}</div></div>
+      <div class="hdr-qnum">${spectatorsOf(room).length ? `<span title="Zuschauer">👁 ${spectatorsOf(room).length}</span> · ` : ""}Frage ${qi + 1} / ${total}</div></div>
     <div class="chips">${chips}</div>
     <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
   </div>`;
@@ -56,7 +56,7 @@ export function playerList(room, uid, { showReady = true } = {}) {
     <div class="pitem${p.uid === uid ? " me" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span>
       <span class="pitem-name">${esc(p.name)}${p.uid === uid ? " (du)" : ""}</span>
-      ${p.role === "moderator" ? `<span class="tag mod">Moderator</span>`
+      ${p.role === "moderator" ? `<span class="tag mod">Moderator</span>` : p.role === "spectator" ? `<span class="tag">Zuschauer</span>`
         : showReady ? `<span class="tag${p.ready ? " ok" : ""}">${p.ready ? "Bereit ✓" : "Wartet"}</span>` : ""}
     </div>`).join("")}</div>`;
 }

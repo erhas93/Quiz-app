@@ -45,16 +45,18 @@ export async function joinAsPlayer(name) {
   name = (name || "").trim();
   if (!name) return fail("Bitte einen Namen eingeben");
   rememberName(name);
-  if (store.room?.meta?.status !== "lobby") return fail("Beitreten geht nur in der Lobby");
+  if (store.room?.meta?.status !== "lobby") return fail("Mitspielen geht nur in der Lobby");
   const now = serverNow();
   try {
     const res = await runTransaction(roomRef("players"), cur => {
       cur = cur || {};
-      if (cur[uid()]) { cur[uid()].name = name; return cur; }
+      const mine = cur[uid()];
+      if (mine && mine.role === "player") { mine.name = name; return cur; }
+      if (mine && mine.role === "moderator") return; // Moderator spielt nicht mit
       const list = Object.values(cur);
       if (list.filter(p => p.role === "player").length >= MAX_PLAYERS) return;
-      const seat = Math.max(0, ...list.map(p => p.seat || 0)) + 1;
-      cur[uid()] = { name, role: "player", seat, ready: false, joinedAt: now };
+      const seat = Math.max(0, ...list.filter(p => p.role !== "spectator").map(p => p.seat || 0)) + 1;
+      cur[uid()] = { name, role: "player", seat, ready: false, joinedAt: mine?.joinedAt || now };
       return cur;
     });
     DBG.log("joinAsPlayer", { committed: res.committed });
@@ -63,7 +65,26 @@ export async function joinAsPlayer(name) {
   } catch (e) { return fail("Beitreten fehlgeschlagen", e); }
 }
 
-export async function joinAsModerator(name) {
+export async function joinAsSpectator(name) {
+  name = (name || "").trim() || "Gast";
+  rememberName(name);
+  const st = store.room?.meta?.status;
+  if (st !== "lobby" && st !== "running" && st !== "finished") return fail("Es gibt gerade nichts zum Zuschauen");
+  const now = serverNow();
+  try {
+    const res = await runTransaction(roomRef("players"), cur => {
+      cur = cur || {};
+      if (cur[uid()]) return cur; // schon dabei, Rolle bleibt
+      cur[uid()] = { name, role: "spectator", seat: 100, joinedAt: now };
+      return cur;
+    });
+    DBG.log("joinAsSpectator", { committed: res.committed });
+    return res.committed;
+  } catch (e) { return fail("Zuschauen fehlgeschlagen", e); }
+}
+
+// takeover=true: ein länger offline gewesener Moderator wird zum Zuschauer, man selbst übernimmt
+export async function joinAsModerator(name, takeover = false) {
   name = (name || "").trim() || "Moderator";
   rememberName(name);
   const now = serverNow();
@@ -71,15 +92,30 @@ export async function joinAsModerator(name) {
     const res = await runTransaction(roomRef("players"), cur => {
       cur = cur || {};
       const mod = Object.entries(cur).find(([, p]) => p.role === "moderator");
-      if (mod && mod[0] !== uid()) return; // es gibt schon einen
-      cur[uid()] = { ...(cur[uid()] || {}), name, role: "moderator", seat: 0, joinedAt: now };
+      if (mod && mod[0] !== uid()) {
+        if (!takeover) return; // es gibt schon einen
+        cur[mod[0]] = { ...mod[1], role: "spectator", seat: 100 };
+      }
+      if (cur[uid()]?.role === "player" && store.room?.meta?.status === "running") return; // Spieler mitten in der Partie nicht umwandeln
+      cur[uid()] = { ...(cur[uid()] || {}), name, role: "moderator", seat: 0, joinedAt: cur[uid()]?.joinedAt || now };
       return cur;
     });
-    if (!res.committed) return fail("Es gibt bereits einen Moderator");
+    if (!res.committed) return fail(takeover ? "Übernahme nicht möglich" : "Es gibt bereits einen Moderator");
     await update(roomRef("meta"), { hostUid: uid(), updatedAt: serverNow() });
-    DBG.log("joinAsModerator");
+    DBG.log("joinAsModerator", { takeover });
     return true;
   } catch (e) { return fail("Übernehmen fehlgeschlagen", e); }
+}
+
+// Partie, in der seit langem niemand online war, als abgebrochen markieren
+export async function markAbandoned() {
+  try {
+    const res = await runTransaction(roomRef("meta"), m => {
+      if (!m || (m.status !== "lobby" && m.status !== "running")) return;
+      return { ...m, status: "abandoned", abandonedAt: serverNow(), prevStatus: m.status };
+    });
+    DBG.log("markAbandoned", { committed: res.committed });
+  } catch (e) { DBG.log("markAbandoned-Fehler", e.message); }
 }
 
 export async function leaveRoom() {
