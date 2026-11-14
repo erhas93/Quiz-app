@@ -1,0 +1,4 @@
+{ "name": "Kaputtes Testpack", "questions": [
+  { "q": "Frage ohne Hintergrund?", "a": ["A","B","C"], "r": 5, "type": "mc" },
+  { "q": "Schätzfrage ohne Zahl", "answer": "viele", "type": "estimate", "fact": "x" }
+]}
