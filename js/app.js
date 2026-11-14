@@ -14,7 +14,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.1.0";
+export const VERSION = "v4.1.1";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -35,7 +35,7 @@ function pickView(s) {
   return { key: "home", html: homeView(s, serverNow()) };
 }
 
-let lastView = "";
+let lastView = "", lastHtml = "";
 function render(s) {
   // Fokus und Cursor eines Eingabefelds über das Neuzeichnen retten
   const ae = document.activeElement;
@@ -44,7 +44,11 @@ function render(s) {
   const scrollTop = scroller?.scrollTop || 0;
 
   const v = pickView(s);
-  $("app").innerHTML = banners(s) + v.html + (v.key === "plGame" ? overlay(s) : "");
+  const html = banners(s) + v.html + (v.key === "plGame" ? overlay(s) : "");
+  // Unverändertes HTML nicht neu setzen: sonst gehen Taps verloren, die genau während eines Updates passieren
+  if (html === lastHtml) { $("conn-dot").className = "dot " + (s.connected ? "on" : "off"); afterRender(s, v.key); return; }
+  lastHtml = html;
+  $("app").innerHTML = html;
 
   if (v.key === lastView) { const sc = document.querySelector("#app .g-body, #app .page"); if (sc) sc.scrollTop = scrollTop; }
   if (v.key !== lastView) DBG.log("Ansicht", v.key);
