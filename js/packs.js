@@ -1,7 +1,7 @@
-// Fragenpakete aus dem Repo laden (packs/ liegt eine Ebene über v4/)
+// Fragenpakete aus dem Repo laden (packs/ liegt neben js/, unabhängig von der Seiten-URL)
 import { DBG } from "./debug.js";
 
-const BASE = new URL("../packs/", location.href).href;
+const BASE = new URL("../packs/", import.meta.url).href;
 const cache = {};
 
 export async function loadPackList() {
