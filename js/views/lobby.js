@@ -1,6 +1,7 @@
 // Lobby für Moderator und Spieler
 import { esc, activePlayers } from "../model.js";
 import { playerList } from "./common.js";
+import { playStats, packLine } from "./packs.js";
 
 export function modLobbyView(s) {
   const room = s.room;
@@ -9,13 +10,14 @@ export function modLobbyView(s) {
   const packs = s.local.packs;
   const sel = room.settings?.packId;
 
-  let packHtml;
-  if (packs === null) packHtml = `<div class="spin"></div>`;
-  else if (packs.error) packHtml = `<div class="muted">${esc(packs.error)}</div>`;
-  else packHtml = `<div class="pack-grid">${packs.map(p => `
-      <button class="pack${p.id === sel ? " on" : ""}" data-act="choosePack" data-arg="${esc(p.id)}">
-        <span>${esc(p.emoji)}</span><span class="pack-name">${esc(p.name)}</span>
-        <span class="muted small">${p.count} Fragen</span></button>`).join("")}</div>`;
+  const cur = Array.isArray(packs) ? packs.find(p => p.id === sel) : null;
+  const packHtml = sel
+    ? `<button class="pk-main pk-sel" data-act="openPicker">
+        <span class="pk-emoji">${esc(cur?.emoji || "❓")}</span>
+        <span class="pk-txt"><span class="pk-name">${esc(room.settings?.packName || sel)}</span>
+          <span class="pk-sub">${cur ? `${cur.count} Fragen · ${packLine(cur, playStats(s.history))}` : ""}</span></span>
+        <span class="muted small">Ändern</span></button>`
+    : `<button class="btn btn-ghost btn-full" data-act="openPicker">Fragenpaket wählen …</button>`;
 
   let startLabel, startDisabled = false;
   if (!players.length) { startLabel = "Warte auf Spieler …"; startDisabled = true; }

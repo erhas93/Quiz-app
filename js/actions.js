@@ -248,6 +248,12 @@ export async function judge(qi, playerUid, correct) {
   } catch (e) { fail("Bewertung nicht gespeichert", e); }
 }
 
+// ── Pack-Vorlieben (für alle Partien gleich) ───────────────────────────────
+export async function setPackPref(packId, key, value) {
+  try { await set(ref(db, `packPrefs/${packId}/${key}`), value ? true : null); DBG.log("packPref", { packId, key, value }); }
+  catch (e) { fail("Einstellung nicht gespeichert", e); }
+}
+
 // ── Timer, Joker, Bonus (Moderator) ────────────────────────────────────────
 export async function setTimer(mode, sec) {
   const patch = {};

@@ -9,11 +9,14 @@ export const store = {
   room: null,          // kompletter Raumzustand aus Firebase (oder null)
   loaded: false,       // erster Snapshot angekommen
   connected: true,
+  packPrefs: {},       // Favoriten/ausgeblendet je Pack (/packPrefs)
+  history: {},         // Kurzfassungen beendeter Partien (/history)
   local: {
     pending: null,     // MC-Auswahl vor dem Einloggen: { qi, value }
     draft: null,       // Text-/Zahleneingabe vor dem Einloggen: { qi, value }
     name: (() => { try { return localStorage.getItem("quiz.v4.name") || ""; } catch { return ""; } })(),
     packs: null,       // geladene Pack-Liste (nur Moderator-Lobby)
+    picker: null,      // Pack-Auswahl offen: { q, filter, showHidden }
     error: null
   }
 };
@@ -61,4 +64,13 @@ function cleanupLocal() {
     const v = store.local[k];
     if (v && (v.qi !== qi || mine || g?.phase !== "answering" || store.room?.meta?.status !== "running")) store.local[k] = null;
   }
+}
+
+// Pack-Favoriten und Spielhistorie: nur abonnieren, wenn die Pack-Auswahl gebraucht wird
+let packDataSubscribed = false;
+export function subscribePackData() {
+  if (packDataSubscribed) return;
+  packDataSubscribed = true;
+  onValue(ref(db, "packPrefs"), s => { store.packPrefs = s.val() || {}; rerender(); }, e => DBG.log("packPrefs-Fehler", e.message));
+  onValue(ref(db, "history"), s => { store.history = s.val() || {}; rerender(); }, e => DBG.log("history-Fehler", e.message));
 }

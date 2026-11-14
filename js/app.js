@@ -1,6 +1,6 @@
 // Einstieg: Identität, Abo auf den Raum, Rendern, Ereignisse
 import { initIdentity, ROOM_ID, serverNow } from "./firebase.js";
-import { store, subscribe, onRender, rerender, setLocal } from "./store.js";
+import { store, subscribe, onRender, rerender, setLocal, subscribePackData } from "./store.js";
 import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
@@ -12,8 +12,9 @@ import { modLobbyView, playerLobbyView, spectatorLobbyView } from "./views/lobby
 import { playerGameView } from "./views/player.js";
 import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
+import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.0.0";
+export const VERSION = "v4.1.0";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -25,7 +26,7 @@ function pickView(s) {
   const dismissed = s.local.dismissed && s.local.dismissed === `${room?.meta?.createdAt}:${room?.meta?.finishedAt}`;
   if (!me || status === "none" || status === "abandoned" || (status === "finished" && dismissed)) return { key: "home", html: homeView(s, serverNow()) };
   if (status === "lobby") {
-    if (me.role === "moderator") return { key: "modLobby", html: modLobbyView(s, me) };
+    if (me.role === "moderator") return s.local.picker ? { key: "modLobby", html: packPickerView(s) } : { key: "modLobby", html: modLobbyView(s, me) };
     if (me.role === "spectator") return { key: "specLobby", html: spectatorLobbyView(s, me) };
     return { key: "plLobby", html: playerLobbyView(s, me) };
   }
@@ -102,6 +103,7 @@ function afterRender(s, key) {
     if (lockRequested !== k) { lockRequested = k; A.lockAnswers(g.qIndex); }
   }
   // Moderator-Lobby: Packliste einmal laden
+  if (key === "modLobby") subscribePackData();
   if (key === "modLobby" && s.local.packs === null && !packsLoading) {
     packsLoading = true;
     loadPackList().then(list => setLocal({ packs: list })).catch(e => setLocal({ packs: { error: e.message } })).finally(() => { packsLoading = false; });
@@ -155,6 +157,13 @@ const handlers = {
   dismiss: () => setLocal({ dismissed: `${store.room?.meta?.createdAt}:${store.room?.meta?.finishedAt}` }),
   toggleReady: () => A.setReady(!store.room?.players?.[store.uid]?.ready),
   choosePack: (el) => { const p = (store.local.packs || []).find(x => x.id === el.dataset.arg); if (p) A.choosePack(p); },
+  openPicker: () => setLocal({ picker: { q: "", filter: "all", showHidden: false } }),
+  closePicker: () => setLocal({ picker: null }),
+  pickPack: (el) => { const p = (store.local.packs || []).find(x => x.id === el.dataset.arg); if (p) { A.choosePack(p); setLocal({ picker: null }); } },
+  packFilter: (el) => setLocal({ picker: { ...store.local.picker, filter: el.dataset.arg } }),
+  toggleHidden: () => setLocal({ picker: { ...store.local.picker, showHidden: !store.local.picker?.showHidden } }),
+  packFav: (el) => A.setPackPref(el.dataset.arg, "fav", !store.packPrefs?.[el.dataset.arg]?.fav),
+  packHide: (el) => A.setPackPref(el.dataset.arg, "hidden", !store.packPrefs?.[el.dataset.arg]?.hidden),
   startGame: (el) => { el.disabled = true; A.startGame(); },
   closeRoom: () => { if (confirm("Partie für alle beenden und den Raum leeren?")) A.resetRoom(); },
   newRound: () => A.newRound(),
@@ -202,6 +211,7 @@ document.addEventListener("input", e => {
   const el = e.target;
   const kind = el.dataset?.input;
   if (kind === "name") store.local.name = el.value;
+  if (kind === "packSearch") setLocal({ picker: { ...store.local.picker, q: el.value } });
   if (kind === "draft") {
     store.local.draft = { qi: store.room?.game?.qIndex, value: el.value };
     const b = document.querySelector('[data-act="commitDraft"]');

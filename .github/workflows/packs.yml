@@ -1,0 +1,49 @@
+name: Packs prüfen und Katalog bauen
+
+on:
+  push:
+    branches: [main]
+    paths: ["packs/**", "tools/check-packs.mjs", ".github/workflows/packs.yml"]
+  pull_request:
+    paths: ["packs/**", "tools/check-packs.mjs"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: packs-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Packs prüfen
+        run: node tools/check-packs.mjs
+
+      - name: Katalog erzeugen
+        if: github.event_name != 'pull_request'
+        run: node tools/check-packs.mjs --write
+
+      - name: Katalog committen
+        if: github.event_name != 'pull_request'
+        run: |
+          if git diff --quiet -- packs/index.json packs/catalog.json; then
+            echo "Katalog unverändert."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packs/index.json packs/catalog.json
+          git commit -m "Katalog aktualisiert (automatisch)"
+          git pull --rebase origin main
+          git push origin HEAD:main

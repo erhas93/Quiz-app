@@ -182,3 +182,16 @@ h2{font-size:var(--fs-lg);font-weight:800}
 .pill.on{border-color:var(--c3);background:rgba(233,196,106,.12);color:var(--c3)}
 .pill:disabled{opacity:.4;cursor:default}
 .pill-inp{width:90px;padding:7px 10px;border-radius:99px;text-align:center}
+
+/* ── PACK-AUSWAHL (Phase 4) ── */
+.pk{display:flex;align-items:stretch;gap:6px}
+.pk.hid{opacity:.5}
+.pk-main{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);border:1.5px solid var(--card-b);background:var(--bg2);color:var(--text);cursor:pointer;text-align:left}
+.pk.on .pk-main,.pk-sel{border-color:var(--c2);background:rgba(42,157,143,.12)}
+.pk-sel{width:100%}
+.pk-emoji{font-size:1.4rem;width:30px;text-align:center;flex-shrink:0}
+.pk-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pk-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pk-sub{font-size:.78rem;color:var(--text2)}
+.pk-icon{width:42px;flex-shrink:0;border-radius:var(--r);border:1.5px solid var(--card-b);background:var(--bg3);color:var(--text2);font-size:1.1rem;cursor:pointer}
+.pk-icon.fav{color:var(--c3);border-color:rgba(233,196,106,.5)}
