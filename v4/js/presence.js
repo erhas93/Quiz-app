@@ -4,6 +4,7 @@ import { roomRef, set, onDisconnect, serverTimestamp } from "./firebase.js";
 import { DBG } from "./debug.js";
 
 let registeredFor = null; // "uid@roomCreatedAt" der aktuellen Verbindung
+let inFlight = false;
 
 export function syncPresence(store) {
   const { uid, room, connected } = store;
@@ -12,13 +13,16 @@ export function syncPresence(store) {
   if (!member) { registeredFor = null; return; }
   const key = `${uid}@${room?.meta?.createdAt || ""}`;
   const online = room?.presence?.[uid]?.online;
-  if (registeredFor === key && online) return;
+  // Bereits gemeldet (oder Meldung unterwegs) → nichts tun; nur erneut melden, wenn der Server "offline" zeigt
+  if (registeredFor === key && (online || inFlight)) return;
   registeredFor = key;
+  inFlight = true;
   const pRef = roomRef(`presence/${uid}`);
   onDisconnect(pRef).set({ online: false, lastSeen: serverTimestamp() })
     .then(() => set(pRef, { online: true, lastSeen: serverTimestamp() }))
     .then(() => DBG.log("Präsenz gesetzt"))
-    .catch(e => { registeredFor = null; DBG.log("Präsenz-Fehler", e.message); });
+    .catch(e => { registeredFor = null; DBG.log("Präsenz-Fehler", e.message); })
+    .finally(() => { inFlight = false; });
 }
 
 // Beim Zurückkehren in die App (Tab/App im Vordergrund) Präsenz erneut prüfen

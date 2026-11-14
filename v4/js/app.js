@@ -13,7 +13,7 @@ import { playerGameView } from "./views/player.js";
 import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 
-export const VERSION = "v4.0.0-alpha.1";
+export const VERSION = "v4.0.0-alpha.2";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
