@@ -61,8 +61,10 @@ export function checkPack(id, raw) {
       }
     } else if (type === "estimate") {
       if (typeof q.answer !== "number" || !isFinite(q.answer)) errors.push(`${n}: Schätzfrage braucht eine Zahl in "answer"`);
+      if (q.tol != null && (typeof q.tol !== "number" || q.tol < 0)) errors.push(`${n}: "tol" (Toleranz fürs Einzelspiel) muss eine Zahl ≥ 0 sein`);
     } else if (type === "open") {
       if (typeof q.answer !== "string" || !q.answer.trim()) errors.push(`${n}: Freitextfrage braucht "answer" als Text`);
+      if (q.alt != null && (!Array.isArray(q.alt) || q.alt.some(x => typeof x !== "string" || !x.trim()))) errors.push(`${n}: "alt" (weitere richtige Antworten) muss eine Liste von Texten sein`);
     }
     const key = norm(q.q);
     if (key) { if (seen.has(key)) errors.push(`${n}: gleicher Fragetext wie Frage ${seen.get(key) + 1}`); else seen.set(key, i); }

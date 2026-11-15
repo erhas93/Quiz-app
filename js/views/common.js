@@ -132,13 +132,14 @@ export function questionCard(q, compact = false) {
   return `<div class="q-card${compact ? " compact" : ""}">${cat}<div class="q-text">${esc(q.q)}</div></div>`;
 }
 
+// Hintergrund: standardmäßig zugeklappt (eine Zeile), Tippen klappt den ganzen Text auf
 export function factCard(q, open, title = "Hintergrund") {
   const fact = q?.fact || q?.erklaerung;
   if (!fact) return "";
-  const long = fact.length > 140;
-  return `<div class="fact"><div class="fact-h">${title}</div>
-    <div class="fact-t${long && !open ? " clamp" : ""}">${esc(fact)}</div>
-    ${long ? `<button class="link-btn" data-act="toggleFact">${open ? "Weniger" : "Weiterlesen"}</button>` : ""}</div>`;
+  return `<div class="fact${open ? " open" : ""}">
+    <button class="fact-toggle" data-act="toggleFact" aria-expanded="${open ? "true" : "false"}">
+      <span class="fact-h">${title}</span><span class="fact-chev">${ICON.chev(18)}</span></button>
+    ${open ? `<div class="fact-t">${esc(fact)}</div>` : ""}</div>`;
 }
 
 // Zwischenstand in einem Satz

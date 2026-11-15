@@ -328,6 +328,22 @@ export async function submitAnswer(qi, value) {
 }
 
 // ── Ohne Moderator ─────────────────────────────────────────────────────────
+// Einzelspiel: automatische Bewertung (by "auto"), nach dem Auflösen von Hand korrigierbar
+export async function autoJudgeAnswer(qi, playerUid, correct) {
+  try { await set(roomRef(`judgments/${qi}/${playerUid}`), { v: correct ? "correct" : "wrong", by: "auto" }); DBG.log("autoJudge", { qi, correct }); }
+  catch (e) { fail("Bewertung nicht gespeichert", e); }
+}
+export async function overrideJudgment(qi, playerUid, correct) {
+  const room = JSON.parse(JSON.stringify(store.room || {}));
+  room.judgments = room.judgments || {};
+  room.judgments[qi] = { ...(room.judgments[qi] || {}), [playerUid]: { v: correct ? "correct" : "wrong", by: uid() } };
+  const res = computeResult(room, qi);
+  try {
+    await update(roomRef(), { [`judgments/${qi}/${playerUid}`]: room.judgments[qi][playerUid], [`results/${qi}/points`]: res.points, [`results/${qi}/fastestUid`]: res.fastestUid });
+    DBG.log("overrideJudgment", { qi, correct });
+  } catch (e) { fail("Korrektur nicht gespeichert", e); }
+}
+
 // Nach dem Auflösen bestätigt jeder Spieler "Weiter"; der Host schaltet, wenn alle online-Spieler bereit sind
 export async function markNext(qi) {
   try { await set(roomRef(`next/${qi}/${uid()}`), true); DBG.log("markNext", qi); }

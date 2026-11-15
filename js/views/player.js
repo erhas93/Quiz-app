@@ -24,7 +24,9 @@ export function playerGameView(s, me) {
   const iAmHost = free && hostUid(room) === s.uid;
   const online = uid => !!room.presence?.[uid]?.online;
   // Ohne Moderator: darf ich die Antwort von targetUid bewerten? (zugewiesen – oder als Host für einen offline-Bewerter)
-  const canJudge = targetUid => free && !spectator && phase === "shown" && !!answers[targetUid]
+  const solo = free && players.length === 1;
+  // Im Einzelspiel bewertet die App selbst – keine Bewerten-Knöpfe
+  const canJudge = targetUid => free && !solo && !spectator && phase === "shown" && !!answers[targetUid]
     && (judgeOf(room, targetUid) === s.uid || (iAmHost && !online(judgeOf(room, targetUid))));
 
   let body = "", actions = "", note = "", noteCls = "";
@@ -91,6 +93,13 @@ export function playerGameView(s, me) {
         return `<div class="prow ${j || ""}"><span class="prow-name">${esc(p.name)}${p.uid === s.uid ? " (du)" : ""}</span>
           ${a ? `<span class="prow-val">${formatValue(q, a.value)}</span>` : `<span class="prow-val none">keine Antwort</span>`}${judgeBtns}${mark}</div>`;
       }).join("");
+      // Einzelspiel: automatische Bewertung lässt sich nach dem Auflösen korrigieren
+      if (solo && revealed && answers[s.uid]) {
+        const ok = judgmentOf(room, qi, s.uid) === "correct";
+        const auto = room.judgments?.[qi]?.[s.uid]?.by === "auto";
+        body += `<div class="meta-line" style="justify-content:space-between"><span>${auto ? "Automatisch bewertet" : "Von dir korrigiert"}</span>
+          <button class="btn btn-ghost btn-sm" data-act="override" data-val="${ok ? 0 : 1}">${ok ? "Doch falsch" : "Doch richtig"}</button></div>`;
+      }
     }
   }
 
@@ -103,6 +112,7 @@ export function playerGameView(s, me) {
     note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} eingeloggt` : (total > 1 ? "Noch niemand eingeloggt" : "");
   } else if (phase === "locked" && !mine) note = "Zeit abgelaufen – keine Antwort";
   else if (phase === "answering" || phase === "locked") { note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Eingeloggt ✓ · gleich wird aufgelöst"; noteCls = "ok"; }
+  else if (phase === "shown" && solo && isOpenType(q)) note = "Wird automatisch bewertet …";
   else if (phase === "shown" && free && isOpenType(q)) {
     const mineToDo = players.filter(p => canJudge(p.uid) && !judgmentOf(room, qi, p.uid));
     const openJudges = [...new Set(players.filter(p => answers[p.uid] && !judgmentOf(room, qi, p.uid)).map(p => judgeOf(room, p.uid)))]

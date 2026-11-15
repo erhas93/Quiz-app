@@ -211,3 +211,48 @@ export function fmtMs(ms) {
 }
 
 export const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// ── Automatische Bewertung (Einzelspiel ohne Moderator) ────────────────────
+// Schätzfragen: Jahreszahlen ±2 Jahre, sonst ±10 % (mindestens ±1); ein Pack kann mit "tol" eine eigene Toleranz setzen.
+// Freitext: Groß/Klein, Akzente, Artikel und Klammerzusätze egal, kleine Tippfehler erlaubt,
+// Teilantworten zählen, wenn sie den Kern (letztes Wort, z. B. Nachname) treffen; "alt" kann Alternativen auflisten.
+const ARTICLES = new Set(["der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "the", "a", "an"]);
+export function normAnswer(s) {
+  return String(s ?? "").toLowerCase().replace(/\([^)]*\)/g, " ").replace(/ß/g, "ss")
+    .normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim()
+    .split(" ").filter((w, i, all) => w && !(i === 0 && all.length > 1 && ARTICLES.has(w))).join(" ");
+}
+function lev(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+const close = (a, b) => lev(a, b) <= (Math.max(a.length, b.length) >= 8 ? 2 : Math.max(a.length, b.length) >= 4 ? 1 : 0);
+
+export function autoJudge(q, value) {
+  if (!q || value == null || value === "") return false;
+  if (q.type === "estimate") {
+    const target = Number(q.answer), v = typeof value === "number" ? value : Number(String(value).replace(",", "."));
+    if (!isFinite(target) || !isFinite(v)) return false;
+    const isYear = Number.isInteger(target) && target >= 1000 && target <= 2100;
+    const tol = typeof q.tol === "number" ? q.tol : isYear ? 2 : Math.max(1, Math.abs(target) * 0.1);
+    return Math.abs(v - target) <= tol;
+  }
+  const user = normAnswer(value);
+  if (!user) return false;
+  const sols = [q.answer, ...(Array.isArray(q.alt) ? q.alt : [])].map(normAnswer).filter(Boolean);
+  for (const sol of sols) {
+    if (close(user, sol)) return true;
+    // Teilantwort: jedes eingegebene Wort passt zu einem Wort der Lösung, und das letzte Lösungswort ist getroffen
+    const ut = user.split(" "), st = sol.split(" ");
+    if (st.length > 1 && ut.every(u => st.some(w => close(u, w))) && ut.some(u => close(u, st[st.length - 1]) && u.length >= 4)) return true;
+  }
+  return false;
+}
+export const isSoloFree = room => isFree(room) && activePlayers(room).length === 1;

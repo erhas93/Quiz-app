@@ -5,7 +5,7 @@ import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf } from "./model.js";
 import { overviewView } from "./views/overview.js";
 import { ICON } from "./views/common.js";
 import { vibrate, keepAwake, share, initNative, isApp, setBarStyle } from "./native.js";
@@ -16,7 +16,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.4.0";
+export const VERSION = "v4.5.0";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -142,6 +142,11 @@ function afterRender(s, key) {
     const q = room.questions?.[qi];
     if (g.phase === "locked") doOnce(`show:${base}`, () => A.showAnswers(qi), 400);
     if (g.phase === "shown" && q && !isOpenType(q)) doOnce(`reveal:${base}`, () => A.reveal(qi), 2200);
+    // Einzelspiel: Schätz- und Freitextantwort automatisch bewerten
+    if (g.phase === "shown" && q && isOpenType(q) && isSoloFree(room)) {
+      const a = answerOf(room, qi, s.uid);
+      if (a && !judgmentOf(room, qi, s.uid)) doOnce(`auto:${base}`, () => A.autoJudgeAnswer(qi, s.uid, autoJudge(q, a.value)));
+    }
     if (g.phase === "shown" && q && isOpenType(q) && unjudgedCount(room) === 0) doOnce(`reveal:${base}`, () => A.reveal(qi), 800);
     if (g.phase === "revealed" && Object.keys(nextOf(room, qi)).length && !waitingForNext(room, qi).length) doOnce(`next:${base}`, () => A.nextQuestion(qi), 300);
   }
@@ -205,6 +210,7 @@ const handlers = {
   },
   overview: () => goOverview(),
   useJoker: () => A.useJoker(),
+  override: (el) => A.overrideJudgment(store.room.game.qIndex, store.uid, el.dataset.val === "1"),
   markNext: (el) => { el.disabled = true; A.markNext(store.room.game.qIndex); },
   joinPlayer: () => A.joinAsPlayer(store.local.name),
   joinModerator: () => A.joinAsModerator(store.local.name),
