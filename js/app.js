@@ -16,7 +16,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.5.0";
+export const VERSION = "v4.5.1";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -53,6 +53,7 @@ function render(s) {
   if (html === lastHtml) { afterRender(s, v.key); return; }
   lastHtml = html;
   $("app").innerHTML = html;
+  if (s.local.factAnim) { s.local.factAnim = false; lastHtml = ""; }
 
   if (v.key === lastView) { const sc = document.querySelector("#app .body"); if (sc) sc.scrollTop = scrollTop; }
   if (v.key !== lastView) DBG.log("Ansicht", v.key);
@@ -193,6 +194,15 @@ function parseEstimate(raw) {
   return t !== "" && isFinite(n) ? n : raw.trim();
 }
 
+// Fakten-Seite: hereinschieben bzw. hinausschieben, dann zurück zum vorherigen Bildschirm
+function toggleFact() {
+  const qi = store.room?.game?.qIndex;
+  if (store.local.factOpen !== qi) return setLocal({ factOpen: qi, factAnim: true });
+  const page = $("fact-page");
+  if (page) { page.classList.remove("in"); page.classList.add("out"); setTimeout(() => setLocal({ factOpen: null }), 180); }
+  else setLocal({ factOpen: null });
+}
+
 // Name merken, bevor die Seite für einen anderen Raum neu lädt
 function saveName() { const n = String(store.local.name || "").trim(); if (n) try { localStorage.setItem("quiz.v4.name", n); } catch {} }
 
@@ -268,7 +278,7 @@ const handlers = {
   debug: () => { setLocal({ menu: false }); DBG.toggle(); },
   menu: () => setLocal({ menu: true }),
   closeMenu: (el, e) => { if (e.target === el) setLocal({ menu: false }); },
-  toggleFact: () => { const qi = store.room?.game?.qIndex; setLocal({ factOpen: store.local.factOpen === qi ? null : qi }); },
+  toggleFact: () => toggleFact(),
   invite: async () => {
     const url = `https://erhas93.github.io/Quiz-app/?room=${ROOM_ID}`;
     const r = await share(`Komm in die Quiz-Lobby von ${store.local.name || "uns"} – Raumcode ${ROOM_ID}`, url);
@@ -323,6 +333,7 @@ document.addEventListener("keydown", e => {
     onBack: () => {
       if (store.local.menu) { setLocal({ menu: false }); return true; }
       if (store.local.picker) { setLocal({ picker: null }); return true; }
+      if (store.local.factOpen != null && store.local.factOpen === store.room?.game?.qIndex) { toggleFact(); return true; }
       const dbg = $("dbg-panel"); if (dbg && dbg.style.display !== "none") { DBG.toggle(); return true; }
       if (store.local.error) { setLocal({ error: null }); return true; }
       // In einem Raum, aber nicht mitten in einer eigenen Partie: zurück zur Übersicht

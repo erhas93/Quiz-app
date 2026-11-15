@@ -21,6 +21,7 @@ export const ICON = {
   full: s => svg('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>', s),
   bug: s => svg('<rect x="7" y="8" width="10" height="12" rx="5"/><path d="M12 8V5M9 5l1.5 2M15 5l-1.5 2M3 13h4M17 13h4M4 19l3-2M20 19l-3-2"/>', s),
   trash: s => svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>', s),
+  bulb: s => svg('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>', s),
   search: s => svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>', s)
 };
 
@@ -132,14 +133,23 @@ export function questionCard(q, compact = false) {
   return `<div class="q-card${compact ? " compact" : ""}">${cat}<div class="q-text">${esc(q.q)}</div></div>`;
 }
 
-// Hintergrund: standardmäßig zugeklappt (eine Zeile), Tippen klappt den ganzen Text auf
-export function factCard(q, open, title = "Hintergrund") {
+// Hintergrund: kleiner Reiter am rechten Rand; ein Tipp schiebt eine eigene Seite mit den Fakten herein,
+// ein zweiter Tipp (oder die Zurück-Taste) schiebt sie wieder weg
+export function factPanel(q, open, { title = "Hintergrund", animate = false } = {}) {
   const fact = q?.fact || q?.erklaerung;
   if (!fact) return "";
-  return `<div class="fact${open ? " open" : ""}">
-    <button class="fact-toggle" data-act="toggleFact" aria-expanded="${open ? "true" : "false"}">
-      <span class="fact-h">${title}</span><span class="fact-chev">${ICON.chev(18)}</span></button>
-    ${open ? `<div class="fact-t">${esc(fact)}</div>` : ""}</div>`;
+  const sol = q.type === "estimate" || q.type === "open" ? formatValue(q, q.answer) : esc(q.a?.[q.r] ?? "");
+  const tab = `<button class="fact-tab${open ? " open" : ""}" data-act="toggleFact" aria-expanded="${open}" aria-label="${open ? "Hintergrund schließen" : "Hintergrund anzeigen"}">
+      <span class="fact-tab-ico">${open ? ICON.chev(18) : ICON.bulb(18)}</span><span class="fact-tab-txt">${open ? "Zurück" : "Fakten"}</span></button>`;
+  if (!open) return tab;
+  return `<div class="fact-page${animate ? " in" : ""}" id="fact-page" role="dialog" aria-label="${esc(title)}">
+      <div class="fact-page-inner">
+        <div class="fact-h">${esc(title)}</div>
+        <div class="fact-q">${esc(q.q)}</div>
+        ${sol ? `<div class="fact-sol"><b>Richtig:</b> ${sol}</div>` : ""}
+        <div class="fact-text">${esc(fact)}</div>
+      </div>
+    </div>${tab}`;
 }
 
 // Zwischenstand in einem Satz

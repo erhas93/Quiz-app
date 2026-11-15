@@ -1,6 +1,6 @@
 // Spieler- und Zuschaueransicht während der Partie
 import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount } from "../model.js";
-import { gameHeader, questionCard, factCard, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
+import { gameHeader, questionCard, factPanel, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
 
 export function playerGameView(s, me) {
   const room = s.room;
@@ -103,7 +103,7 @@ export function playerGameView(s, me) {
     }
   }
 
-  if (revealed) body += factCard(q, factOpen);
+  const fact = revealed ? factPanel(q, factOpen, { animate: s.local.factAnim }) : "";
 
   // Hinweiszeile über dem Knopf
   if (spectator) note = phase === "answering" || phase === "locked" ? `${done} von ${total} eingeloggt` : phase === "shown" ? "Antworten werden gezeigt" : "";
@@ -140,5 +140,6 @@ export function playerGameView(s, me) {
     ${gameHeader(s, spectator ? "spec" : "player")}
     <div class="body">${body}<div class="spacer"></div></div>
     <div class="actions"><div class="foot-note ${noteCls}">${note}</div>${actions}</div>
+    ${fact}
   </div>`;
 }

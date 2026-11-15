@@ -1,6 +1,6 @@
 // Moderatoransicht während der Partie
 import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs } from "../model.js";
-import { gameHeader, questionCard, factCard, L, shortName, formatValue, standing, ICON } from "./common.js";
+import { gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON } from "./common.js";
 
 export function modGameView(s, me) {
   const room = s.room;
@@ -50,7 +50,7 @@ export function modGameView(s, me) {
     }).join("");
   }
 
-  if (phase === "shown" || revealed) body += factCard(q, factOpen, "Hintergrund · zum Vorlesen");
+  const fact = phase === "shown" || revealed ? factPanel(q, factOpen, { title: "Hintergrund · zum Vorlesen", animate: s.local.factAnim }) : "";
 
   // Hinweiszeile + Aktionsknopf (+ Timer-Steuerung bei manuellem Timer)
   let note = "", action = "";
@@ -76,5 +76,6 @@ export function modGameView(s, me) {
     ${gameHeader(s, "mod")}
     <div class="body">${body}<div class="spacer"></div></div>
     <div class="actions"><div class="foot-note">${note}</div><div class="actions-row">${timerBtns}${action}</div></div>
+    ${fact}
   </div>`;
 }
