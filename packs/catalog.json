@@ -1,6 +1,20 @@
 {
-  "generated": "2026-11-15T12:35:03.146Z",
+  "generated": "2026-11-15T20:21:34.509Z",
   "packs": [
+    {
+      "id": "allgemeinwissen-vi",
+      "name": "Allgemeinwissen VI",
+      "emoji": "🧩",
+      "count": 15,
+      "types": {
+        "mc": 10,
+        "estimate": 3,
+        "open": 2
+      },
+      "hash": "2f8f9b4bcf",
+      "updated": "2026-11-15T21:21:15+01:00",
+      "warnings": 0
+    },
     {
       "id": "beruhmte-personlichkeiten",
       "name": "Berühmte Persönlichkeiten",
@@ -14,6 +28,34 @@
       "hash": "475364b23e",
       "updated": "2026-07-15T20:51:10+02:00",
       "warnings": 2
+    },
+    {
+      "id": "dinosaurier",
+      "name": "Dinosaurier (Dinosaurs)",
+      "emoji": "🦕",
+      "count": 15,
+      "types": {
+        "mc": 10,
+        "estimate": 3,
+        "open": 2
+      },
+      "hash": "0f90eadea7",
+      "updated": "2026-11-15T21:21:15+01:00",
+      "warnings": 0
+    },
+    {
+      "id": "formel-1",
+      "name": "Formel 1 (Formula 1)",
+      "emoji": "🏎️",
+      "count": 15,
+      "types": {
+        "mc": 10,
+        "estimate": 3,
+        "open": 2
+      },
+      "hash": "b7d146f6e3",
+      "updated": "2026-11-15T21:21:15+01:00",
+      "warnings": 0
     },
     {
       "id": "fussball-geschichte-ii",
