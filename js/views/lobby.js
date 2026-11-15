@@ -1,14 +1,18 @@
 // Lobby für Moderator, Spieler und Zuschauer – alles auf einem Bildschirm
-import { esc, activePlayers, moderatorOf, MAX_PLAYERS } from "../model.js";
+import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid } from "../model.js";
+import { ROOM_ID } from "../firebase.js";
 import { topBar, slots, spectatorLine, ICON } from "./common.js";
 import { playStats, packLine } from "./packs.js";
 
+const code = () => `Raum <span class="code-badge">${esc(ROOM_ID)}</span>`;
 const playersCard = (room, uid, right = "") => `<div class="card">
     <div class="card-h"><span class="label">Spieler · ${activePlayers(room).length} von ${MAX_PLAYERS}</span>${right}</div>
     ${slots(room, uid, MAX_PLAYERS)}${spectatorLine(room)}</div>`;
 
+// Moderator-Lobby; ohne Moderator sieht der Host (selbst Spieler) dieselbe Steuerung
 export function modLobbyView(s) {
   const room = s.room;
+  const free = isFree(room);
   const players = activePlayers(room);
   const ready = players.filter(p => p.ready).length;
   const packs = s.local.packs;
@@ -25,16 +29,16 @@ export function modLobbyView(s) {
   let startLabel, startDisabled = false;
   if (!players.length) { startLabel = "Warte auf Spieler …"; startDisabled = true; }
   else if (!sel) { startLabel = "Erst Fragenpaket wählen"; startDisabled = true; }
-  else if (players.length === 1) startLabel = ready ? "Einzelspiel starten" : "Einzelspiel trotzdem starten";
+  else if (players.length === 1) startLabel = ready || free ? "Einzelspiel starten" : "Einzelspiel trotzdem starten";
   else startLabel = ready === players.length ? "Quiz starten" : `Trotzdem starten (${ready}/${players.length} bereit)`;
 
   const invite = `<button class="btn btn-ghost btn-sm" data-act="invite">${ICON.share(16)} Einladen</button>`;
   return `<div class="screen">
-    ${topBar("Lobby", `${esc(moderatorOf(room)?.name || "Du")} moderiert`, { connected: s.connected })}
+    ${topBar("Lobby", `${code()} · ${free ? "ohne Moderator · du steuerst" : `${esc(moderatorOf(room)?.name || "Du")} moderiert`}`, { back: "overview", connected: s.connected })}
     <div class="body">
       ${playersCard(room, s.uid, invite)}
       <div class="card"><span class="label">Fragenpaket</span>${pack}</div>
-      ${timerCard(room)}
+      ${timerCard(room, free)}
       <div class="spacer"></div>
     </div>
     <div class="actions">
@@ -46,14 +50,17 @@ export function modLobbyView(s) {
 
 export function playerLobbyView(s, me) {
   const room = s.room;
+  const free = isFree(room);
+  const host = room.players?.[hostUid(room)]?.name;
+  const sub = free ? `ohne Moderator${host ? ` · ${esc(host)} steuert` : ""}` : `${esc(moderatorOf(room)?.name || "Noch kein Moderator")}${moderatorOf(room) ? " moderiert" : ""}`;
   return `<div class="screen">
-    ${topBar("Lobby", `${esc(moderatorOf(room)?.name || "Noch kein Moderator")}${moderatorOf(room) ? " moderiert" : ""}`, { connected: s.connected })}
+    ${topBar("Lobby", `${code()} · ${sub}`, { back: "overview", connected: s.connected })}
     <div class="body">
       <div class="card"><label class="label" for="in-lobbyname">Dein Name</label>
         <input class="inp" id="in-lobbyname" data-input="name" data-commit="setName" maxlength="20" value="${esc(me.name)}"></div>
       ${playersCard(room, s.uid)}
       <div class="card"><span class="label">Fragenpaket</span>
-        <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">Der Moderator wählt noch …</span>`}</div></div>
+        <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
       <div class="spacer"></div>
     </div>
     <div class="actions">
@@ -67,11 +74,11 @@ export function spectatorLobbyView(s) {
   const room = s.room;
   const full = activePlayers(room).length >= MAX_PLAYERS;
   return `<div class="screen">
-    ${topBar("Lobby", "Du schaust zu", { connected: s.connected })}
+    ${topBar("Lobby", `${code()} · du schaust zu`, { back: "overview", connected: s.connected })}
     <div class="body">
       ${playersCard(room, s.uid)}
       <div class="card"><span class="label">Fragenpaket</span>
-        <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">Der Moderator wählt noch …</span>`}</div></div>
+        <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
       <div class="spacer"></div>
     </div>
     <div class="actions">
@@ -81,10 +88,11 @@ export function spectatorLobbyView(s) {
   </div>`;
 }
 
-function timerCard(room) {
+function timerCard(room, free = false) {
   const mode = room.settings?.timerMode || "none";
   const sec = room.settings?.timerSec || 30;
-  const modes = [["none", "Aus"], ["auto", "Auto"], ["manual", "Manuell"]];
+  // Ohne Moderator gibt es niemanden, der einen manuellen Timer bedient
+  const modes = free ? [["none", "Aus"], ["auto", "Auto"]] : [["none", "Aus"], ["auto", "Auto"], ["manual", "Manuell"]];
   const presets = [10, 20, 30, 45, 60];
   return `<div class="card"><div class="card-h"><span class="label">Timer</span>${mode === "none" ? "" : `<span class="muted small">${mode === "auto" ? "startet je Frage von selbst" : "du startest pro Frage"}</span>`}</div>
     <div class="seg3">${modes.map(([m, l]) => `<button class="${m === mode ? "on" : ""}" data-act="timerMode" data-arg="${m}">${l}</button>`).join("")}</div>

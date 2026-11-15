@@ -21,21 +21,25 @@ function rememberName(name) {
 }
 
 // ── Raum ───────────────────────────────────────────────────────────────────
-export async function createRoom(name) {
-  name = (name || "").trim() || "Moderator";
+// mode "moderated": man wird Moderator; mode "players": man spielt selbst mit und steuert als Host
+export async function createRoom(name, mode = "moderated") {
+  name = (name || "").trim() || (mode === "players" ? "Spieler 1" : "Moderator");
   rememberName(name);
   const now = serverNow();
+  const me = mode === "players"
+    ? { name, role: "player", seat: 1, ready: true, joinedAt: now }
+    : { name, role: "moderator", seat: 0, joinedAt: now };
   try {
     const res = await runTransaction(roomRef(), cur => {
       const st = cur?.meta?.status;
       if (st === "lobby" || st === "running") return; // abbrechen: Partie existiert
       return {
-        meta: { status: "lobby", mode: "moderated", hostUid: uid(), createdAt: now, updatedAt: now },
+        meta: { status: "lobby", mode, hostUid: uid(), createdAt: now, updatedAt: now },
         settings: { packId: null, packName: null, timerMode: "none", timerSec: 30, maxPlayers: MAX_PLAYERS },
-        players: { [uid()]: { name, role: "moderator", seat: 0, joinedAt: now } }
+        players: { [uid()]: me }
       };
     });
-    DBG.log("createRoom", { committed: res.committed });
+    DBG.log("createRoom", { committed: res.committed, mode });
     if (!res.committed) return fail("Es läuft bereits eine Partie");
     return true;
   } catch (e) { return fail("Raum konnte nicht angelegt werden", e); }
@@ -115,6 +119,7 @@ export async function markAbandoned() {
       return { ...m, status: "abandoned", abandonedAt: serverNow(), prevStatus: m.status };
     });
     DBG.log("markAbandoned", { committed: res.committed });
+    if (res.committed) await update(ref(db, `roomIndex/${ROOM_ID}`), { status: "abandoned", updatedAt: serverTimestamp() });
   } catch (e) { DBG.log("markAbandoned-Fehler", e.message); }
 }
 
@@ -157,7 +162,7 @@ export async function startGame() {
     await update(roomRef(), {
       questions,
       game: { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now) },
-      answers: null, judgments: null, results: null, jokers: null, bonus: null,
+      answers: null, judgments: null, results: null, jokers: null, bonus: null, next: null,
       "settings/packName": pack.name
     });
     // 2. Lobby → läuft, nur wenn noch Lobby
@@ -235,9 +240,9 @@ async function writeHistory(room) {
 export async function newRound() {
   const patch = {
     "meta/status": "lobby", "meta/updatedAt": serverNow(), "meta/startedAt": null, "meta/finishedAt": null,
-    game: null, questions: null, answers: null, judgments: null, results: null, jokers: null, bonus: null
+    game: null, questions: null, answers: null, judgments: null, results: null, jokers: null, bonus: null, next: null
   };
-  for (const p of activePlayers(store.room)) patch[`players/${p.uid}/ready`] = false;
+  for (const p of activePlayers(store.room)) patch[`players/${p.uid}/ready`] = p.uid === store.room?.meta?.hostUid && store.room?.meta?.mode === "players";
   try { await update(roomRef(), patch); DBG.log("newRound"); } catch (e) { fail("Neue Runde fehlgeschlagen", e); }
 }
 
@@ -279,6 +284,9 @@ export const timerPause = () => timerTx((t, sec, now) => !t.running ? null
   : { running: false, pauseLeft: Math.max(0, sec - (now - t.startAt) / 1000) }, "Pause");
 export const timerReset = () => timerTx(() => ({ running: false }), "Reset");
 
+// Ohne Moderator setzt jeder seinen 50:50-Joker selbst ein
+export const useJoker = () => grantJoker(uid());
+
 export async function grantJoker(playerUid) {
   const room = store.room;
   const g = room?.game;
@@ -319,18 +327,52 @@ export async function submitAnswer(qi, value) {
   } catch (e) { return fail("Antwort nicht gespeichert", e); }
 }
 
+// ── Ohne Moderator ─────────────────────────────────────────────────────────
+// Nach dem Auflösen bestätigt jeder Spieler "Weiter"; der Host schaltet, wenn alle online-Spieler bereit sind
+export async function markNext(qi) {
+  try { await set(roomRef(`next/${qi}/${uid()}`), true); DBG.log("markNext", qi); }
+  catch (e) { fail("Weiter nicht gespeichert", e); }
+}
+
+// Host-Übergabe, wenn der bisherige Host länger offline ist (nur wenn er noch Host ist)
+export async function claimHost(oldHost) {
+  try {
+    const res = await runTransaction(roomRef("meta"), m => {
+      if (!m || m.hostUid !== oldHost) return;
+      return { ...m, hostUid: uid(), updatedAt: serverNow() };
+    });
+    DBG.log("claimHost", { committed: res.committed });
+  } catch (e) { DBG.log("claimHost-Fehler", e.message); }
+}
+
 // ── Verwaltung ─────────────────────────────────────────────────────────────
 export async function resetRoom() {
   try { await remove(roomRef()); await remove(ref(db, `roomIndex/${ROOM_ID}`)); DBG.log("resetRoom"); }
   catch (e) { fail("Zurücksetzen fehlgeschlagen", e); }
 }
 
-// Kleine Übersicht für den Startbildschirm, vom Moderator gepflegt
+// Kleine Übersicht für die Raumliste, vom Moderator bzw. Host gepflegt
 let lastIndex = "";
 export function syncIndex(room) {
+  if (!ROOM_ID || !room?.meta) return;
   const s = summary(room);
   const key = JSON.stringify(s);
   if (key === lastIndex) return;
   lastIndex = key;
   set(ref(db, `roomIndex/${ROOM_ID}`), { ...s, updatedAt: serverTimestamp() }).catch(() => {});
+}
+
+// Alte Räume aufräumen (ohne Server-Funktionen): beendete/abgebrochene nach 1 Tag, alles nach 7 Tagen
+let cleaned = false;
+export function cleanupRooms(rooms) {
+  if (cleaned || !rooms) return;
+  cleaned = true;
+  const now = serverNow(), DAY = 864e5;
+  const patch = {};
+  for (const [id, r] of Object.entries(rooms)) {
+    const age = now - (r?.updatedAt || 0);
+    const done = r?.status === "finished" || r?.status === "abandoned" || r?.status === "none";
+    if ((done && age > DAY) || age > 7 * DAY) { patch[`rooms/${id}`] = null; patch[`roomIndex/${id}`] = null; }
+  }
+  if (Object.keys(patch).length) update(ref(db), patch).then(() => DBG.log("Alte Räume aufgeräumt", Object.keys(patch).length / 2)).catch(() => {});
 }

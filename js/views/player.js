@@ -1,5 +1,5 @@
 // Spieler- und Zuschaueransicht während der Partie
-import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor } from "../model.js";
+import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount } from "../model.js";
 import { gameHeader, questionCard, factCard, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
 
 export function playerGameView(s, me) {
@@ -20,6 +20,12 @@ export function playerGameView(s, me) {
   const revealed = phase === "revealed";
   const answers = answersFor(room, qi);
   const factOpen = s.local.factOpen === qi;
+  const free = isFree(room);
+  const iAmHost = free && hostUid(room) === s.uid;
+  const online = uid => !!room.presence?.[uid]?.online;
+  // Ohne Moderator: darf ich die Antwort von targetUid bewerten? (zugewiesen – oder als Host für einen offline-Bewerter)
+  const canJudge = targetUid => free && !spectator && phase === "shown" && !!answers[targetUid]
+    && (judgeOf(room, targetUid) === s.uid || (iAmHost && !online(judgeOf(room, targetUid))));
 
   let body = "", actions = "", note = "", noteCls = "";
 
@@ -60,7 +66,10 @@ export function playerGameView(s, me) {
       return `<button class="${cls.join(" ")}" ${canPick ? `data-act="pick" data-arg="${i}"` : "disabled"}>
         <span class="ans-l">${letter}</span><span class="ans-txt">${esc(txt)}</span>${mk}</button>`;
     }).join("")}</div>`;
-    if (canPick) actions = `<button class="btn btn-blue" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen</button>`;
+    if (canPick) {
+      const jokerBtn = free && !jokerOf(room, s.uid) ? `<button class="btn-sq" data-act="useJoker" aria-label="50:50-Joker einsetzen" style="font-size:13px;font-weight:800;color:var(--c3)">50:50</button>` : "";
+      actions = `<div class="actions-row">${jokerBtn}<button class="btn btn-blue" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen</button></div>`;
+    }
   } else {
     // ── Schätzen / Freitext ──
     if (!spectator && phase === "answering" && !mine) {
@@ -72,13 +81,15 @@ export function playerGameView(s, me) {
       body += `<div class="my-answer">Deine Antwort: ${formatValue(q, mine.value)}</div>`;
     }
     if (showOthers) {
-      if (revealed && q.answer != null) body += `<div class="solution"><b>Richtig:</b> ${formatValue(q, q.answer)}</div>`;
+      if ((revealed || free) && q.answer != null) body += `<div class="solution"><b>Richtig:</b> ${formatValue(q, q.answer)}</div>`;
       body += players.map(p => {
         const a = answers[p.uid];
-        const j = revealed ? judgmentOf(room, qi, p.uid) : null;
+        const j = revealed || free ? judgmentOf(room, qi, p.uid) : null;
+        const judgeBtns = canJudge(p.uid) ? `<button class="judge c${j === "correct" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="1" aria-label="${esc(p.name)} richtig">${ICON.check(20)}</button>
+          <button class="judge w${j === "wrong" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="0" aria-label="${esc(p.name)} falsch">${ICON.x(20)}</button>` : "";
+        const mark = !judgeBtns && j ? `<span class="chip-st ${j === "correct" ? "ok" : ""}" style="${j === "wrong" ? "color:var(--c5)" : ""}">${j === "correct" ? ICON.check(18) : ICON.x(18)}</span>` : "";
         return `<div class="prow ${j || ""}"><span class="prow-name">${esc(p.name)}${p.uid === s.uid ? " (du)" : ""}</span>
-          ${a ? `<span class="prow-val">${formatValue(q, a.value)}</span>` : `<span class="prow-val none">keine Antwort</span>`}
-          ${j ? `<span class="chip-st ${j === "correct" ? "ok" : ""}" style="${j === "wrong" ? "color:var(--c5)" : ""}">${j === "correct" ? ICON.check(18) : ICON.x(18)}</span>` : ""}</div>`;
+          ${a ? `<span class="prow-val">${formatValue(q, a.value)}</span>` : `<span class="prow-val none">keine Antwort</span>`}${judgeBtns}${mark}</div>`;
       }).join("");
     }
   }
@@ -92,8 +103,23 @@ export function playerGameView(s, me) {
     note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} eingeloggt` : (total > 1 ? "Noch niemand eingeloggt" : "");
   } else if (phase === "locked" && !mine) note = "Zeit abgelaufen – keine Antwort";
   else if (phase === "answering" || phase === "locked") { note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Eingeloggt ✓ · gleich wird aufgelöst"; noteCls = "ok"; }
+  else if (phase === "shown" && free && isOpenType(q)) {
+    const mineToDo = players.filter(p => canJudge(p.uid) && !judgmentOf(room, qi, p.uid));
+    const openJudges = [...new Set(players.filter(p => answers[p.uid] && !judgmentOf(room, qi, p.uid)).map(p => judgeOf(room, p.uid)))]
+      .filter(u => u !== s.uid).map(u => esc(room.players?.[u]?.name || "?"));
+    note = mineToDo.length ? `Bewerte ${mineToDo.map(p => p.uid === s.uid ? "deine eigene" : `${esc(p.name)}s`).join(" und ")} Antwort` : openJudges.length ? `Warte auf die Bewertung von ${openJudges.join(", ")} …` : "Gleich wird aufgelöst …";
+    noteCls = mineToDo.length ? "ok" : "";
+  }
   else if (phase === "shown") note = isOpenType(q) ? "Der Moderator bewertet die Antworten …" : "Gleich wird aufgelöst …";
-  else if (revealed) note = "Warte auf die nächste Frage …";
+  else if (revealed && free && !spectator) {
+    const done = !!nextOf(room, qi)[s.uid];
+    const wait = waitingForNext(room, qi).filter(p => p.uid !== s.uid).map(p => esc(p.name));
+    const last = qi + 1 >= qCount(room);
+    if (!done) actions = `<button class="btn btn-primary" data-act="markNext">${last ? "Zum Ergebnis" : "Weiter"}</button>`;
+    note = done ? (wait.length ? `Bereit ✓ · warte auf ${wait.join(", ")}` : "Bereit ✓") : (wait.length < players.filter(p => p.online).length - 1 ? "Die anderen warten auf dich" : "");
+    noteCls = done ? "ok" : "";
+  }
+  else if (revealed) note = free ? "Warte auf die nächste Frage …" : "Warte auf die nächste Frage …";
 
   if (spectator) {
     actions = (moderatorAway(room, Date.now()) ? `<button class="btn btn-gold" data-act="takeover">Moderation übernehmen</button>` : "")

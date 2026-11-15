@@ -1,12 +1,13 @@
 // Zentraler Zustand: Raum aus Firebase + lokale, noch nicht abgeschickte Eingaben.
 // Jede Änderung löst genau ein render() aus.
-import { db, ref, onValue, roomRef } from "./firebase.js";
+import { db, ref, onValue, roomRef, ROOM_ID } from "./firebase.js";
 import { DBG, diff } from "./debug.js";
 
 export const store = {
   uid: null,
   authMode: null,
   room: null,          // kompletter Raumzustand aus Firebase (oder null)
+  rooms: {},           // Übersicht aller Räume (/roomIndex), nur ohne ?room
   loaded: false,       // erster Snapshot angekommen
   connected: true,
   packPrefs: {},       // Favoriten/ausgeblendet je Pack (/packPrefs)
@@ -38,6 +39,12 @@ export function subscribe() {
     DBG.log("verbunden", store.connected);
     rerender();
   });
+  if (!ROOM_ID) {
+    // Übersicht: nur die kleine Raumliste abonnieren
+    onValue(ref(db, "roomIndex"), snap => { store.rooms = snap.val() || {}; store.loaded = true; rerender(); },
+      err => { store.local.error = "Keine Leserechte für die Datenbank: " + err.message; store.loaded = true; rerender(); });
+    return;
+  }
   onValue(roomRef(), snap => {
     const next = snap.val();
     const d = diff(store.room || {}, next || {});

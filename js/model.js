@@ -56,9 +56,10 @@ export const answersFor = (room, qi) => room?.answers?.[qi] || {};
 export const answerOf = (room, qi, uid) => answersFor(room, qi)[uid] || null;
 export const judgmentOf = (room, qi, uid) => room?.judgments?.[qi]?.[uid]?.v || null;
 
-export function allAnswered(room) {
+// onlineOnly: ohne Moderator wartet niemand auf Spieler, die gerade offline sind
+export function allAnswered(room, onlineOnly = false) {
   const qi = room?.game?.qIndex ?? 0;
-  const ps = activePlayers(room);
+  const ps = activePlayers(room).filter(p => !onlineOnly || p.online);
   return ps.length > 0 && ps.every(p => answersFor(room, qi)[p.uid]);
 }
 export function answeredCount(room) {
@@ -153,12 +154,44 @@ export function ranking(room) {
   return list;
 }
 
+// ── Modus ohne Moderator ────────────────────────────────────────────────────
+export const isFree = room => room?.meta?.mode === "players";
+export const hostUid = room => room?.meta?.hostUid || null;
+export const HOST_AWAY_MS = 15 * 1000;     // Host offline → nächster Spieler übernimmt die Steuerung
+
+// Wer bewertet wen (Freitext/Schätzen): ringförmig, jeder bewertet seinen Vorgänger; allein bewertet man sich selbst
+export function judgeOf(room, targetUid) {
+  const ps = activePlayers(room);
+  const i = ps.findIndex(p => p.uid === targetUid);
+  if (i < 0 || !ps.length) return null;
+  return ps[(i + 1) % ps.length].uid;
+}
+export const judgeTargetsOf = (room, uid) => activePlayers(room).filter(p => judgeOf(room, p.uid) === uid);
+
+// "Weiter" nach dem Auflösen: alle online-Spieler müssen bestätigen
+export const nextOf = (room, qi) => room?.next?.[qi] || {};
+export function waitingForNext(room, qi) {
+  const n = nextOf(room, qi);
+  return activePlayers(room).filter(p => p.online && !n[p.uid]);
+}
+
+// Host offline? Dann übernimmt der erste online-Spieler nach Sitzreihenfolge
+export function hostSuccessor(room, now) {
+  const h = hostUid(room);
+  const pres = room?.presence?.[h];
+  const hostIsPlayer = activePlayers(room).some(p => p.uid === h);
+  const away = !hostIsPlayer || (!pres?.online && now - (pres?.lastSeen || lastActivity(room)) > HOST_AWAY_MS);
+  if (!away) return null;
+  return activePlayers(room).find(p => p.online)?.uid || null;
+}
+
 // Kurzfassung für Startbildschirm und roomIndex
 export function summary(room) {
   const status = room?.meta?.status || "none";
   const ps = activePlayers(room);
   return {
     status,
+    mode: room?.meta?.mode || "moderated",
     packName: room?.settings?.packName || null,
     playerNames: ps.map(p => p.name),
     moderator: moderatorOf(room)?.name || null,

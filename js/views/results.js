@@ -1,5 +1,5 @@
 // Ergebnis: Rangliste (bzw. Einzelspieler-Statistik), Bonus, Zeittabelle pro Frage
-import { esc, ranking, questionsOf, answerOf, resultFor, fmtMs } from "../model.js";
+import { esc, ranking, questionsOf, answerOf, resultFor, fmtMs, isFree, hostUid } from "../model.js";
 import { topBar } from "./common.js";
 
 export function resultsView(s, me) {
@@ -7,6 +7,7 @@ export function resultsView(s, me) {
   const rk = ranking(room);
   const qs = questionsOf(room);
   const isMod = me.role === "moderator";
+  const controls = isMod || (isFree(room) && hostUid(room) === s.uid);  // ohne Moderator: der Host
   const solo = rk.length === 1;
   const pack = esc(room.settings?.packName || "");
 
@@ -47,10 +48,10 @@ export function resultsView(s, me) {
       }).join("")}</tr>`;
     }).join("")}</tbody></table></div>`;
 
-  const actions = isMod
+  const actions = controls
     ? `<button class="btn btn-primary" data-act="newRound">Neue Runde, gleiche Spieler</button>
        <button class="btn btn-text danger" data-act="closeRoom">Partie beenden</button>`
-    : `<div class="foot-note">Der Moderator kann eine neue Runde starten.</div>
+    : `<div class="foot-note">${isFree(room) ? "Der Host" : "Der Moderator"} kann eine neue Runde starten.</div>
        <button class="btn btn-ghost" data-act="dismiss">Zurück zum Start</button>`;
 
   return `<div class="screen">

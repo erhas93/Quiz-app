@@ -1,11 +1,12 @@
 // Einstieg: Identität, Abo auf den Raum, Rendern, Ereignisse
-import { initIdentity, ROOM_ID, serverNow } from "./firebase.js";
+import { initIdentity, ROOM_ID, CREATE_MODE, serverNow, goRoom, goOverview, newRoomCode, normCode, clearCreateParam } from "./firebase.js";
 import { store, subscribe, onRender, rerender, setLocal, subscribePackData } from "./store.js";
 import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers } from "./model.js";
+import { overviewView } from "./views/overview.js";
 import { ICON } from "./views/common.js";
 import { vibrate, keepAwake, share, initNative, isApp, setBarStyle } from "./native.js";
 import { homeView } from "./views/home.js";
@@ -15,19 +16,21 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.3.0";
+export const VERSION = "v4.4.0";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
 function pickView(s) {
   if (!s.loaded) return { key: "loading", html: `<div class="screen"><div class="body center"><div class="spin"></div></div></div>` };
+  if (!ROOM_ID) return { key: "overview", html: overviewView(s, serverNow()) };
   const room = s.room;
   const status = room?.meta?.status || "none";
   const me = meIn(room, s.uid);
   const dismissed = s.local.dismissed && s.local.dismissed === `${room?.meta?.createdAt}:${room?.meta?.finishedAt}`;
   if (!me || status === "none" || status === "abandoned" || (status === "finished" && dismissed)) return { key: "home", html: homeView(s, serverNow()) };
+  const steers = me.role === "moderator" || (isFree(room) && hostUid(room) === s.uid && me.role === "player");
   if (status === "lobby") {
-    if (me.role === "moderator") return s.local.picker ? { key: "modLobby", html: packPickerView(s) } : { key: "modLobby", html: modLobbyView(s, me) };
+    if (steers) return s.local.picker ? { key: "modLobby", html: packPickerView(s) } : { key: "modLobby", html: modLobbyView(s, me) };
     if (me.role === "spectator") return { key: "specLobby", html: spectatorLobbyView(s, me) };
     return { key: "plLobby", html: playerLobbyView(s, me) };
   }
@@ -74,42 +77,75 @@ function menuSheet(s) {
     <button class="sheet-item" data-act="theme">${ICON.theme()}${light ? "Dunkles Design" : "Helles Design"}</button>
     <button class="sheet-item browser-only" data-act="fullscreen">${ICON.full()}Vollbild</button>
     <button class="sheet-item" data-act="debug">${ICON.bug()}Debug-Log</button>
-    <button class="sheet-item danger" data-act="resetAll">${ICON.trash()}Raum zurücksetzen</button>
-    <div class="sheet-info"><span class="dot ${s.connected ? "on" : "off"}"></span>${s.connected ? "Verbunden" : "Keine Verbindung"} · Raum ${esc(ROOM_ID)} · ${VERSION}</div>
+    ${ROOM_ID ? `<button class="sheet-item" data-act="overview">${ICON.back()}Zur Raumübersicht</button>
+    <button class="sheet-item danger" data-act="resetAll">${ICON.trash()}Raum zurücksetzen</button>` : ""}
+    <div class="sheet-info"><span class="dot ${s.connected ? "on" : "off"}"></span>${s.connected ? "Verbunden" : "Keine Verbindung"} · ${ROOM_ID ? `Raum ${esc(ROOM_ID)}` : "Übersicht"} · ${VERSION}</div>
   </div></div>`;
 }
 
 let revealVibed = null;
-let lockRequested = null, abandonChecked = null;
+let lockRequested = null, abandonChecked = null, createDone = false;
+const once = new Set();   // Automatik-Schritte nur einmal je Schlüssel auslösen
+function doOnce(key, fn, delay = 0) {
+  if (once.has(key)) return;
+  once.add(key);
+  delay ? setTimeout(fn, delay) : fn();
+}
 function afterRender(s, key) {
   syncPresence(s);
+  keepAwake(key === "modGame" || key === "plGame");
+  if (!ROOM_ID) { if (s.loaded) A.cleanupRooms(s.rooms); return; }
   const room = s.room;
   const g = room?.game;
-  keepAwake(key === "modGame" || key === "plGame");
+  const now = serverNow();
+  const me = meIn(room, s.uid);
 
+  // Neue Partie aus der Übersicht: Raum anlegen, sobald er geladen ist
+  if (CREATE_MODE && s.loaded && !createDone) {
+    createDone = true;
+    clearCreateParam();
+    const st = room?.meta?.status;
+    if (st !== "lobby" && st !== "running") A.createRoom(s.local.name, CREATE_MODE);
+  }
   // Verlassene Partie (alle seit 10 min offline) als abgebrochen markieren – einmal pro Raum
-  if (isStale(room, serverNow())) {
+  if (isStale(room, now)) {
     const k = `${room.meta?.createdAt}`;
     if (abandonChecked !== k) { abandonChecked = k; A.markAbandoned(); }
   }
   // Spieler: kurze Vibration beim Auflösen (richtig: einmal, falsch: doppelt)
-  if (key === "plGame" && g?.phase === "revealed" && meIn(room, s.uid)?.role === "player") {
+  if (key === "plGame" && g?.phase === "revealed" && me?.role === "player") {
     const k = `${room.meta?.createdAt}:${g.qIndex}`;
     if (revealVibed !== k && resultFor(room, g.qIndex)) {
       revealVibed = k;
       vibrate(resultFor(room, g.qIndex)?.points?.[s.uid] ? 80 : [60, 80, 60]);
     }
   }
-  if (key === "modGame" || key === "modLobby" || key === "results") {
-    const me = meIn(room, s.uid);
-    if (me?.role === "moderator") A.syncIndex(room);
+  const free = isFree(room);
+  const isHost = free && hostUid(room) === s.uid && me?.role === "player";
+  const steers = me?.role === "moderator" || isHost;
+  if (steers) A.syncIndex(room);
+
+  // Ohne Moderator: Steuerung geht an den nächsten Spieler, wenn der Host weg ist
+  if (free && me?.role === "player" && (room.meta?.status === "lobby" || room.meta?.status === "running")) {
+    const succ = hostSuccessor(room, now);
+    if (succ === s.uid) doOnce(`claim:${hostUid(room)}:${room.meta?.updatedAt}`, () => A.claimHost(hostUid(room)));
   }
-  // Moderator: automatisch sperren, sobald alle eingeloggt haben
-  if (key === "modGame" && g?.phase === "answering" && allAnswered(room)) {
+
+  // Automatisch sperren, sobald alle eingeloggt haben (Moderator bzw. Host)
+  if (steers && room.meta?.status === "running" && g?.phase === "answering" && allAnswered(room, free)) {
     const k = `${room.meta?.createdAt}:${g.qIndex}`;
     if (lockRequested !== k) { lockRequested = k; A.lockAnswers(g.qIndex); }
   }
-  // Moderator-Lobby: Packliste einmal laden
+  // Host ohne Moderator: Ablauf automatisch weiterschalten
+  if (isHost && room.meta?.status === "running" && g) {
+    const qi = g.qIndex, base = `${room.meta?.createdAt}:${qi}`;
+    const q = room.questions?.[qi];
+    if (g.phase === "locked") doOnce(`show:${base}`, () => A.showAnswers(qi), 400);
+    if (g.phase === "shown" && q && !isOpenType(q)) doOnce(`reveal:${base}`, () => A.reveal(qi), 2200);
+    if (g.phase === "shown" && q && isOpenType(q) && unjudgedCount(room) === 0) doOnce(`reveal:${base}`, () => A.reveal(qi), 800);
+    if (g.phase === "revealed" && Object.keys(nextOf(room, qi)).length && !waitingForNext(room, qi).length) doOnce(`next:${base}`, () => A.nextQuestion(qi), 300);
+  }
+  // Lobby der Steuernden: Packliste einmal laden
   if (key === "modLobby") subscribePackData();
   if (key === "modLobby" && s.local.packs === null && !packsLoading) {
     packsLoading = true;
@@ -132,7 +168,8 @@ function tick() {
       if (chip) chip.className = "timer-chip" + (g.phase !== "answering" ? " off" : g.timer?.running ? (left <= 5 ? " urgent" : left <= 10 ? " warn" : "") : "");
       const bar = $("tbar");
       if (bar) { bar.style.width = Math.max(0, left / sec * 100) + "%"; bar.style.background = left <= 5 ? "var(--c5)" : left <= 10 ? "var(--c4)" : "var(--c2)"; }
-      if (left <= 0 && g.phase === "answering" && g.timer?.running && meIn(room, s.uid)?.role === "moderator") {
+      const steers = meIn(room, s.uid)?.role === "moderator" || (isFree(room) && hostUid(room) === s.uid);
+      if (left <= 0 && g.phase === "answering" && g.timer?.running && steers) {
         const k = `${room.meta?.createdAt}:${g.qIndex}:${g.timer.startAt}`;
         if (expiredFor !== k) { expiredFor = k; A.timerExpired(g.qIndex); vibrate(200); }
       }
@@ -151,9 +188,24 @@ function parseEstimate(raw) {
   return t !== "" && isFinite(n) ? n : raw.trim();
 }
 
+// Name merken, bevor die Seite für einen anderen Raum neu lädt
+function saveName() { const n = String(store.local.name || "").trim(); if (n) try { localStorage.setItem("quiz.v4.name", n); } catch {} }
+
 const handlers = {
   clearError: () => setLocal({ error: null }),
-  createRoom: () => A.createRoom(store.local.name),
+  createRoom: (el) => A.createRoom(store.local.name, el.dataset.arg || "moderated"),
+  openRoom: (el) => { saveName(); goRoom(el.dataset.arg); },
+  joinCode: () => { const c = normCode(store.local.code); if (c.length < 3) return setLocal({ error: "Bitte einen Raumcode eingeben" }); saveName(); goRoom(c); },
+  newRoom: (el) => {
+    if (!String(store.local.name || "").trim()) return setLocal({ error: "Bitte zuerst deinen Namen eingeben" });
+    saveName();
+    let code = newRoomCode();
+    while (store.rooms?.[code]) code = newRoomCode();
+    goRoom(code, el.dataset.arg);
+  },
+  overview: () => goOverview(),
+  useJoker: () => A.useJoker(),
+  markNext: (el) => { el.disabled = true; A.markNext(store.room.game.qIndex); },
   joinPlayer: () => A.joinAsPlayer(store.local.name),
   joinModerator: () => A.joinAsModerator(store.local.name),
   watch: () => A.joinAsSpectator(store.local.name),
@@ -212,8 +264,8 @@ const handlers = {
   closeMenu: (el, e) => { if (e.target === el) setLocal({ menu: false }); },
   toggleFact: () => { const qi = store.room?.game?.qIndex; setLocal({ factOpen: store.local.factOpen === qi ? null : qi }); },
   invite: async () => {
-    const url = "https://erhas93.github.io/Quiz-app/" + (ROOM_ID !== "main" ? `?room=${ROOM_ID}` : "");
-    const r = await share(`Komm in die Quiz-Lobby von ${store.local.name || "uns"}!`, url);
+    const url = `https://erhas93.github.io/Quiz-app/?room=${ROOM_ID}`;
+    const r = await share(`Komm in die Quiz-Lobby von ${store.local.name || "uns"} – Raumcode ${ROOM_ID}`, url);
     if (r === "kopiert") setLocal({ error: "Link kopiert – einfach verschicken." });
   }
 };
@@ -229,6 +281,7 @@ document.addEventListener("input", e => {
   const el = e.target;
   const kind = el.dataset?.input;
   if (kind === "name") store.local.name = el.value;
+  if (kind === "code") store.local.code = el.value;
   if (kind === "packSearch") setLocal({ picker: { ...store.local.picker, q: el.value } });
   if (kind === "draft") {
     store.local.draft = { qi: store.room?.game?.qIndex, value: el.value };
@@ -242,7 +295,7 @@ document.addEventListener("change", e => {
 });
 document.addEventListener("keydown", e => {
   if (e.key !== "Enter" || e.target.tagName !== "INPUT") return;
-  const map = { draft: "commitDraft" };
+  const map = { draft: "commitDraft", code: "joinCode" };
   const act = map[e.target.dataset.input];
   if (act) document.querySelector(`[data-act="${act}"]`)?.click();
   else e.target.blur();
@@ -266,6 +319,9 @@ document.addEventListener("keydown", e => {
       if (store.local.picker) { setLocal({ picker: null }); return true; }
       const dbg = $("dbg-panel"); if (dbg && dbg.style.display !== "none") { DBG.toggle(); return true; }
       if (store.local.error) { setLocal({ error: null }); return true; }
+      // In einem Raum, aber nicht mitten in einer eigenen Partie: zurück zur Übersicht
+      const me = meIn(store.room, store.uid);
+      if (ROOM_ID && !(me && store.room?.meta?.status === "running")) { goOverview(); return true; }
       return false;
     },
     onResume: () => { DBG.log("App wieder im Vordergrund"); rerender(); }
