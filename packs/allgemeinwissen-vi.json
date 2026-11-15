@@ -1,0 +1,176 @@
+{
+  "name": "Allgemeinwissen VI",
+  "emoji": "🧩",
+  "questions": [
+    {
+      "q": "Welcher Architekt entwarf die Basilika Sagrada Família in Barcelona?",
+      "a": [
+        "Le Corbusier",
+        "Antoni Gaudí",
+        "Oscar Niemeyer",
+        "Frank Gehry"
+      ],
+      "r": 1,
+      "cat": "Architektur",
+      "type": "mc",
+      "fact": "Antoni Gaudí übernahm den Bau 1883, ein Jahr nach der Grundsteinlegung, und arbeitete bis zu seinem Tod 1926 daran. Die Kirche ist bis heute nicht vollständig fertiggestellt und wird überwiegend aus Spenden und Eintrittsgeldern finanziert."
+    },
+    {
+      "q": "Welche dieser Früchte ist botanisch gesehen eine Beere?",
+      "a": [
+        "Erdbeere",
+        "Himbeere",
+        "Brombeere",
+        "Banane"
+      ],
+      "r": 3,
+      "cat": "Botanik",
+      "type": "mc",
+      "fact": "Botanisch ist eine Beere eine Frucht, deren gesamte Fruchtwand fleischig ist – das trifft auf Banane, Tomate und sogar Gurke zu. Die Erdbeere ist dagegen eine Sammelnussfrucht, Himbeere und Brombeere sind Sammelsteinfrüchte."
+    },
+    {
+      "q": "Wie hoch ist die Zugspitze, Deutschlands höchster Berg (in Metern)?",
+      "answer": 2962,
+      "cat": "Geografie",
+      "type": "estimate",
+      "fact": "Die Zugspitze im Wettersteingebirge ist 2.962 Meter hoch; über ihren Gipfel verläuft die Grenze zu Österreich. Seit 1926 führt eine Seilbahn hinauf, heute unter anderem die Seilbahn Zugspitze mit einer der höchsten Stahlbaustützen der Welt.",
+      "tol": 50
+    },
+    {
+      "q": "Welcher römische Kaiser ließ einen Grenzwall quer durch Nordengland errichten?",
+      "a": [
+        "Hadrian",
+        "Augustus",
+        "Trajan",
+        "Nero"
+      ],
+      "r": 0,
+      "cat": "Geschichte",
+      "type": "mc",
+      "fact": "Der Hadrianswall (Hadrian’s Wall) entstand ab dem Jahr 122 n. Chr. und war rund 117 Kilometer lang. Er markierte die Nordgrenze der römischen Provinz Britannien und gehört heute zum UNESCO-Welterbe."
+    },
+    {
+      "q": "Welcher ist der längste Fluss Europas?",
+      "a": [
+        "Donau",
+        "Rhein",
+        "Wolga",
+        "Dnepr"
+      ],
+      "r": 2,
+      "cat": "Geografie",
+      "type": "mc",
+      "fact": "Die Wolga ist rund 3.530 Kilometer lang und fließt vollständig durch Russland, bevor sie ins Kaspische Meer mündet. Die Donau folgt mit knapp 2.850 Kilometern auf Platz zwei."
+    },
+    {
+      "q": "Aus welchem Land stammt das Fischgericht Ceviche ursprünglich?",
+      "a": [
+        "Mexiko",
+        "Peru",
+        "Spanien",
+        "Kuba"
+      ],
+      "r": 1,
+      "cat": "Essen & Kulinarik",
+      "type": "mc",
+      "fact": "Beim Ceviche wird roher Fisch in Limettensaft eingelegt, wodurch das Eiweiß ohne Hitze „gart“. Peru hat das Gericht zum nationalen Kulturerbe erklärt; 2023 nahm die UNESCO die Ceviche-Tradition in die Liste des immateriellen Kulturerbes auf."
+    },
+    {
+      "q": "Welche Stadt war von 1949 bis 1990 Hauptstadt der Bundesrepublik Deutschland?",
+      "answer": "Bonn",
+      "cat": "Geschichte",
+      "type": "open",
+      "fact": "Bonn galt bewusst als „provisorische“ Hauptstadt, um den Anspruch auf ein wiedervereinigtes Deutschland mit Berlin offen zu halten. 1991 beschloss der Bundestag den Umzug nach Berlin; Bonn trägt heute den Titel „Bundesstadt“."
+    },
+    {
+      "q": "Wie heißt der Effekt, bei dem Menschen mit wenig Wissen ihre Kompetenz überschätzen?",
+      "a": [
+        "Halo-Effekt (Halo effect)",
+        "Placebo-Effekt (Placebo effect)",
+        "Dunning-Kruger-Effekt (Dunning–Kruger effect)",
+        "Pygmalion-Effekt (Pygmalion effect)"
+      ],
+      "r": 2,
+      "cat": "Psychologie",
+      "type": "mc",
+      "fact": "Die Psychologen David Dunning und Justin Kruger beschrieben den Effekt 1999: Wer in einem Gebiet wenig weiß, kann oft auch die eigenen Fehler schlecht erkennen – und schätzt sich deshalb zu gut ein."
+    },
+    {
+      "q": "Wofür steht die Abkürzung „HTTP“?",
+      "a": [
+        "Hyperlink Text Transfer Protocol",
+        "Hypertext Transfer Protocol",
+        "High Throughput Transfer Protocol",
+        "Hypertext Transmission Process"
+      ],
+      "r": 1,
+      "cat": "Technologie & Internet",
+      "type": "mc",
+      "fact": "Das Hypertext Transfer Protocol entwickelte Tim Berners-Lee ab 1989 am CERN in Genf zusammen mit HTML und dem ersten Webbrowser. Das „S“ in HTTPS steht für „Secure“ – die verschlüsselte Variante."
+    },
+    {
+      "q": "Wie lang ist ein Marathon in Kilometern?",
+      "answer": 42.195,
+      "cat": "Sport",
+      "type": "estimate",
+      "fact": "Die krumme Strecke von 42,195 Kilometern geht auf die Olympischen Spiele 1908 in London zurück: Start war vor Schloss Windsor, das Ziel vor der königlichen Loge im Stadion. 1921 wurde diese Länge offiziell festgelegt.",
+      "tol": 0.5
+    },
+    {
+      "q": "Wie viele Herzen hat ein Oktopus (Krake)?",
+      "a": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "r": 2,
+      "cat": "Tiere & Natur",
+      "type": "mc",
+      "fact": "Zwei Kiemenherzen pumpen das Blut durch die Kiemen, ein drittes Herz versorgt den restlichen Körper. Das Blut ist blau, weil der Sauerstoff an das kupferhaltige Hämocyanin gebunden wird statt an eisenhaltiges Hämoglobin."
+    },
+    {
+      "q": "Wer malte das Bild „Das Mädchen mit dem Perlenohrring“ (Girl with a Pearl Earring)?",
+      "a": [
+        "Johannes Vermeer",
+        "Rembrandt van Rijn",
+        "Frans Hals",
+        "Peter Paul Rubens"
+      ],
+      "r": 0,
+      "cat": "Kultur & Kunst",
+      "type": "mc",
+      "fact": "Johannes Vermeer malte das Bild um 1665 in Delft. Es hängt heute im Mauritshuis in Den Haag und wird oft „Mona Lisa des Nordens“ genannt. Wer das Mädchen war, ist bis heute unbekannt."
+    },
+    {
+      "q": "In welchem Jahr wurden die ersten Oscars (Academy Awards) verliehen?",
+      "answer": 1929,
+      "cat": "Film & Kino",
+      "type": "estimate",
+      "fact": "Die erste Verleihung fand am 16. Mai 1929 in einem Hotel in Hollywood statt und dauerte nur rund 15 Minuten. Die Gewinner standen bereits Monate vorher fest – Spannung kam erst später mit den versiegelten Umschlägen auf."
+    },
+    {
+      "q": "Welcher Komponist schrieb die „Mondscheinsonate“ (Moonlight Sonata)?",
+      "answer": "Ludwig van Beethoven",
+      "cat": "Musik",
+      "type": "open",
+      "fact": "Beethoven komponierte die Klaviersonate Nr. 14 im Jahr 1801. Den Beinamen „Mondscheinsonate“ bekam sie erst Jahre später durch den Dichter Ludwig Rellstab, den der erste Satz an Mondlicht über dem Vierwaldstättersee erinnerte.",
+      "alt": [
+        "Beethoven"
+      ]
+    },
+    {
+      "q": "Welches chemische Element hat das Symbol „W“?",
+      "a": [
+        "Wasserstoff",
+        "Wismut",
+        "Vanadium",
+        "Wolfram"
+      ],
+      "r": 3,
+      "cat": "Wissenschaft",
+      "type": "mc",
+      "fact": "Das W steht für Wolfram, im Englischen heißt das Metall „Tungsten“ (schwedisch für „schwerer Stein“). Wolfram hat mit 3.422 °C den höchsten Schmelzpunkt aller Metalle und wurde deshalb früher für Glühfäden in Glühbirnen verwendet."
+    }
+  ]
+}

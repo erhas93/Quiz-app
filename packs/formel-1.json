@@ -1,0 +1,180 @@
+{
+  "name": "Formel 1 (Formula 1)",
+  "emoji": "🏎️",
+  "questions": [
+    {
+      "q": "Wer wurde 1950 erster Weltmeister der Formel 1?",
+      "a": [
+        "Juan Manuel Fangio",
+        "Alberto Ascari",
+        "Giuseppe Farina",
+        "Stirling Moss"
+      ],
+      "r": 2,
+      "cat": "Geschichte",
+      "type": "mc",
+      "fact": "Giuseppe „Nino“ Farina gewann 1950 im Alfa Romeo den ersten WM-Titel. Er gewann auch das allererste WM-Rennen am 13. Mai 1950 in Silverstone, bei dem sogar das britische Königspaar zuschaute."
+    },
+    {
+      "q": "In welchem Jahr fand die erste Formel-1-Weltmeisterschaft statt?",
+      "answer": 1950,
+      "cat": "Geschichte",
+      "type": "estimate",
+      "fact": "Die erste Saison 1950 umfasste nur sieben Rennen, darunter die 500 Meilen von Indianapolis, die damals offiziell zur WM zählten, aber von fast keinem Formel-1-Team bestritten wurden."
+    },
+    {
+      "q": "Wie heißt die langsamste Kurve im Formel-1-Kalender, die in Monaco liegt?",
+      "a": [
+        "Fairmont-Haarnadel",
+        "Parabolica-Kurve",
+        "Copse-Kurve",
+        "Spoon-Kurve"
+      ],
+      "r": 0,
+      "cat": "Strecken",
+      "type": "mc",
+      "fact": "Durch die enge Haarnadel vor dem Fairmont-Hotel (Fairmont Hairpin) fahren die Autos nur mit etwa 50 km/h. Damit sie überhaupt herumkommen, bekommen die Teams in Monaco teils speziell angepasste Lenkungen mit größerem Einschlag."
+    },
+    {
+      "q": "Welches Team hat die meisten Konstrukteurs-Weltmeistertitel gewonnen?",
+      "a": [
+        "McLaren",
+        "Williams",
+        "Ferrari",
+        "Mercedes"
+      ],
+      "r": 2,
+      "cat": "Teams",
+      "type": "mc",
+      "fact": "Ferrari ist zudem das einzige Team, das seit der ersten Saison 1950 ununterbrochen in der Formel 1 antritt. Der Konstrukteurstitel wird erst seit 1958 vergeben."
+    },
+    {
+      "q": "Wofür stand die Abkürzung „DRS“ bei den Heckflügeln?",
+      "a": [
+        "Downforce Regulation System",
+        "Drag Reduction System",
+        "Drive Response Sensor",
+        "Dynamic Rear Spoiler"
+      ],
+      "r": 1,
+      "cat": "Technik",
+      "type": "mc",
+      "fact": "Das Drag Reduction System öffnete ab 2011 eine Klappe im Heckflügel, um auf Geraden den Luftwiderstand zu senken und Überholen zu erleichtern. Mit dem Reglement 2026 wurde DRS durch verstellbare Flügel an Front und Heck (aktive Aerodynamik) ersetzt."
+    },
+    {
+      "q": "Wie heißt die italienische Rennstrecke, die als „Tempel der Geschwindigkeit“ (Temple of Speed) gilt?",
+      "answer": "Monza",
+      "cat": "Strecken",
+      "type": "open",
+      "fact": "Das Autodromo Nazionale Monza nahe Mailand wurde 1922 eröffnet und ist die schnellste Strecke im Kalender mit Durchschnittsgeschwindigkeiten über 250 km/h. Die steilen Steilkurven des alten Ovals stehen bis heute im Park.",
+      "alt": [
+        "Autodromo Nazionale Monza",
+        "Autodromo di Monza"
+      ]
+    },
+    {
+      "q": "Auf welcher Strecke liegt die berühmte Kurvenkombination Eau Rouge/Raidillon?",
+      "a": [
+        "Monza",
+        "Silverstone",
+        "Suzuka",
+        "Spa-Francorchamps"
+      ],
+      "r": 3,
+      "cat": "Strecken",
+      "type": "mc",
+      "fact": "Die Bergauf-Kombination in den belgischen Ardennen wird mit über 300 km/h durchfahren und gilt als Mutprobe für Fahrer. Spa ist mit rund 7 Kilometern zudem die längste Strecke im aktuellen Kalender."
+    },
+    {
+      "q": "Welcher Deutsche wurde 2010 mit 23 Jahren jüngster Weltmeister der Formel-1-Geschichte?",
+      "a": [
+        "Nico Rosberg",
+        "Sebastian Vettel",
+        "Michael Schumacher",
+        "Nico Hülkenberg"
+      ],
+      "r": 1,
+      "cat": "Fahrer",
+      "type": "mc",
+      "fact": "Sebastian Vettel holte den Titel im Red Bull beim Saisonfinale in Abu Dhabi, obwohl er vor dem Rennen nur Dritter der WM-Wertung war. Bis 2013 gewann er vier Titel in Folge."
+    },
+    {
+      "q": "Wie viele Runden umfasst der Große Preis von Monaco?",
+      "answer": 78,
+      "cat": "Strecken",
+      "type": "estimate",
+      "fact": "Die Stadtstrecke ist nur gut 3,3 Kilometer lang, deshalb sind 78 Runden nötig, um auf rund 260 Kilometer Renndistanz zu kommen. Monaco ist damit das kürzeste Rennen der Saison – die Mindestdistanz der übrigen Rennen liegt bei 305 Kilometern.",
+      "tol": 3
+    },
+    {
+      "q": "Was bedeutet die blaue Flagge für einen Fahrer?",
+      "a": [
+        "Rennen wird unterbrochen",
+        "Rutschige Fahrbahn voraus",
+        "Letzte Runde beginnt",
+        "Schnelleres Auto will vorbei"
+      ],
+      "r": 3,
+      "cat": "Regeln",
+      "type": "mc",
+      "fact": "Die blaue Flagge fordert einen überrundeten Fahrer auf, das schnellere Auto vorbeizulassen; wer drei blaue Flaggen ignoriert, riskiert eine Strafe. Die rote Flagge unterbricht dagegen das Rennen, die rot-gelb gestreifte warnt vor rutschiger Fahrbahn."
+    },
+    {
+      "q": "Wie viele Punkte bekommt der Sieger eines Grand Prix (seit 2010)?",
+      "a": [
+        "18",
+        "20",
+        "25",
+        "30"
+      ],
+      "r": 2,
+      "cat": "Regeln",
+      "type": "mc",
+      "fact": "Seit 2010 gibt es 25-18-15-12-10-8-6-4-2-1 Punkte für die ersten zehn. Davor bekam der Sieger nur 10 Punkte – Ergebnisse aus verschiedenen Epochen lassen sich deshalb kaum direkt vergleichen."
+    },
+    {
+      "q": "Wie viele Sekunden dauert ein sehr schneller Boxenstopp mit Wechsel aller vier Reifen?",
+      "answer": 2,
+      "cat": "Technik",
+      "type": "estimate",
+      "fact": "Rund 20 Mechaniker sind an einem Stopp beteiligt. Den Rekord hält McLaren mit 1,80 Sekunden beim Großen Preis von Katar 2023. Nachtanken ist in der Formel 1 übrigens seit 2010 verboten.",
+      "tol": 0.5
+    },
+    {
+      "q": "Welcher Fahrer hat die meisten Grand-Prix-Siege errungen?",
+      "a": [
+        "Lewis Hamilton",
+        "Michael Schumacher",
+        "Max Verstappen",
+        "Sebastian Vettel"
+      ],
+      "r": 0,
+      "cat": "Fahrer",
+      "type": "mc",
+      "fact": "Lewis Hamilton feierte 2021 in Sotschi als erster Fahrer überhaupt seinen 100. Grand-Prix-Sieg. Michael Schumacher hatte zuvor mit 91 Siegen lange als unerreichbar gegolten."
+    },
+    {
+      "q": "Welcher Fahrer gewann 2021 im letzten Rennen in Abu Dhabi seinen ersten WM-Titel?",
+      "answer": "Max Verstappen",
+      "cat": "Fahrer",
+      "type": "open",
+      "fact": "Verstappen überholte Lewis Hamilton in der letzten Runde nach einer umstrittenen Safety-Car-Entscheidung. Die Rennleitung wurde danach umgebaut, Rennleiter Michael Masi verlor seinen Posten.",
+      "alt": [
+        "Verstappen"
+      ]
+    },
+    {
+      "q": "Wie heißt der Bügel über dem Cockpit, der seit 2018 Pflicht ist und den Kopf des Fahrers schützt?",
+      "a": [
+        "Aeroscreen",
+        "Halo",
+        "HANS-System (HANS device)",
+        "Monocoque"
+      ],
+      "r": 1,
+      "cat": "Technik",
+      "type": "mc",
+      "fact": "Der Halo aus Titan war anfangs wegen seines Aussehens umstritten. Spätestens seit Romain Grosjeans Feuerunfall 2020 in Bahrain, bei dem er Grosjean wohl das Leben rettete, ist er allgemein anerkannt."
+    }
+  ]
+}
