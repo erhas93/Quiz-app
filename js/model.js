@@ -68,11 +68,38 @@ export function answeredCount(room) {
 }
 
 // Richtig/falsch für eine Antwort: MC automatisch, Schätzen/Freitext über Bewertung
+// Schätzfragen ab 2 Spielern: wer am nächsten dran ist, bekommt den Punkt (bei Gleichstand alle Nächsten).
+// Allein gilt die Toleranzregel (autoJudge), solange niemand von Hand bewertet hat.
+export const estimateByDistance = (room, q) => q?.type === "estimate" && activePlayers(room).length >= 2;
+export function closestUids(room, qi) {
+  const q = room?.questions?.[qi];
+  const target = Number(q?.answer);
+  const diffs = activePlayers(room).map(p => {
+    const v = answerOf(room, qi, p.uid)?.value;
+    return typeof v === "number" && isFinite(target) ? { uid: p.uid, d: Math.abs(v - target) } : null;
+  }).filter(Boolean);
+  if (!diffs.length) return [];
+  const min = Math.min(...diffs.map(x => x.d));
+  return diffs.filter(x => x.d - min < 1e-9).map(x => x.uid);
+}
+// Urteil für die Anzeige: "correct" | "wrong" | null (noch offen)
+export function verdictOf(room, qi, uid) {
+  const q = room?.questions?.[qi];
+  if (!answerOf(room, qi, uid)) return null;
+  if (estimateByDistance(room, q)) return closestUids(room, qi).includes(uid) ? "correct" : "wrong";
+  return judgmentOf(room, qi, uid);
+}
+
 export function isCorrect(room, qi, uid) {
   const q = room?.questions?.[qi];
   const a = answerOf(room, qi, uid);
   if (!q || !a) return false;
-  if (isOpenType(q)) return judgmentOf(room, qi, uid) === "correct";
+  if (estimateByDistance(room, q)) return closestUids(room, qi).includes(uid);
+  if (isOpenType(q)) {
+    const j = judgmentOf(room, qi, uid);
+    if (!j && q.type === "estimate") return autoJudge(q, a.value);   // Einzelspiel ohne Bewertung: Toleranz
+    return j === "correct";
+  }
   return a.value === q.r;
 }
 
@@ -131,7 +158,7 @@ export function speedLead(room) {
 export function unjudgedCount(room) {
   const qi = room?.game?.qIndex ?? 0;
   const q = room?.questions?.[qi];
-  if (!isOpenType(q)) return 0;
+  if (!isOpenType(q) || q.type === "estimate") return 0;   // Schätzfragen werden automatisch gewertet
   return activePlayers(room).filter(p => answerOf(room, qi, p.uid) && !judgmentOf(room, qi, p.uid)).length;
 }
 

@@ -1,5 +1,5 @@
 // Spieler- und Zuschaueransicht während der Partie
-import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount } from "../model.js";
+import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount } from "../model.js";
 import { gameHeader, questionCard, factPanel, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
 
 export function playerGameView(s, me) {
@@ -26,7 +26,7 @@ export function playerGameView(s, me) {
   // Ohne Moderator: darf ich die Antwort von targetUid bewerten? (zugewiesen – oder als Host für einen offline-Bewerter)
   const solo = free && players.length === 1;
   // Im Einzelspiel bewertet die App selbst – keine Bewerten-Knöpfe
-  const canJudge = targetUid => free && !solo && !spectator && phase === "shown" && !!answers[targetUid]
+  const canJudge = targetUid => free && !solo && !spectator && phase === "shown" && !!answers[targetUid] && !estimateByDistance(room, q)
     && (judgeOf(room, targetUid) === s.uid || (iAmHost && !online(judgeOf(room, targetUid))));
 
   let body = "", actions = "", note = "", noteCls = "";
@@ -86,7 +86,7 @@ export function playerGameView(s, me) {
       if ((revealed || free) && q.answer != null) body += `<div class="solution"><b>Richtig:</b> ${formatValue(q, q.answer)}</div>`;
       body += players.map(p => {
         const a = answers[p.uid];
-        const j = revealed || free ? judgmentOf(room, qi, p.uid) : null;
+        const j = revealed || (free && !estimateByDistance(room, q)) ? verdictOf(room, qi, p.uid) : null;
         const judgeBtns = canJudge(p.uid) ? `<button class="judge c${j === "correct" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="1" aria-label="${esc(p.name)} richtig">${ICON.check(20)}</button>
           <button class="judge w${j === "wrong" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="0" aria-label="${esc(p.name)} falsch">${ICON.x(20)}</button>` : "";
         const mark = !judgeBtns && j ? `<span class="chip-st ${j === "correct" ? "ok" : ""}" style="${j === "wrong" ? "color:var(--c5)" : ""}">${j === "correct" ? ICON.check(18) : ICON.x(18)}</span>` : "";
@@ -120,7 +120,7 @@ export function playerGameView(s, me) {
     note = mineToDo.length ? `Bewerte ${mineToDo.map(p => p.uid === s.uid ? "deine eigene" : `${esc(p.name)}s`).join(" und ")} Antwort` : openJudges.length ? `Warte auf die Bewertung von ${openJudges.join(", ")} …` : "Gleich wird aufgelöst …";
     noteCls = mineToDo.length ? "ok" : "";
   }
-  else if (phase === "shown") note = isOpenType(q) ? "Der Moderator bewertet die Antworten …" : "Gleich wird aufgelöst …";
+  else if (phase === "shown") note = q.type === "open" ? "Der Moderator bewertet die Antworten …" : q.type === "estimate" && total > 1 ? "Wer am nächsten dran ist, bekommt den Punkt …" : "Gleich wird aufgelöst …";
   else if (revealed && free && !spectator) {
     const done = !!nextOf(room, qi)[s.uid];
     const wait = waitingForNext(room, qi).filter(p => p.uid !== s.uid).map(p => esc(p.name));

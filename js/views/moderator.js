@@ -1,5 +1,5 @@
 // Moderatoransicht während der Partie
-import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs } from "../model.js";
+import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, verdictOf, estimateByDistance } from "../model.js";
 import { gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON } from "./common.js";
 
 export function modGameView(s, me) {
@@ -39,8 +39,9 @@ export function modGameView(s, me) {
     body += `<div class="solution">${sol}</div>`;
     body += players.map(p => {
       const a = answers[p.uid];
-      const j = judgmentOf(room, qi, p.uid);
-      const canJudge = a && phase === "shown";
+      const byDist = estimateByDistance(room, q);   // ab 2 Spielern gewinnt bei Schätzfragen der Nächste – nichts zu bewerten
+      const j = byDist ? (phase === "shown" || revealed ? verdictOf(room, qi, p.uid) : null) : judgmentOf(room, qi, p.uid);
+      const canJudge = a && phase === "shown" && !byDist;
       let meta = a ? fmtMs(a.ms) : "";
       if (q.type === "estimate" && a && typeof a.value === "number" && q.answer != null) meta = `Δ ${Math.abs(a.value - parseFloat(q.answer)).toLocaleString("de-DE")}`;
       return `<div class="prow ${j || ""}"><span class="prow-name">${esc(p.name)}</span>
