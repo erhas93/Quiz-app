@@ -378,17 +378,23 @@ export function syncIndex(room) {
   set(ref(db, `roomIndex/${ROOM_ID}`), { ...s, updatedAt: serverTimestamp() }).catch(() => {});
 }
 
-// Alte Räume aufräumen (ohne Server-Funktionen): beendete/abgebrochene nach 1 Tag, alles nach 7 Tagen
+// Alte Räume aufräumen (ohne Server-Funktionen): beendete/abgebrochene nach 1 Tag löschen.
+// Offene Räume ohne Aktivität seit 7 Tagen erst als abgebrochen markieren (das dürfen laut Regeln alle),
+// gelöscht werden sie dann beim nächsten Aufräumen. Jeder Raum einzeln, damit ein verweigerter Schritt nicht alles blockiert.
 let cleaned = false;
 export function cleanupRooms(rooms) {
   if (cleaned || !rooms) return;
   cleaned = true;
   const now = serverNow(), DAY = 864e5;
-  const patch = {};
   for (const [id, r] of Object.entries(rooms)) {
     const age = now - (r?.updatedAt || 0);
     const done = r?.status === "finished" || r?.status === "abandoned" || r?.status === "none";
-    if ((done && age > DAY) || age > 7 * DAY) { patch[`rooms/${id}`] = null; patch[`roomIndex/${id}`] = null; }
+    if (done && age > DAY) {
+      remove(ref(db, `rooms/${id}`)).then(() => remove(ref(db, `roomIndex/${id}`)))
+        .then(() => DBG.log("Alter Raum gelöscht", id)).catch(e => DBG.log("Aufräumen verweigert", { id, e: e.message }));
+    } else if (!done && age > 7 * DAY) {
+      update(ref(db, `rooms/${id}/meta`), { status: "abandoned", abandonedAt: now })
+        .then(() => update(ref(db, `roomIndex/${id}`), { status: "abandoned", updatedAt: now })).catch(() => {});
+    }
   }
-  if (Object.keys(patch).length) update(ref(db), patch).then(() => DBG.log("Alte Räume aufgeräumt", Object.keys(patch).length / 2)).catch(() => {});
 }
