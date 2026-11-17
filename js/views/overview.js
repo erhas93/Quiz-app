@@ -16,7 +16,7 @@ export function overviewView(s, now) {
   const rows = list.length ? list.map(r => {
     const names = (r.playerNames || []).map(esc);
     const who = names.length ? names.join(r.status === "running" ? " vs. " : ", ") : "noch keine Spieler";
-    const st = r.status === "lobby" ? "Lobby offen" : `läuft · Frage ${(r.qIndex ?? 0) + 1}/${r.qCount || "–"}`;
+    const st = r.status === "lobby" ? (r.game === "duel" ? "Lobby offen · Duell" : "Lobby offen") : r.game === "duel" ? "Kategorie-Duell läuft" : `läuft · Frage ${(r.qIndex ?? 0) + 1}/${r.qCount || "–"}`;
     const mode = r.mode === "players" ? "ohne Moderator" : r.moderator ? `Moderation: ${esc(r.moderator)}` : "mit Moderator";
     return `<button class="room-row" data-act="openRoom" data-arg="${esc(r.id)}">
       <span class="room-code">${esc(r.id.slice(0, 4))}</span>

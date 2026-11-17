@@ -1,0 +1,202 @@
+{
+  "name": "Duell: Querbeet 1",
+  "emoji": "⚔️",
+  "mode": "duel",
+  "questions": [
+    {
+      "q": "Welcher Fluss fließt durch Wien?",
+      "a": [
+        "Rhein",
+        "Elbe",
+        "Donau",
+        "Moldau"
+      ],
+      "r": 2,
+      "cat": "Geografie",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Die Donau (Danube) fließt durch vier Hauptstädte: Wien, Bratislava, Budapest und Belgrad – so viele wie kein anderer Fluss der Welt."
+    },
+    {
+      "q": "Welches Land erstreckt sich über die meisten Zeitzonen?",
+      "a": [
+        "Russland",
+        "USA",
+        "Großbritannien",
+        "Frankreich"
+      ],
+      "r": 3,
+      "cat": "Geografie",
+      "diff": 2,
+      "type": "mc",
+      "fact": "Dank Überseegebieten wie Französisch-Polynesien, Réunion und Neukaledonien kommt Frankreich auf 12 Zeitzonen, mit dem Antarktis-Anspruch sogar auf 13. Russland hat 11."
+    },
+    {
+      "q": "Wie hoch ist der Mount Everest laut der gemeinsamen Messung von China und Nepal aus dem Jahr 2020 (in Metern)?",
+      "answer": 8849,
+      "cat": "Geografie",
+      "diff": 3,
+      "type": "estimate",
+      "fact": "Die beiden Länder einigten sich 2020 auf 8.848,86 Meter. Früher galten je nach Messung 8.848 oder 8.844 Meter, weil umstritten war, ob die Schneekappe mitzählt.",
+      "tol": 20
+    },
+    {
+      "q": "Wer führte Regie bei „Der weiße Hai“ (Jaws)?",
+      "a": [
+        "Steven Spielberg",
+        "George Lucas",
+        "Ridley Scott",
+        "James Cameron"
+      ],
+      "r": 0,
+      "cat": "Film & Kino",
+      "diff": 1,
+      "type": "mc",
+      "fact": "„Der weiße Hai“ (1975) gilt als erster Sommer-Blockbuster. Der mechanische Hai fiel beim Dreh so oft aus, dass Steven Spielberg ihn seltener zeigte – was die Spannung erst richtig aufbaute."
+    },
+    {
+      "q": "Welcher Film gewann 2020 als erster nicht englischsprachiger Film den Oscar als Bester Film?",
+      "a": [
+        "Roma",
+        "Parasite",
+        "Amélie",
+        "Das Leben der Anderen"
+      ],
+      "r": 1,
+      "cat": "Film & Kino",
+      "diff": 2,
+      "type": "mc",
+      "fact": "Bong Joon-hos „Parasite“ (Gisaengchung) aus Südkorea gewann 2020 vier Oscars, darunter Bester Film, Beste Regie und Bestes Originaldrehbuch."
+    },
+    {
+      "q": "Wie viele Minuten dauert James Camerons „Titanic“ (1997) in der Kinofassung?",
+      "answer": 194,
+      "cat": "Film & Kino",
+      "diff": 3,
+      "type": "estimate",
+      "fact": "Mit 3 Stunden und 14 Minuten war „Titanic“ einer der längsten Kino-Blockbuster seiner Zeit. Der Film gewann 11 Oscars – ein Rekord, den er sich mit „Ben Hur“ und „Der Herr der Ringe: Die Rückkehr des Königs“ teilt.",
+      "tol": 10
+    },
+    {
+      "q": "Wie viele Beine hat eine Spinne?",
+      "a": [
+        "6",
+        "8",
+        "10",
+        "12"
+      ],
+      "r": 1,
+      "cat": "Tiere & Natur",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Spinnen gehören zu den Spinnentieren (Arachnida) und haben acht Beine, Insekten dagegen sechs. Dazu kommen bei Spinnen zwei kurze Taster am Kopf, die oft wie ein weiteres Beinpaar aussehen."
+    },
+    {
+      "q": "Welches Tier hat das schwerste Gehirn?",
+      "a": [
+        "Afrikanischer Elefant",
+        "Blauwal",
+        "Pottwal",
+        "Orca"
+      ],
+      "r": 2,
+      "cat": "Tiere & Natur",
+      "diff": 2,
+      "type": "mc",
+      "fact": "Das Gehirn des Pottwals (Sperm Whale) wiegt bis zu etwa 8 Kilogramm – mehr als bei jedem anderen bekannten Tier. Das menschliche Gehirn wiegt rund 1,3 bis 1,4 Kilogramm."
+    },
+    {
+      "q": "Welcher Hai gilt mit einem geschätzten Alter von bis zu rund 400 Jahren als langlebigstes Wirbeltier?",
+      "answer": "Grönlandhai",
+      "cat": "Tiere & Natur",
+      "diff": 3,
+      "type": "open",
+      "fact": "Forscher bestimmten 2016 das Alter von Grönlandhaien (Greenland Shark) über die Augenlinse per Radiokarbon-Datierung. Die Tiere wachsen nur etwa einen Zentimeter pro Jahr und werden erst mit rund 150 Jahren geschlechtsreif.",
+      "alt": [
+        "Groenlandhai",
+        "Eishai",
+        "Greenland Shark",
+        "Somniosus microcephalus"
+      ]
+    },
+    {
+      "q": "Welches chemische Symbol hat Gold?",
+      "a": [
+        "Ag",
+        "Au",
+        "Go",
+        "Gd"
+      ],
+      "r": 1,
+      "cat": "Wissenschaft",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Au kommt vom lateinischen Wort „aurum“. Ag ist Silber (argentum), Gd steht für Gadolinium."
+    },
+    {
+      "q": "Wie viele Knochen hat ein erwachsener Mensch?",
+      "answer": 206,
+      "cat": "Wissenschaft",
+      "diff": 2,
+      "type": "estimate",
+      "fact": "Neugeborene haben rund 300 Knochen bzw. Knochenanlagen, von denen viele im Laufe der Kindheit zusammenwachsen – etwa am Schädel und am Kreuzbein. Am Ende bleiben in der Regel 206.",
+      "tol": 5
+    },
+    {
+      "q": "Welcher Physiker sagte die Existenz des Positrons (Antielektron) theoretisch voraus?",
+      "a": [
+        "Paul Dirac",
+        "Enrico Fermi",
+        "Niels Bohr",
+        "Wolfgang Pauli"
+      ],
+      "r": 0,
+      "cat": "Wissenschaft",
+      "diff": 3,
+      "type": "mc",
+      "fact": "Paul Dirac leitete 1928 eine Gleichung für das Elektron her, die auch ein positiv geladenes Gegenstück zuließ. 1932 wies Carl Anderson das Positron in der kosmischen Strahlung nach; beide erhielten dafür den Nobelpreis."
+    },
+    {
+      "q": "Wie viele Saiten hat eine klassische Gitarre?",
+      "a": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "r": 2,
+      "cat": "Musik",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Die Standardstimmung der sechs Saiten lautet E-A-D-G-H-E. Es gibt auch Gitarren mit 7 oder 12 Saiten, die sind aber Sonderformen."
+    },
+    {
+      "q": "Wer komponierte „Die vier Jahreszeiten“ (Le quattro stagioni)?",
+      "a": [
+        "Johann Sebastian Bach",
+        "Georg Friedrich Händel",
+        "Wolfgang Amadeus Mozart",
+        "Antonio Vivaldi"
+      ],
+      "r": 3,
+      "cat": "Musik",
+      "diff": 2,
+      "type": "mc",
+      "fact": "Antonio Vivaldi veröffentlichte die vier Violinkonzerte 1725. Zu jedem Konzert gehört ein Gedicht, das beschreibt, was die Musik darstellt – etwa Vogelgesang, Gewitter oder Eisglätte."
+    },
+    {
+      "q": "Wie heißt das Tasteninstrument, dessen Saiten angerissen statt angeschlagen werden und das vor dem Klavier weit verbreitet war?",
+      "answer": "Cembalo",
+      "cat": "Musik",
+      "diff": 3,
+      "type": "open",
+      "fact": "Beim Cembalo (Harpsichord) zupfen kleine Kiele die Saiten an. Deshalb lässt sich die Lautstärke über den Anschlag kaum verändern – genau das konnte erst das Hammerklavier, das „Pianoforte“ (leise-laut).",
+      "alt": [
+        "Harpsichord",
+        "Kielflügel",
+        "Clavicembalo",
+        "Spinett"
+      ]
+    }
+  ]
+}

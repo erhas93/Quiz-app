@@ -1,5 +1,5 @@
 // Gemeinsame Bausteine der Ansichten (Design A · Kompakt)
-import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking } from "../model.js";
+import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking, isDuel, playOrder, isStartQ, pickOf, DUEL_TURNS, DIFF_LABEL, pointsOf } from "../model.js";
 
 export const L = i => String.fromCharCode(65 + i);
 
@@ -38,6 +38,7 @@ export const menuBtn = (connected = true) =>
 // ── Segmentierte Fragenleiste ──
 // Spieler: eigene Ergebnisse grün/rot; Moderator/Zuschauer: alle richtig grün, keiner rot, gemischt gold
 export function segBar(room, uid, own) {
+  if (isDuel(room)) return duelSegBar(room, uid, own);
   const total = qCount(room);
   const g = room.game || {};
   const qi = g.qIndex ?? 0;
@@ -56,6 +57,25 @@ export function segBar(room, uid, own) {
     html += `<span class="seg ${cls}"></span>`;
   }
   return `<div class="segs" aria-label="Fortschritt: Frage ${qi + 1} von ${total}">${html}</div>`;
+}
+
+// Duell: Segmente in Spielreihenfolge (Startfrage + 14 Züge); Farbe = wer die Punkte bekam
+function duelSegBar(room, uid, own) {
+  const order = playOrder(room), total = qCount(room), g = room.game || {};
+  let html = "";
+  for (let k = 0; k < total; k++) {
+    const qi = order[k];
+    const r = qi != null ? resultFor(room, qi) : null;
+    let cls = "";
+    if (r && !(qi === g.qIndex && g.phase !== "revealed" && g.phase !== "finished" && g.phase !== "board")) {
+      const winners = Object.entries(r.points || {}).filter(([, v]) => v > 0).map(([u]) => u);
+      if (own) cls = r.points?.[uid] ? "ok" : winners.length ? "no" : "";
+      else cls = !winners.length ? "no" : winners.length > 1 ? "mix" : "ok";
+      if (!cls) cls = "none";
+    } else if (qi != null && qi === g.qIndex) cls = "cur";
+    html += `<span class="seg ${cls}"></span>`;
+  }
+  return `<div class="segs" aria-label="Duell: ${order.length} von ${total} Feldern gespielt">${html}</div>`;
 }
 
 // ── Timer (Zahl/Balken werden per requestAnimationFrame aktualisiert: ids tchip/tnum/tbar) ──
@@ -81,7 +101,7 @@ export function gameHeader(s, mode) {
   const role = mode === "mod" ? `<span class="role">Moderator</span>`
     : mode === "spec" ? `<span class="role spec">Zuschauer</span>` : "";
   const top = `<div class="top">
-    <div class="top-main"><div class="top-title sm">Frage ${qi + 1} / ${qCount(room)}${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div>${segBar(room, uid, mode === "player")}</div>
+    <div class="top-main"><div class="top-title sm">${isDuel(room) ? (isStartQ(room, qi) ? "Startfrage" : `Zug ${pickOf(room, qi)?.turn || "?"} / ${DUEL_TURNS}`) : `Frage ${qi + 1} / ${qCount(room)}`}${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div>${segBar(room, uid, mode === "player")}</div>
     ${timerChip(room)}${role}${menuBtn(s.connected)}</div>`;
   return top + timerBar(room) + (mode === "mod" ? modChips(room) : playerChips(room, uid));
 }
@@ -92,11 +112,12 @@ function playerChips(room, uid) {
   const answers = answersFor(room, qi);
   const open = g.phase === "answering" || g.phase === "locked";
   const lead = speedLead(room)?.leader?.uid;
-  return `<div class="chips">${activePlayers(room).map(p => {
+  return `<div class="chips">${activePlayers(room).map((p, pi) => {
     let st = "";
     if (open) st = answers[p.uid] ? `<span class="chip-st ok" aria-label="eingeloggt">${ICON.check(16)}</span>` : `<span class="chip-st">…</span>`;
     if (open && jokerOf(room, p.uid)?.q === qi) st = `<span class="chip-st gold">50:50</span>` + st;
-    return `<div class="chip${p.uid === uid ? " me" : ""}">
+    const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
+    return `<div class="chip ${side}${p.uid === uid ? " me" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span>
       <span class="chip-name">${esc(p.name)}${lead === p.uid ? " ⚡" : ""}</span>${st}
       <span class="chip-pts">${scoreOf(room, p.uid)}</span></div>`;
@@ -111,16 +132,17 @@ function modChips(room) {
   const answers = answersFor(room, qi);
   const res = resultFor(room, qi);
   const mcOpen = q && !isOpenType(q) && g.phase === "answering";
-  return `<div class="chips">${activePlayers(room).map(p => {
+  return `<div class="chips">${activePlayers(room).map((p, pi) => {
     const a = answers[p.uid];
     const j = jokerOf(room, p.uid);
+    const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
     let sub = a ? `${fmtMs(a.ms)} ✓` : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
     if (a && res?.fastestUid === p.uid) sub = `${fmtMs(a.ms)} ⚡`;
     let jk = "";
     if (j && j.q === qi) jk = `<span class="chip-st gold">50:50 aktiv</span>`;
     else if (mcOpen && !j) jk = `<button class="mini-btn" data-act="joker" data-arg="${p.uid}" ${a ? "disabled" : ""} aria-label="50:50-Joker für ${esc(p.name)}">50:50</button>`;
     else if (mcOpen && j) jk = `<span class="chip-st">Joker weg</span>`;
-    return `<div class="chip2">
+    return `<div class="chip2 ${side}">
       <div class="chip2-r"><span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span><span class="chip-pts">${scoreOf(room, p.uid)}</span></div>
       <div class="chip2-r"><span class="chip2-sub">${sub}</span>${jk}</div></div>`;
   }).join("")}</div>`;
@@ -128,7 +150,8 @@ function modChips(room) {
 
 // ── Frage, Hintergrund, Ergebnis ──
 export function questionCard(q, compact = false) {
-  const type = q.type === "estimate" ? `<span class="q-type">Schätzfrage</span>` : q.type === "open" ? `<span class="q-type">Freitext</span>` : "";
+  let type = q.type === "estimate" ? `<span class="q-type">Schätzfrage</span>` : q.type === "open" ? `<span class="q-type">Freitext</span>` : "";
+  if (q.diff) type += `<span class="q-type diff d${q.diff}">${DIFF_LABEL[q.diff] || ""} · ${pointsOf(q)} P</span>`;
   const cat = q.cat || type ? `<div class="q-cat">${q.cat ? esc(q.cat) : ""}${type}</div>` : "";
   return `<div class="q-card${compact ? " compact" : ""}">${cat}<div class="q-text">${esc(q.q)}</div></div>`;
 }

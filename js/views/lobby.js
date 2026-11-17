@@ -1,5 +1,5 @@
 // Lobby für Moderator, Spieler und Zuschauer – alles auf einem Bildschirm
-import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid } from "../model.js";
+import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC } from "../model.js";
 import { ROOM_ID } from "../firebase.js";
 import { topBar, slots, spectatorLine, ICON } from "./common.js";
 import { playStats, packLine } from "./packs.js";
@@ -10,8 +10,26 @@ const playersCard = (room, uid, right = "") => `<div class="card">
     ${slots(room, uid, MAX_PLAYERS)}${spectatorLine(room)}</div>`;
 
 // Moderator-Lobby; ohne Moderator sieht der Host (selbst Spieler) dieselbe Steuerung
+// Lieblingsthema fürs gewählte Pack (normales Spiel); im Duell kommt die Frage auf dem Brett
+function favCard(room, uid) {
+  const p = room.players?.[uid];
+  if (!p || p.role !== "player" || isDuel(room) || !room.settings?.packId) return "";
+  const v = p.favPack === room.settings.packId && typeof p.fav === "boolean" ? p.fav : null;
+  return `<div class="card"><div class="card-h"><span class="label">Ist das eins deiner Lieblingsthemen?</span>${v == null ? `<span class="muted small">für die Statistik</span>` : ""}</div>
+    <div class="seg3"><button class="${v === true ? "on" : ""}" data-act="fav" data-arg="1">Ja</button><button class="${v === false ? "on" : ""}" data-act="fav" data-arg="0">Nein</button></div></div>`;
+}
+
+function modeCard(room) {
+  const duel = isDuel(room);
+  const n = activePlayers(room).length;
+  return `<div class="card"><div class="card-h"><span class="label">Spielmodus</span>${duel && n !== 2 ? `<span class="muted small">braucht genau 2 Spieler</span>` : ""}</div>
+    <div class="seg3"><button class="${duel ? "" : "on"}" data-act="gameMode" data-arg="classic">Klassisch</button><button class="${duel ? "on" : ""}" data-act="gameMode" data-arg="duel">Kategorie-Duell</button></div>
+    ${duel ? `<button class="toggle-row" data-act="pickTimer" aria-pressed="${!!room.settings?.pickTimer}"><span>Wähl-Timer (${PICK_SEC} s)</span><span class="switch${room.settings?.pickTimer ? " on" : ""}"></span></button>` : ""}</div>`;
+}
+
 export function modLobbyView(s) {
   const room = s.room;
+  const duel = isDuel(room);
   const free = isFree(room);
   const players = activePlayers(room);
   const ready = players.filter(p => p.ready).length;
@@ -24,11 +42,13 @@ export function modLobbyView(s) {
         <span class="pack-ico">${esc(cur?.emoji || "❓")}</span>
         <span class="pack-txt"><span class="pack-name">${esc(room.settings?.packName || sel)}</span>
           <span class="pack-sub">${cur ? `${cur.count} Fragen · ${packLine(cur, playStats(s.history))}` : "Ändern"}</span></span>${ICON.chev(20)}</button>`
-    : `<button class="pack-row" data-act="openPicker"><span class="pack-ico">?</span><span class="pack-txt"><span class="pack-name">Fragenpaket wählen</span><span class="pack-sub">${Array.isArray(packs) ? `${packs.length} Packs verfügbar` : "lädt …"}</span></span>${ICON.chev(20)}</button>`;
+    : `<button class="pack-row" data-act="openPicker"><span class="pack-ico">?</span><span class="pack-txt"><span class="pack-name">${duel ? "Duell-Pack wählen" : "Fragenpaket wählen"}</span><span class="pack-sub">${Array.isArray(packs) ? `${packs.filter(p => (p.mode === "duel") === duel).length} Packs verfügbar` : "lädt …"}</span></span>${ICON.chev(20)}</button>`;
 
   let startLabel, startDisabled = false;
   if (!players.length) { startLabel = "Warte auf Spieler …"; startDisabled = true; }
   else if (!sel) { startLabel = "Erst Fragenpaket wählen"; startDisabled = true; }
+  else if (duel && players.length !== 2) { startLabel = players.length < 2 ? "Duell: warte auf 2. Spieler" : "Duell geht nur zu zweit"; startDisabled = true; }
+  else if (duel) startLabel = ready === players.length || free ? "Duell starten" : `Duell trotzdem starten (${ready}/2 bereit)`;
   else if (players.length === 1) startLabel = ready || free ? "Einzelspiel starten" : "Einzelspiel trotzdem starten";
   else startLabel = ready === players.length ? "Quiz starten" : `Trotzdem starten (${ready}/${players.length} bereit)`;
 
@@ -37,7 +57,9 @@ export function modLobbyView(s) {
     ${topBar("Lobby", `${code()} · ${free ? "ohne Moderator · du steuerst" : `${esc(moderatorOf(room)?.name || "Du")} moderiert`}`, { back: "overview", connected: s.connected })}
     <div class="body">
       ${playersCard(room, s.uid, invite)}
+      ${modeCard(room)}
       <div class="card"><span class="label">Fragenpaket</span>${pack}</div>
+      ${favCard(room, s.uid)}
       ${timerCard(room, free)}
       <div class="spacer"></div>
     </div>
@@ -59,8 +81,9 @@ export function playerLobbyView(s, me) {
       <div class="card"><label class="label" for="in-lobbyname">Dein Name</label>
         <input class="inp" id="in-lobbyname" data-input="name" data-commit="setName" maxlength="20" value="${esc(me.name)}"></div>
       ${playersCard(room, s.uid)}
-      <div class="card"><span class="label">Fragenpaket</span>
+      <div class="card"><span class="label">${isDuel(room) ? "Kategorie-Duell · Duell-Pack" : "Fragenpaket"}</span>
         <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
+      ${favCard(room, s.uid)}
       <div class="spacer"></div>
     </div>
     <div class="actions">

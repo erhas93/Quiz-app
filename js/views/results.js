@@ -1,6 +1,14 @@
 // Ergebnis: Rangliste (bzw. Einzelspieler-Statistik), Bonus, Zeittabelle pro Frage
-import { esc, ranking, questionsOf, answerOf, resultFor, fmtMs, isFree, hostUid } from "../model.js";
+import { esc, ranking, questionsOf, answerOf, resultFor, fmtMs, isFree, hostUid, isDuel, activePlayers, isFavFor } from "../model.js";
 import { topBar } from "./common.js";
+import { boardHtml, categoryTable } from "./duel.js";
+
+// Lieblingsthema im normalen Spiel aufdecken
+function favNote(room, uid) {
+  if (isDuel(room)) return "";
+  const v = isFavFor(room, 0, uid);
+  return v === true ? " · ★ Lieblingsthema" : "";
+}
 
 export function resultsView(s, me) {
   const room = s.room;
@@ -27,12 +35,12 @@ export function resultsView(s, me) {
     head = `<div class="card"><div class="winner" style="padding:4px 0 2px"><h1>${title}</h1></div>
       ${rk.map(p => `<div class="rank${p.rank === 1 ? " first" : ""}${p.uid === s.uid ? " me" : ""}">
         <span class="rank-pos">${p.rank}</span>
-        <span class="rank-name">${esc(p.name)}${p.uid === s.uid ? " (du)" : ""}<div class="rank-sub">${p.correct}/${qs.length} richtig · Ø ${fmtMs(p.avgMs)}${p.uid === room.bonus?.uid ? " · +1 Bonus" : ""}</div></span>
+        <span class="rank-name">${esc(p.name)}${p.uid === s.uid ? " (du)" : ""}<div class="rank-sub">${p.correct}/${qs.length} richtig · Ø ${fmtMs(p.avgMs)}${p.uid === room.bonus?.uid ? " · +1 Bonus" : ""}${favNote(room, p.uid)}</div></span>
         <span class="rank-pts">${p.score}</span></div>`).join("")}</div>`;
   }
 
   const bonusUid = room.bonus?.uid || null;
-  const bonus = isMod && rk.length ? `<div class="card"><span class="label">Bonuspunkt</span>
+  const bonus = isMod && rk.length && !isDuel(room) ? `<div class="card"><span class="label">Bonuspunkt</span>
       <div class="pills">${rk.map(p => `<button class="pill${p.uid === bonusUid ? " on" : ""}" data-act="bonus" data-arg="${p.uid}">${esc(p.name)}${p.uid === bonusUid ? " +1" : ""}</button>`).join("")}
       <button class="pill${!bonusUid ? " on" : ""}" data-act="bonus" data-arg="">Keiner</button></div></div>` : "";
 
@@ -48,6 +56,9 @@ export function resultsView(s, me) {
       }).join("")}</tr>`;
     }).join("")}</tbody></table></div>`;
 
+  const duelCards = isDuel(room) ? `<div class="card"><span class="label">Spielbrett · ★ Lieblingskategorien</span>${boardHtml(room, null, { showFavs: activePlayers(room).map(p => p.uid) })}</div>
+    <div class="card"><span class="label">Bilanz pro Kategorie</span>${categoryTable(room)}</div>` : "";
+
   const actions = controls
     ? `<button class="btn btn-primary" data-act="newRound">Neue Runde, gleiche Spieler</button>
        <button class="btn btn-text danger" data-act="closeRoom">Partie beenden</button>`
@@ -56,7 +67,7 @@ export function resultsView(s, me) {
 
   return `<div class="screen">
     ${topBar("Ergebnis", pack, { connected: s.connected })}
-    <div class="body">${head}${bonus}${table}</div>
+    <div class="body">${head}${bonus}${duelCards || table}</div>
     <div class="actions">${actions}</div>
   </div>`;
 }

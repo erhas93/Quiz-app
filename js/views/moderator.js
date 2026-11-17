@@ -1,6 +1,14 @@
 // Moderatoransicht während der Partie
-import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, verdictOf, estimateByDistance } from "../model.js";
-import { gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON } from "./common.js";
+import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, verdictOf, estimateByDistance, isDuel, playOrder } from "../model.js";
+import { gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON, resultBanner } from "./common.js";
+import { duelStakeLine, duelOutcome } from "./duel.js";
+
+// Feedback zur Schwierigkeit (nur Moderator, nach dem Auflösen) – fließt in die Statistik
+const FB = [["easy", "zu leicht"], ["ok", "passt"], ["hard", "zu schwer"], ["bad", "Fehler"]];
+function feedbackRow(room, qi) {
+  const cur = room.feedback?.[qi] || null;
+  return `<div class="fb-row"><span class="fb-l">Feedback</span>${FB.map(([k, l]) => `<button class="fb${cur === k ? " on" : ""}${k === "bad" ? " bad" : ""}" data-act="feedback" data-arg="${k}">${l}</button>`).join("")}</div>`;
+}
 
 export function modGameView(s, me) {
   const room = s.room;
@@ -17,7 +25,11 @@ export function modGameView(s, me) {
   const revealed = phase === "revealed";
   const factOpen = s.local.factOpen === qi;
 
-  let body = questionCard(q);
+  const duel = isDuel(room);
+  let body = "";
+  if (duel && !revealed) body += duelStakeLine(room, qi, null);
+  if (duel && revealed) { const o = duelOutcome(room, qi, null); if (o) body += resultBanner(o.kind === "neutral" ? "neutral" : o.kind, o.big, o.sub); }
+  body += questionCard(q);
 
   if (!isOpenType(q)) {
     // Markierungen zeigen live, wer was gewählt hat
@@ -63,7 +75,8 @@ export function modGameView(s, me) {
     action = `<button class="btn btn-gold" data-act="reveal">Auflösen</button>`;
   } else if (revealed) {
     note = standing(room, null);
-    action = `<button class="btn btn-primary" data-act="next">${qi + 1 >= qCount(room) ? "Zum Ergebnis" : "Nächste Frage"}</button>`;
+    const last = duel ? playOrder(room).length >= qCount(room) : qi + 1 >= qCount(room);
+    action = `<button class="btn btn-primary" data-act="next">${last ? "Zum Ergebnis" : duel ? "Zurück zum Brett" : "Nächste Frage"}</button>`;
   }
   let timerBtns = "";
   if (room.settings?.timerMode === "manual" && phase === "answering") {
@@ -76,7 +89,7 @@ export function modGameView(s, me) {
   return `<div class="screen">
     ${gameHeader(s, "mod")}
     <div class="body">${body}<div class="spacer"></div></div>
-    <div class="actions"><div class="foot-note">${note}</div><div class="actions-row">${timerBtns}${action}</div></div>
+    <div class="actions">${revealed ? feedbackRow(room, qi) : ""}<div class="foot-note">${note}</div><div class="actions-row">${timerBtns}${action}</div></div>
     ${fact}
   </div>`;
 }

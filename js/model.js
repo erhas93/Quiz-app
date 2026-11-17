@@ -104,16 +104,31 @@ export function isCorrect(room, qi, uid) {
 }
 
 // Ergebnis einer Frage, wie es beim Auflösen gespeichert wird
+// ok: wer richtig lag; points: wer Punkte bekommt (im Duell: Wähler, sonst klaut der Gegner)
 export function computeResult(room, qi) {
-  const points = {};
+  const points = {}, ok = {};
   let fastestUid = null, fastestMs = Infinity;
   for (const p of activePlayers(room)) {
-    const ok = isCorrect(room, qi, p.uid);
-    points[p.uid] = ok ? 1 : 0;
+    const c = isCorrect(room, qi, p.uid);
+    ok[p.uid] = c;
+    points[p.uid] = c ? 1 : 0;
     const a = answerOf(room, qi, p.uid);
-    if (ok && a && typeof a.ms === "number" && a.ms < fastestMs) { fastestMs = a.ms; fastestUid = p.uid; }
+    if (c && a && typeof a.ms === "number" && a.ms < fastestMs) { fastestMs = a.ms; fastestUid = p.uid; }
   }
-  return { points, fastestUid };
+  if (!isDuel(room)) return { points, ok, fastestUid };
+  const pts = pointsOf(room.questions?.[qi]);
+  const uids = activePlayers(room).map(p => p.uid);
+  for (const u of uids) points[u] = 0;
+  if (isStartQ(room, qi)) {
+    for (const u of uids) if (ok[u]) points[u] = pts;
+    return { points, ok, fastestUid, startWinner: startWinner(points, fastestUid, uids) };
+  }
+  const by = pickOf(room, qi)?.by;
+  const opp = uids.find(u => u !== by);
+  let stolen = false;
+  if (by && ok[by]) points[by] = pts;
+  else if (opp && ok[opp]) { points[opp] = pts; stolen = true; }
+  return { points, ok, fastestUid, by: by || null, stolen };
 }
 
 export const resultFor = (room, qi) => room?.results?.[qi] || null;
@@ -170,7 +185,8 @@ export function ranking(room) {
     questionsOf(room).forEach((_, qi) => {
       const a = answerOf(room, qi, p.uid);
       if (a && typeof a.ms === "number") times.push(a.ms);
-      if (resultFor(room, qi)?.points?.[p.uid]) correct++;
+      const r = resultFor(room, qi);
+      if (r && (r.ok ? r.ok[p.uid] : r.points?.[p.uid])) correct++;
     });
     const avgMs = times.length ? times.reduce((x, y) => x + y, 0) / times.length : null;
     return { ...p, score: scoreOf(room, p.uid), correct, answered: times.length, avgMs };
@@ -224,6 +240,7 @@ export function summary(room) {
     moderator: moderatorOf(room)?.name || null,
     qIndex: room?.game?.qIndex ?? null,
     qCount: qCount(room) || null,
+    game: room?.settings?.game || "classic",
     phase: room?.game?.phase || null
   };
 }
@@ -283,3 +300,80 @@ export function autoJudge(q, value) {
   return false;
 }
 export const isSoloFree = room => isFree(room) && activePlayers(room).length === 1;
+
+// ── Kategorie-Duell ────────────────────────────────────────────────────────
+// Brett: Kategorien in Reihenfolge des ersten Auftretens, je Kategorie die Fragen der Stufen 1–3.
+// game.duel = { startQ, drawAt, picker, turn, picks: { "q<qi>": { by, turn } } }
+// (Schlüssel mit Buchstaben, sonst macht Firebase aus Zahlen-Schlüsseln Arrays)
+export const isDuel = room => room?.settings?.game === "duel";
+export const DUEL_TURNS = 14;
+export const PICK_SEC = 20;
+export const DRAW_MS = 3600;   // Dauer der Auslos-Animation
+export const DIFF_LABEL = { 1: "leicht", 2: "mittel", 3: "schwer" };
+export const pointsOf = q => (q?.diff >= 1 && q?.diff <= 3 ? q.diff : 1);
+
+export function duelBoard(room) {
+  const qs = room?.questions || [];
+  const cats = [];
+  const cells = {};
+  qs.forEach((q, qi) => {
+    if (!q) return;
+    const c = q.cat || "?";
+    if (!cells[c]) { cells[c] = {}; cats.push(c); }
+    cells[c][q.diff || 1] = qi;
+  });
+  return cats.map(cat => ({ cat, cells: [1, 2, 3].map(d => cells[cat][d] ?? null) }));
+}
+export const duelOf = room => room?.game?.duel || {};
+export const isStartQ = (room, qi) => duelOf(room).startQ != null && duelOf(room).startQ === qi;
+export const pickOf = (room, qi) => duelOf(room).picks?.["q" + qi] || null;
+export const isPlayed = (room, qi) => isStartQ(room, qi) || !!pickOf(room, qi);
+export function playOrder(room) {
+  const d = duelOf(room);
+  const list = d.startQ != null ? [d.startQ] : [];
+  return list.concat(Object.entries(d.picks || {}).filter(([, v]) => v).sort((a, b) => a[1].turn - b[1].turn).map(([k]) => Number(k.slice(1))));
+}
+export const freeCells = room => (room?.questions || []).map((_, qi) => qi).filter(qi => !isPlayed(room, qi));
+export const opponentOf = (room, uid) => activePlayers(room).find(p => p.uid !== uid)?.uid || null;
+// Lieblingskategorien eines Spielers (Indizes ins Brett)
+export const favCatsOf = (room, uid) => Object.entries(room?.players?.[uid]?.favCats || {}).filter(([, v]) => v).map(([k]) => Number(k.slice(1)));
+export const favDone = (room, uid) => !!room?.players?.[uid]?.favDone;
+
+// Wer gewinnt die Startfrage? Beide richtig → schneller; einer richtig → der; keiner → Los
+export function startWinner(points, fastestUid, players) {
+  const right = players.filter(u => points[u] > 0);
+  if (right.length === 1) return right[0];
+  if (right.length > 1) return fastestUid && right.includes(fastestUid) ? fastestUid : right[0];
+  return players[Math.floor(Math.random() * players.length)] || null;
+}
+
+// ── Lieblingsthema (alle Modi) ─────────────────────────────────────────────
+// true/false oder null (nicht angegeben)
+export function isFavFor(room, qi, uid) {
+  const p = room?.players?.[uid];
+  if (!p) return null;
+  if (isDuel(room)) {
+    if (!p.favDone) return null;
+    const ci = duelBoard(room).findIndex(r => r.cells.includes(qi));
+    return ci >= 0 && !!p.favCats?.["c" + ci];
+  }
+  if (p.favPack !== room?.settings?.packId || typeof p.fav !== "boolean") return null;
+  return p.fav;
+}
+
+// ── Statistik ──────────────────────────────────────────────────────────────
+// Feste Kennung je Frage aus dem Fragetext (FNV-1a), damit Werte auch bei geänderter Reihenfolge passen
+export function questionKey(q) {
+  let h = 0x811c9dc5;
+  const s = String(q?.q || "").toLowerCase().replace(/\s+/g, " ").trim();
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return "q" + h.toString(36);
+}
+// Richtig im Sinne der Schwierigkeit: Schätzfragen immer mit der Toleranzregel (unabhängig vom Abstand zum Gegner)
+export function statCorrect(room, qi, uid) {
+  const q = room?.questions?.[qi];
+  const a = answerOf(room, qi, uid);
+  if (!q || !a) return false;
+  if (q.type === "estimate") return autoJudge(q, a.value);
+  return isCorrect(room, qi, uid);
+}

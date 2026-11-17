@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-15T20:21:34.509Z",
+  "generated": "2026-11-17T06:00:05.874Z",
   "packs": [
     {
       "id": "allgemeinwissen-vi",
@@ -26,7 +26,7 @@
         "open": 2
       },
       "hash": "475364b23e",
-      "updated": "2026-07-15T20:51:10+02:00",
+      "updated": "2026-11-14T11:34:43+01:00",
       "warnings": 2
     },
     {
@@ -41,6 +41,50 @@
       },
       "hash": "0f90eadea7",
       "updated": "2026-11-15T21:21:15+01:00",
+      "warnings": 0
+    },
+    {
+      "id": "duell-querbeet-1",
+      "name": "Duell: Querbeet 1",
+      "emoji": "⚔️",
+      "count": 15,
+      "mode": "duel",
+      "cats": [
+        "Geografie",
+        "Film & Kino",
+        "Tiere & Natur",
+        "Wissenschaft",
+        "Musik"
+      ],
+      "types": {
+        "mc": 10,
+        "estimate": 3,
+        "open": 2
+      },
+      "hash": "48f13126c2",
+      "updated": null,
+      "warnings": 0
+    },
+    {
+      "id": "duell-querbeet-2",
+      "name": "Duell: Querbeet 2",
+      "emoji": "🎯",
+      "count": 15,
+      "mode": "duel",
+      "cats": [
+        "Geschichte",
+        "Sport",
+        "Essen & Kulinarik",
+        "Technologie & Internet",
+        "Kultur & Kunst"
+      ],
+      "types": {
+        "mc": 10,
+        "estimate": 3,
+        "open": 2
+      },
+      "hash": "127fc349f0",
+      "updated": null,
       "warnings": 0
     },
     {
@@ -68,7 +112,7 @@
         "open": 0
       },
       "hash": "2e45a8a438",
-      "updated": "2026-07-13T19:10:36+02:00",
+      "updated": "2026-11-14T11:34:43+01:00",
       "warnings": 3
     },
     {
@@ -82,7 +126,7 @@
         "open": 2
       },
       "hash": "5d2d4af758",
-      "updated": "2026-07-15T20:50:54+02:00",
+      "updated": "2026-11-14T11:34:43+01:00",
       "warnings": 1
     },
     {
@@ -96,7 +140,7 @@
         "open": 1
       },
       "hash": "126b72a394",
-      "updated": "2026-07-14T13:03:08+02:00",
+      "updated": "2026-11-14T11:34:43+01:00",
       "warnings": 0
     },
     {
@@ -110,7 +154,7 @@
         "open": 2
       },
       "hash": "b3bd1fed94",
-      "updated": "2026-07-15T20:55:11+02:00",
+      "updated": "2026-11-14T11:34:43+01:00",
       "warnings": 5
     }
   ]

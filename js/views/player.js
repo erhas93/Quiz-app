@@ -1,5 +1,6 @@
 // Spieler- und Zuschaueransicht während der Partie
-import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount } from "../model.js";
+import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount, isDuel, playOrder } from "../model.js";
+import { duelStakeLine, duelOutcome } from "./duel.js";
 import { gameHeader, questionCard, factPanel, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
 
 export function playerGameView(s, me) {
@@ -35,7 +36,12 @@ export function playerGameView(s, me) {
   if (mod && !mod.online) body += `<div class="notice warn">Moderator ${esc(mod.name)} ist offline – warte …</div>`;
 
   // Ergebnis der Frage zuerst (nur nach dem Auflösen)
-  if (revealed) {
+  const duel = isDuel(room);
+  if (duel && !revealed) body += duelStakeLine(room, qi, s.uid);
+  if (revealed && duel) {
+    const o = duelOutcome(room, qi, spectator ? null : s.uid);
+    if (o) body += resultBanner(o.kind, o.big, [o.sub, standing(room, s.uid)].filter(Boolean).join(" · "));
+  } else if (revealed) {
     const st = standing(room, s.uid);
     if (spectator) body += resultBanner("neutral", "Aufgelöst", st);
     else {
@@ -120,16 +126,16 @@ export function playerGameView(s, me) {
     note = mineToDo.length ? `Bewerte ${mineToDo.map(p => p.uid === s.uid ? "deine eigene" : `${esc(p.name)}s`).join(" und ")} Antwort` : openJudges.length ? `Warte auf die Bewertung von ${openJudges.join(", ")} …` : "Gleich wird aufgelöst …";
     noteCls = mineToDo.length ? "ok" : "";
   }
-  else if (phase === "shown") note = q.type === "open" ? "Der Moderator bewertet die Antworten …" : q.type === "estimate" && total > 1 ? "Wer am nächsten dran ist, bekommt den Punkt …" : "Gleich wird aufgelöst …";
+  else if (phase === "shown") note = q.type === "open" ? "Der Moderator bewertet die Antworten …" : q.type === "estimate" && total > 1 ? (duel ? "Wer näher dran ist, liegt richtig …" : "Wer am nächsten dran ist, bekommt den Punkt …") : "Gleich wird aufgelöst …";
   else if (revealed && free && !spectator) {
     const done = !!nextOf(room, qi)[s.uid];
     const wait = waitingForNext(room, qi).filter(p => p.uid !== s.uid).map(p => esc(p.name));
-    const last = qi + 1 >= qCount(room);
-    if (!done) actions = `<button class="btn btn-primary" data-act="markNext">${last ? "Zum Ergebnis" : "Weiter"}</button>`;
+    const last = duel ? playOrder(room).length >= qCount(room) : qi + 1 >= qCount(room);
+    if (!done) actions = `<button class="btn btn-primary" data-act="markNext">${last ? "Zum Ergebnis" : duel ? "Zurück zum Brett" : "Weiter"}</button>`;
     note = done ? (wait.length ? `Bereit ✓ · warte auf ${wait.join(", ")}` : "Bereit ✓") : (wait.length < players.filter(p => p.online).length - 1 ? "Die anderen warten auf dich" : "");
     noteCls = done ? "ok" : "";
   }
-  else if (revealed) note = free ? "Warte auf die nächste Frage …" : "Warte auf die nächste Frage …";
+  else if (revealed) note = duel ? "Gleich geht es zurück zum Brett …" : "Warte auf die nächste Frage …";
 
   if (spectator) {
     actions = (moderatorAway(room, Date.now()) ? `<button class="btn btn-gold" data-act="takeover">Moderation übernehmen</button>` : "")

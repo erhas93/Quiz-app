@@ -268,3 +268,49 @@ button{cursor:pointer}
 .fact-sol{padding:10px 14px;border-radius:var(--r);background:var(--ok-bg);border:1px solid var(--c2);font-size:16px}
 .fact-sol b{color:var(--c2)}
 .fact-text{font-size:18px;line-height:1.6}
+
+/* ── KATEGORIE-DUELL ── */
+.chip.pa{border-left:4px solid var(--blue)}.chip.pb{border-left:4px solid var(--c4)}
+.chip.turn{box-shadow:0 0 0 2px var(--c3) inset}
+.board{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.brow{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,clamp(50px,16.5vw,72px));gap:6px;align-items:stretch}
+.brow.bhead{margin-bottom:-2px}
+.bh{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);text-align:center}
+.bcat{display:flex;align-items:center;gap:5px;min-width:0;padding:0 2px;font-size:clamp(12.5px,3.6vw,14px);font-weight:700;line-height:1.2;color:var(--text);background:none;border:0;text-align:left}
+.bname{min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.bcat.edit{border:1.5px dashed var(--line);border-radius:12px;padding:0 6px;background:var(--bg2)}
+.bcat.edit.fav{border:1.5px solid var(--c3);background:var(--gold-bg)}
+.bstar{font-size:18px;color:var(--c3);flex-shrink:0;width:18px;text-align:center}
+.bfav{color:var(--c3);font-size:15px;flex-shrink:0}.bfav.pa{color:var(--blue)}.bfav.pb{color:var(--c4)}
+.cell{height:clamp(52px,7.4vh,66px);border-radius:12px;border:1.5px solid var(--line);background:var(--bg3);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0 2px;min-width:0;transition:transform .12s,background .12s}
+.cell.void{background:none;border-style:dashed;opacity:.3}
+.cell:disabled{cursor:default}
+.cell[data-act]{border-color:var(--c2);background:var(--ok-bg)}
+.cell[data-act]:active{transform:scale(.95)}
+.cell-pts{font-size:22px;font-weight:900;line-height:1}
+.cell-who{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cell-tag{font-size:11px;font-weight:700;opacity:.8}
+.cell.pa{background:rgba(91,156,245,.28);border-color:var(--blue)}
+.cell.pb{background:rgba(244,162,97,.26);border-color:var(--c4)}
+.cell.both{background:linear-gradient(135deg,rgba(91,156,245,.3) 50%,rgba(244,162,97,.3) 50%);border-color:var(--c3)}
+.cell.none{opacity:.45}
+.cell.cur{border-color:var(--c3)}
+.cell.hl{background:var(--c3);border-color:var(--c3);color:#132028;transform:scale(1.06);box-shadow:0 0 18px rgba(233,196,106,.6)}
+.cell.hl.final{animation:cellPulse .6s ease-in-out 3}
+@keyframes cellPulse{50%{transform:scale(1.14)}}
+.stake{padding:7px 12px;border-radius:var(--r-sm);font-size:13.5px;font-weight:700;text-align:center;background:var(--bg2);border:1px solid var(--line);color:var(--text2);flex-shrink:0}
+.stake.pa{border-left:4px solid var(--blue)}.stake.pb{border-left:4px solid var(--c4)}
+.q-type.diff{border-color:var(--gold-line);color:var(--c3)}
+.fb-row{display:flex;gap:5px;align-items:center;justify-content:center}
+.fb-l{font-size:12px;color:var(--text3);font-weight:600}
+.fb{height:30px;padding:0 8px;white-space:nowrap;border-radius:99px;border:1px solid var(--line);background:var(--bg2);color:var(--text2);font-size:13px;font-weight:600}
+.fb.on{border-color:var(--c3);background:var(--gold-bg);color:var(--c3)}
+.fb.bad.on{border-color:var(--c5);background:var(--no-bg);color:var(--c5)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:8px;height:40px;padding:0 4px;background:none;border:0;color:var(--text);font-size:15px;font-weight:600}
+.switch{width:44px;height:26px;border-radius:99px;background:var(--bg3);border:1.5px solid var(--line);position:relative;flex-shrink:0;transition:background .15s}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--text3);transition:left .15s,background .15s}
+.switch.on{background:var(--ok-bg);border-color:var(--c2)}.switch.on::after{left:20px;background:var(--c2)}
+.ctable td:first-child{text-align:left;font-weight:700}
+.ctable th.pa{color:var(--blue)}.ctable th.pb{color:var(--c4)}
+.seg.none{background:var(--text3)}
+.chip2.pa{border-left:4px solid var(--blue)}.chip2.pb{border-left:4px solid var(--c4)}

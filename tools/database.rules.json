@@ -2,24 +2,68 @@
   "rules": {
     ".read": false,
     ".write": false,
-
     "rooms": {
       "$room": {
         ".read": "auth != null",
         ".write": "auth != null && (!data.exists() || !(data.child('meta/status').val() === 'lobby' || data.child('meta/status').val() === 'running') || data.child('meta/hostUid').val() === auth.uid || data.child('players').child(auth.uid).child('role').val() === 'moderator')",
-
-        "meta":     { ".write": "auth != null" },
-        "players":  { ".write": "auth != null" },
-        "presence": { "$uid": { ".write": "auth != null && auth.uid === $uid" } },
-        "answers":  { "$q": { "$uid": { ".write": "auth != null && auth.uid === $uid && !data.exists()" } } },
-        "judgments": { ".write": "auth != null && data.parent().child('meta/mode').val() === 'players'" },
-        "jokers":   { "$uid": { ".write": "auth != null && auth.uid === $uid && !data.exists()" } },
-        "next":     { "$q": { "$uid": { ".write": "auth != null && auth.uid === $uid" } } }
+        "meta": {
+          ".write": "auth != null"
+        },
+        "players": {
+          ".write": "auth != null"
+        },
+        "presence": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid"
+          }
+        },
+        "answers": {
+          "$q": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid && !data.exists()"
+            }
+          }
+        },
+        "judgments": {
+          ".write": "auth != null && data.parent().child('meta/mode').val() === 'players'"
+        },
+        "jokers": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && !data.exists()"
+          }
+        },
+        "next": {
+          "$q": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid"
+            }
+          }
+        }
       }
     },
-
-    "roomIndex": { ".read": "auth != null", "$room": { ".write": "auth != null" } },
-    "history":   { ".read": "auth != null", "$id":   { ".write": "auth != null" } },
-    "packPrefs": { ".read": "auth != null", ".write": "auth != null" }
+    "roomIndex": {
+      ".read": "auth != null",
+      "$room": {
+        ".write": "auth != null"
+      }
+    },
+    "history": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null"
+      }
+    },
+    "packPrefs": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "questionStats": {
+      ".read": true,
+      "$pack": {
+        "$q": {
+          ".write": "auth != null"
+        }
+      }
+    }
   }
 }

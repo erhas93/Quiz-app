@@ -5,7 +5,8 @@ import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS } from "./model.js";
+import { duelBoardView, drawFrame } from "./views/duel.js";
 import { overviewView } from "./views/overview.js";
 import { ICON } from "./views/common.js";
 import { vibrate, keepAwake, share, initNative, isApp, setBarStyle } from "./native.js";
@@ -16,7 +17,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.6.1";
+export const VERSION = "v4.7";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -34,6 +35,8 @@ function pickView(s) {
     if (me.role === "spectator") return { key: "specLobby", html: spectatorLobbyView(s, me) };
     return { key: "plLobby", html: playerLobbyView(s, me) };
   }
+  if (status === "running" && isDuel(room) && (room.game?.phase === "board" || room.game?.phase === "drawing"))
+    return { key: me.role === "moderator" ? "modGame" : "plGame", html: duelBoardView(s, me) };
   if (status === "running") return me.role === "moderator" ? { key: "modGame", html: modGameView(s, me) } : { key: "plGame", html: playerGameView(s, me) };
   if (status === "finished") return { key: "results", html: resultsView(s, me) };
   return { key: "home", html: homeView(s, serverNow()) };
@@ -137,6 +140,12 @@ function afterRender(s, key) {
     const k = `${room.meta?.createdAt}:${g.qIndex}`;
     if (lockRequested !== k) { lockRequested = k; A.lockAnswers(g.qIndex); }
   }
+  // Duell: Wahl eines Spielers übernehmen (er selbst darf den Spielzustand nicht schreiben)
+  if (steers && room.meta?.status === "running" && isDuel(room) && g?.phase === "board") {
+    const d = duelOf(room);
+    const req = d.picker && room.players?.[d.picker]?.pick;
+    if (req && req.turn === (d.turn || 0)) doOnce(`pick:${room.meta?.createdAt}:${d.turn || 0}`, () => A.pickCell(req.cell, d.picker));
+  }
   // Host ohne Moderator: Ablauf automatisch weiterschalten
   if (isHost && room.meta?.status === "running" && g) {
     const qi = g.qIndex, base = `${room.meta?.createdAt}:${qi}`;
@@ -181,9 +190,53 @@ function tick() {
       }
     }
   }
+  if (room?.meta?.status === "running" && isDuel(room)) duelTick(s, room, g);
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
+
+// Duell: Auslos-Animation, Ende der Animation, Wähl-Timer (Zahl im Fuß, Ablauf durch Moderator/Host)
+let lastHl = null, drawDoneFor = null, pickExpiredFor = null;
+function duelTick(s, room, g) {
+  const now = serverNow();
+  const d = duelOf(room);
+  const me = meIn(room, s.uid);
+  const steers = me?.role === "moderator" || (isFree(room) && hostUid(room) === s.uid && me?.role === "player");
+  if (g?.phase === "drawing") {
+    const f = drawFrame(room, now);
+    if (f) {
+      const key = f.qi + (f.done ? "!" : "");
+      if (key !== lastHl || !document.querySelector(".cell.hl")) {
+        lastHl = key;
+        document.querySelectorAll(".cell.hl").forEach(el => el.classList.remove("hl", "final"));
+        const el = $("cell-" + f.qi);
+        if (el) { el.classList.add("hl"); if (f.done) el.classList.add("final"); }
+        if (!f.done) vibrate(8);
+      }
+    }
+    if (steers && d.drawAt && now - d.drawAt >= DRAW_MS) {
+      const k = `${room.meta?.createdAt}:${d.drawAt}`;
+      if (drawDoneFor !== k) { drawDoneFor = k; A.duelDrawDone(); }
+    }
+  }
+  if (g?.phase === "board" && d.startQ != null) {
+    const picker = room.players?.[d.picker];
+    const pickerOffline = !room.presence?.[d.picker]?.online;
+    const limited = room.settings?.pickTimer || (isFree(room) && pickerOffline);
+    if (!limited) return;
+    const left = Math.max(0, PICK_SEC - (now - (g.phaseAt || now)) / 1000);
+    const el = $("pnum");
+    if (el) el.textContent = Math.ceil(left);
+    if (left <= 0 && steers && picker) {
+      const k = `${room.meta?.createdAt}:${d.turn || 0}`;
+      if (pickExpiredFor !== k) {
+        pickExpiredFor = k;
+        const cells = freeCells(room);
+        if (cells.length) A.pickCell(cells[Math.floor(Math.random() * cells.length)], d.picker);
+      }
+    }
+  }
+}
 
 // ── Eingaben ───────────────────────────────────────────────────────────────
 function parseEstimate(raw) {
@@ -279,6 +332,24 @@ const handlers = {
   menu: () => setLocal({ menu: true }),
   closeMenu: (el, e) => { if (e.target === el) setLocal({ menu: false }); },
   toggleFact: () => toggleFact(),
+  gameMode: (el) => A.setGameMode(el.dataset.arg),
+  pickTimer: () => A.setPickTimer(!store.room?.settings?.pickTimer),
+  fav: (el) => A.setFav(el.dataset.arg === "1"),
+  favCat: (el) => { vibrate(10); A.toggleFavCat(Number(el.dataset.arg)); },
+  confirmFavs: () => A.confirmFavs(true),
+  unconfirmFavs: () => A.confirmFavs(false),
+  duelDraw: (el) => { el.disabled = true; A.duelDraw(); },
+  feedback: (el) => A.giveFeedback(el.dataset.arg),
+  pickCell: (el) => {
+    const room = store.room, d = duelOf(room), cell = Number(el.dataset.arg);
+    const me = meIn(room, store.uid);
+    const canWriteGame = me?.role === "moderator" || (isFree(room) && hostUid(room) === store.uid);
+    vibrate(15);
+    document.querySelectorAll(".cell").forEach(c => c.disabled = true);
+    el.classList.add("hl");
+    if (canWriteGame) A.pickCell(cell, d.picker);
+    else if (d.picker === store.uid) A.requestPick(cell);
+  },
   invite: async () => {
     const url = `https://erhas93.github.io/Quiz-app/?room=${ROOM_ID}`;
     const r = await share(`Komm in die Quiz-Lobby von ${store.local.name || "uns"} – Raumcode ${ROOM_ID}`, url);

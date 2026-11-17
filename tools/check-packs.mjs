@@ -5,6 +5,7 @@
 //   node tools/check-packs.mjs --write  prüfen und packs/index.json + packs/catalog.json schreiben
 //   node tools/check-packs.mjs --json   Ergebnis als JSON ausgeben
 //
+// Duell-Packs ("mode": "duel"): 15 Fragen, 5 Kategorien ("cat") mit je einer Frage pro Stufe ("diff" 1–3).
 // Fehler (blockieren): kaputtes JSON, fehlende Pflichtfelder, ungültige Typen/Antworten.
 // Warnungen (blockieren nicht): Regeln aus den Pack-Richtlinien (Anzahl, Typen-Mix,
 // Verteilung der richtigen Antworten, auffällig lange richtige Antwort, Duplikate).
@@ -70,6 +71,23 @@ export function checkPack(id, raw) {
     if (key) { if (seen.has(key)) errors.push(`${n}: gleicher Fragetext wie Frage ${seen.get(key) + 1}`); else seen.set(key, i); }
   });
 
+  // Duell-Packs: genau 5 Kategorien mit je einer Frage pro Stufe (diff 1–3)
+  let cats = null;
+  if (p.mode != null && p.mode !== "duel") errors.push(`Unbekannter Modus "${p.mode}" (erlaubt: duel)`);
+  if (p.mode === "duel") {
+    const byCat = new Map();
+    qs.forEach((q, i) => {
+      if (!q || typeof q !== "object") return;
+      if (typeof q.cat !== "string" || !q.cat.trim()) errors.push(`Frage ${i + 1}: Duell-Frage braucht eine Kategorie "cat"`);
+      if (![1, 2, 3].includes(q.diff)) errors.push(`Frage ${i + 1}: "diff" muss 1, 2 oder 3 sein`);
+      if (typeof q.cat === "string" && q.cat.trim()) { const k = q.cat.trim(); if (!byCat.has(k)) byCat.set(k, []); byCat.get(k).push(q.diff); }
+    });
+    if (qs.length !== 15) errors.push(`Duell-Pack braucht genau 15 Fragen (hat ${qs.length})`);
+    if (byCat.size !== 5) errors.push(`Duell-Pack braucht genau 5 Kategorien (hat ${byCat.size}: ${[...byCat.keys()].join(", ")})`);
+    for (const [c, ds] of byCat) if (ds.slice().sort().join() !== "1,2,3") errors.push(`Kategorie "${c}": braucht genau eine Frage je Stufe 1, 2, 3 (hat ${ds.join(", ")})`);
+    cats = [...byCat.keys()];
+  } else qs.forEach((q, i) => { if (q?.diff != null && ![1, 2, 3].includes(q.diff)) errors.push(`Frage ${i + 1}: "diff" muss 1, 2 oder 3 sein`); });
+
   // Richtlinien → Warnungen
   const isTest = /test|demo/.test(id);
   const want = isTest ? 5 : 15;
@@ -83,7 +101,7 @@ export function checkPack(id, raw) {
     const unused = pos.map((c, k) => c === 0 ? L[k] : null).filter(Boolean);
     if (unused.length) warnings.push(`Richtige Antwort nie auf ${unused.join(", ")}`);
   }
-  return { id, pack: p, errors, warnings, types, positions: pos, count: qs.length, keys: [...seen.keys()] };
+  return { id, pack: p, errors, warnings, types, positions: pos, count: qs.length, keys: [...seen.keys()], mode: p.mode || null, cats };
 }
 
 export function checkAll() {
@@ -126,7 +144,7 @@ function main() {
     const catalog = {
       generated: new Date().toISOString(),
       packs: ok.map(r => ({
-        id: r.id, name: r.pack.name, emoji: r.pack.emoji || "", count: r.count,
+        id: r.id, name: r.pack.name, emoji: r.pack.emoji || "", count: r.count, ...(r.mode ? { mode: r.mode, cats: r.cats } : {}),
         types: r.types, hash: r.hash, updated: gitDate(path.join("packs", r.file)), warnings: r.warnings.length
       }))
     };

@@ -1,0 +1,192 @@
+{
+  "name": "Duell: Querbeet 2",
+  "emoji": "🎯",
+  "mode": "duel",
+  "questions": [
+    {
+      "q": "In welchem Jahr fiel die Berliner Mauer?",
+      "a": [
+        "1987",
+        "1989",
+        "1990",
+        "1991"
+      ],
+      "r": 1,
+      "cat": "Geschichte",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Am Abend des 9. November 1989 verkündete Günter Schabowski versehentlich, die neue Reiseregelung gelte „ab sofort, unverzüglich“. Noch in derselben Nacht öffneten die Grenzübergänge."
+    },
+    {
+      "q": "Welcher römische Kaiser ließ einen Grenzwall quer durch Britannien bauen?",
+      "a": [
+        "Augustus",
+        "Nero",
+        "Hadrian",
+        "Trajan"
+      ],
+      "r": 2,
+      "cat": "Geschichte",
+      "diff": 2,
+      "type": "mc",
+      "fact": "Der Hadrianswall (Hadrian's Wall) entstand ab 122 n. Chr. und war rund 117 Kilometer lang. Große Teile sind bis heute erhalten und gehören zum UNESCO-Welterbe."
+    },
+    {
+      "q": "In welchem Jahr wurde die englische Magna Carta besiegelt?",
+      "answer": 1215,
+      "cat": "Geschichte",
+      "diff": 3,
+      "type": "estimate",
+      "fact": "König Johann Ohneland (King John) besiegelte die Magna Carta 1215 auf Druck aufständischer Barone. Sie beschränkte erstmals die Macht des Königs und gilt als ein Meilenstein auf dem Weg zum Rechtsstaat."
+    },
+    {
+      "q": "Wie viele Spieler einer Basketballmannschaft stehen gleichzeitig auf dem Feld?",
+      "a": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "r": 1,
+      "cat": "Sport",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Basketball wurde 1891 von James Naismith in den USA erfunden. Anfangs gab es keine feste Spielerzahl, erst ab 1897 wurde mit fünf gegen fünf gespielt."
+    },
+    {
+      "q": "Wie viele Punkte bringt ein Touchdown im American Football – ohne den anschließenden Extrapunkt?",
+      "a": [
+        "3",
+        "7",
+        "8",
+        "6"
+      ],
+      "r": 3,
+      "cat": "Sport",
+      "diff": 2,
+      "type": "mc",
+      "fact": "Nach dem Touchdown kann das Team per Kick einen weiteren Punkt (Extra Point) oder mit einem Spielzug zwei Punkte (Two-Point Conversion) holen. Ein Field Goal bringt drei Punkte."
+    },
+    {
+      "q": "In welcher Sportart wird der Stanley Cup vergeben?",
+      "a": [
+        "Eishockey",
+        "Basketball",
+        "Baseball",
+        "American Football"
+      ],
+      "r": 0,
+      "cat": "Sport",
+      "diff": 3,
+      "type": "mc",
+      "fact": "Der Stanley Cup ist die Meistertrophäe der nordamerikanischen Eishockeyliga NHL und wurde 1892 vom damaligen kanadischen Generalgouverneur Lord Stanley gestiftet. Jedes Mitglied des Siegerteams darf den Pokal einen Tag lang behalten."
+    },
+    {
+      "q": "Aus welchem Land stammt das Reisgericht Paella?",
+      "a": [
+        "Italien",
+        "Portugal",
+        "Mexiko",
+        "Spanien"
+      ],
+      "r": 3,
+      "cat": "Essen & Kulinarik",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Die Paella stammt aus der Region Valencia. Der Name bezeichnet eigentlich die flache Pfanne, in der sie gekocht wird; die ursprüngliche Paella valenciana enthält Huhn, Kaninchen und Bohnen statt Meeresfrüchten."
+    },
+    {
+      "q": "Welches Gewürz gilt nach Gewicht als das teuerste der Welt?",
+      "a": [
+        "Vanille",
+        "Safran",
+        "Kardamom",
+        "Zimt"
+      ],
+      "r": 1,
+      "cat": "Essen & Kulinarik",
+      "diff": 2,
+      "type": "mc",
+      "fact": "Für ein Kilogramm Safran werden die Blütennarben von etwa 150.000 bis 200.000 Krokusblüten von Hand gezupft. Entsprechend kostet ein Kilo oft mehrere Tausend Euro."
+    },
+    {
+      "q": "Aus welcher Milch wird der französische Käse Roquefort hergestellt?",
+      "a": [
+        "Kuhmilch",
+        "Ziegenmilch",
+        "Schafsmilch",
+        "Büffelmilch"
+      ],
+      "r": 2,
+      "cat": "Essen & Kulinarik",
+      "diff": 3,
+      "type": "mc",
+      "fact": "Roquefort wird aus roher Schafsmilch gemacht und muss in den Naturhöhlen von Roquefort-sur-Soulzon reifen. Der Edelschimmel Penicillium roqueforti sorgt für die blaugrünen Adern."
+    },
+    {
+      "q": "Wofür steht die Abkürzung „WWW“?",
+      "a": [
+        "World Wide Web",
+        "Wide World Web",
+        "Web Wide World",
+        "World Web Wide"
+      ],
+      "r": 0,
+      "cat": "Technologie & Internet",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Tim Berners-Lee entwickelte das World Wide Web 1989 am Forschungszentrum CERN bei Genf. Die erste Website ging 1991 online und ist dort bis heute abrufbar."
+    },
+    {
+      "q": "In welchem Jahr stellte Steve Jobs das erste iPhone vor?",
+      "answer": 2007,
+      "cat": "Technologie & Internet",
+      "diff": 2,
+      "type": "estimate",
+      "fact": "Steve Jobs präsentierte das iPhone am 9. Januar 2007 auf der Macworld als „iPod, Telefon und Internet-Kommunikator“ in einem Gerät. In den USA kam es im Juni 2007 in den Handel."
+    },
+    {
+      "q": "Welche Mathematikerin gilt mit ihren Notizen zur Analytical Engine von Charles Babbage als erste Programmiererin?",
+      "answer": "Ada Lovelace",
+      "cat": "Technologie & Internet",
+      "diff": 3,
+      "type": "open",
+      "fact": "Ada Lovelace veröffentlichte 1843 einen Algorithmus zur Berechnung von Bernoulli-Zahlen für die nie gebaute Analytical Engine. Die Programmiersprache Ada wurde nach ihr benannt.",
+      "alt": [
+        "Lovelace",
+        "Augusta Ada King",
+        "Ada King"
+      ]
+    },
+    {
+      "q": "Welcher Maler schnitt sich 1888 einen Teil seines linken Ohrs ab?",
+      "a": [
+        "Paul Gauguin",
+        "Vincent van Gogh",
+        "Edvard Munch",
+        "Claude Monet"
+      ],
+      "r": 1,
+      "cat": "Kultur & Kunst",
+      "diff": 1,
+      "type": "mc",
+      "fact": "Vincent van Gogh verletzte sich in Arles nach einem Streit mit Paul Gauguin. Kurz darauf malte er das „Selbstbildnis mit verbundenem Ohr“."
+    },
+    {
+      "q": "In welcher Stadt steht das Kunstmuseum Prado?",
+      "answer": "Madrid",
+      "cat": "Kultur & Kunst",
+      "diff": 2,
+      "type": "open",
+      "fact": "Der Prado (Museo del Prado) wurde 1819 eröffnet und zeigt eine der bedeutendsten Sammlungen europäischer Malerei, etwa Werke von Velázquez, Goya und Hieronymus Bosch."
+    },
+    {
+      "q": "In welchem Jahr wurde das Opernhaus von Sydney (Sydney Opera House) eröffnet?",
+      "answer": 1973,
+      "cat": "Kultur & Kunst",
+      "diff": 3,
+      "type": "estimate",
+      "fact": "Der dänische Architekt Jørn Utzon gewann 1957 den Wettbewerb. Wegen Kosten- und Bauproblemen verließ er das Projekt 1966 und sah das fertige Gebäude nie. Eröffnet wurde es 1973 von Königin Elisabeth II."
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import { db, ref, roomRef, roomPath, ROOM_ID, set, update, remove, runTransactio
 import { store, rerender } from "./store.js";
 import { DBG } from "./debug.js";
 import { loadPack } from "./packs.js";
-import { MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking } from "./model.js";
+import { MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf } from "./model.js";
 
 const uid = () => store.uid;
 
@@ -143,8 +143,33 @@ export async function setReady(ready) {
 }
 
 export async function choosePack(pack) {
-  try { await update(roomRef("settings"), { packId: pack.id, packName: pack.name }); DBG.log("choosePack", pack.id); }
+  try { await update(roomRef("settings"), { packId: pack.id, packName: pack.name, packMode: pack.mode || null }); DBG.log("choosePack", pack.id); }
   catch (e) { fail("Pack nicht gespeichert", e); }
+}
+
+// Spielmodus: "classic" oder "duel"; ein Pack, das nicht zum Modus passt, wird abgewählt
+export async function setGameMode(mode) {
+  const st = store.room?.settings || {};
+  const patch = { game: mode };
+  const packIsDuel = st.packMode === "duel";
+  if (st.packId && packIsDuel !== (mode === "duel")) Object.assign(patch, { packId: null, packName: null, packMode: null });
+  try { await update(roomRef("settings"), patch); DBG.log("setGameMode", mode); } catch (e) { fail("Modus nicht gespeichert", e); }
+}
+export async function setPickTimer(on) {
+  try { await update(roomRef("settings"), { pickTimer: !!on }); DBG.log("setPickTimer", on); } catch (e) { fail("Wähl-Timer nicht gespeichert", e); }
+}
+
+// Lieblingsthema: normales Spiel ja/nein fürs gewählte Pack; Duell: Lieblingskategorien auf dem Brett
+export async function setFav(fav) {
+  try { await update(roomRef(`players/${uid()}`), { fav: !!fav, favPack: store.room?.settings?.packId || null }); DBG.log("setFav", fav); }
+  catch (e) { fail("Lieblingsthema nicht gespeichert", e); }
+}
+export async function toggleFavCat(ci) {
+  const cur = !!store.room?.players?.[uid()]?.favCats?.["c" + ci];
+  try { await set(roomRef(`players/${uid()}/favCats/c${ci}`), cur ? null : true); } catch (e) { fail("Auswahl nicht gespeichert", e); }
+}
+export async function confirmFavs(done = true) {
+  try { await update(roomRef(`players/${uid()}`), { favDone: !!done }); DBG.log("confirmFavs", done); } catch (e) { fail("Bestätigung nicht gespeichert", e); }
 }
 
 // ── Spielablauf (nur Moderator) ───────────────────────────────────────────
@@ -153,15 +178,24 @@ export async function startGame() {
   const packId = room?.settings?.packId;
   if (!packId) return fail("Bitte zuerst ein Fragenpaket wählen");
   if (!activePlayers(room).length) return fail("Es ist noch kein Spieler beigetreten");
+  const duel = isDuel(room);
+  if (duel && activePlayers(room).length !== 2) return fail("Das Kategorie-Duell braucht genau 2 Spieler");
   let pack;
   try { pack = await loadPack(packId); } catch (e) { return fail("Pack konnte nicht geladen werden", e); }
+  if (duel !== (pack.mode === "duel")) return fail(duel ? "Bitte ein Duell-Pack wählen" : "Duell-Packs gehen nur im Kategorie-Duell");
   const questions = pack.questions.map(q => JSON.parse(JSON.stringify(q)));
   try {
     // 1. Fragen und Startzustand schreiben (noch in der Lobby, für andere unsichtbar)
     const now = serverNow();
+    const game = duel
+      ? { qIndex: -1, phase: "board", phaseAt: now, duel: { turn: 0 } }   // erst das Brett zeigen, Kategorien vorstellen
+      : { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now) };
+    const reset = {};
+    for (const p of activePlayers(room)) Object.assign(reset, { [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: null, [`players/${p.uid}/pick`]: null });
     await update(roomRef(), {
+      ...reset,
       questions,
-      game: { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now) },
+      game, feedback: null,
       answers: null, judgments: null, results: null, jokers: null, bonus: null, next: null,
       "settings/packName": pack.name
     });
@@ -203,12 +237,81 @@ export async function reveal(qi) {
     // Ergebnis zuerst schreiben (idempotent), dann Phase wechseln
     await set(roomRef(`results/${qi}`), { ...computeResult(room, qi), revealedAt: serverNow() });
   } catch (e) { return fail("Ergebnis nicht gespeichert", e); }
-  return transition(["shown"], qi, { phase: "revealed" }, "aufgelöst");
+  const ok = await transition(["shown"], qi, { phase: "revealed" }, "aufgelöst");
+  if (ok) recordStats(room, qi);
+  return ok;
+}
+
+// ── Statistik pro Frage (für die Einstufung neuer Packs) ───────────────────
+// questionStats/{packId}/{key}: n, right, ms, msN, noAns, fav/favRight, nofav/nofavRight, fb{...}
+function statRef(room, qi) {
+  const q = room?.questions?.[qi], pack = room?.settings?.packId;
+  return q && pack ? ref(db, `questionStats/${pack}/${questionKey(q)}`) : null;
+}
+async function recordStats(room, qi) {
+  const r = statRef(room, qi);
+  if (!r) return;
+  const q = room.questions[qi];
+  const rows = activePlayers(room).map(p => {
+    const a = answerOf(room, qi, p.uid);
+    return { a, ok: statCorrect(room, qi, p.uid), fav: isFavFor(room, qi, p.uid) };
+  });
+  try {
+    await runTransaction(r, cur => {
+      const c = cur || { q: String(q.q).slice(0, 90), type: q.type || "mc", cat: q.cat || null, diff: q.diff || null };
+      for (const x of rows) {
+        c.n = (c.n || 0) + 1;
+        if (x.ok) c.right = (c.right || 0) + 1;
+        if (!x.a) c.noAns = (c.noAns || 0) + 1;
+        if (x.a && typeof x.a.ms === "number") { c.ms = (c.ms || 0) + x.a.ms; c.msN = (c.msN || 0) + 1; }
+        if (x.fav === true) { c.fav = (c.fav || 0) + 1; if (x.ok) c.favRight = (c.favRight || 0) + 1; }
+        if (x.fav === false) { c.nofav = (c.nofav || 0) + 1; if (x.ok) c.nofavRight = (c.nofavRight || 0) + 1; }
+      }
+      c.mode = room.settings?.game || "classic";
+      c.last = serverNow();
+      return c;
+    });
+    DBG.log("Statistik", { qi, n: rows.length });
+  } catch (e) { DBG.log("Statistik-Fehler", e.message); }
+}
+
+// Feedback des Moderators: zu leicht / passt / zu schwer / fehlerhaft (umentscheiden möglich)
+export async function giveFeedback(kind) {
+  const room = store.room, qi = room?.game?.qIndex;
+  const r = statRef(room, qi);
+  if (!r) return;
+  const prev = room.feedback?.[qi] || null;
+  const next = prev === kind ? null : kind;
+  try {
+    await set(roomRef(`feedback/${qi}`), next);
+    await runTransaction(r, cur => {
+      const c = cur || {};
+      c.fb = c.fb || {};
+      if (prev) c.fb[prev] = Math.max(0, (c.fb[prev] || 0) - 1);
+      if (next) c.fb[next] = (c.fb[next] || 0) + 1;
+      return c;
+    });
+    DBG.log("Feedback", { qi, kind: next });
+  } catch (e) { fail("Feedback nicht gespeichert", e); }
 }
 
 export async function nextQuestion(qi) {
   const room = store.room;
   const total = qCount(room);
+  if (isDuel(room)) {
+    if (playOrder(room).length >= total) return finishGame(qi);
+    const r = room.results?.[qi];
+    const picker = isStartQ(room, qi) ? r?.startWinner : opponentOf(room, pickOf(room, qi)?.by);
+    if (!picker) return fail("Unklar, wer als Nächstes wählt");
+    try {
+      const res = await runTransaction(roomRef("game"), g => {
+        if (!g || g.qIndex !== qi || g.phase !== "revealed") return;
+        return { ...g, phase: "board", phaseAt: serverNow(), timer: null, duel: { ...(g.duel || {}), picker } };
+      });
+      DBG.log("Phase: zurück zum Brett", { committed: res.committed, picker });
+      return res.committed;
+    } catch (e) { return fail("Zurück zum Brett fehlgeschlagen", e); }
+  }
   if (qi + 1 >= total) return finishGame(qi);
   const now = serverNow();
   return transition(["revealed"], qi, { phase: "answering", qIndex: qi + 1, questionStartAt: now, timer: freshTimer(room, now) }, "nächste Frage");
@@ -230,7 +333,7 @@ async function writeHistory(room) {
   const rk = ranking(room);
   const gameId = `${ROOM_ID}_${room.meta?.createdAt || 0}_${room.meta?.startedAt || 0}`;
   await set(ref(db, `history/${gameId}`), {
-    at: room.meta?.finishedAt || serverNow(), packId: room.settings?.packId || null, packName: room.settings?.packName || null,
+    at: room.meta?.finishedAt || serverNow(), packId: room.settings?.packId || null, packName: room.settings?.packName || null, game: room.settings?.game || "classic",
     players: rk.map(p => ({ name: p.name, score: p.score, correct: p.correct, avgMs: p.avgMs ? Math.round(p.avgMs) : null })),
     moderator: moderatorOf(room)?.name || null, questions: qCount(room), bonus: room.bonus?.uid ? (room.players?.[room.bonus.uid]?.name || null) : null
   });
@@ -240,9 +343,12 @@ async function writeHistory(room) {
 export async function newRound() {
   const patch = {
     "meta/status": "lobby", "meta/updatedAt": serverNow(), "meta/startedAt": null, "meta/finishedAt": null,
-    game: null, questions: null, answers: null, judgments: null, results: null, jokers: null, bonus: null, next: null
+    game: null, questions: null, answers: null, judgments: null, results: null, jokers: null, bonus: null, next: null, feedback: null
   };
-  for (const p of activePlayers(store.room)) patch[`players/${p.uid}/ready`] = p.uid === store.room?.meta?.hostUid && store.room?.meta?.mode === "players";
+  for (const p of activePlayers(store.room)) Object.assign(patch, {
+    [`players/${p.uid}/ready`]: p.uid === store.room?.meta?.hostUid && store.room?.meta?.mode === "players",
+    [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: null, [`players/${p.uid}/pick`]: null
+  });
   try { await update(roomRef(), patch); DBG.log("newRound"); } catch (e) { fail("Neue Runde fehlgeschlagen", e); }
 }
 
@@ -251,6 +357,56 @@ export async function judge(qi, playerUid, correct) {
     await set(roomRef(`judgments/${qi}/${playerUid}`), { v: correct ? "correct" : "wrong", by: uid() });
     DBG.log("judge", { qi, correct });
   } catch (e) { fail("Bewertung nicht gespeichert", e); }
+}
+
+// ── Kategorie-Duell ────────────────────────────────────────────────────────
+// Startfrage auslosen: Feld wird sofort festgelegt, alle Geräte spielen dieselbe Animation bis drawAt + DRAW_MS
+export async function duelDraw() {
+  const room = store.room;
+  const cells = freeCells(room);
+  if (!cells.length) return false;
+  const cell = cells[Math.floor(Math.random() * cells.length)];
+  try {
+    const res = await runTransaction(roomRef("game"), g => {
+      if (!g || g.phase !== "board" || g.duel?.startQ != null) return;
+      return { ...g, phase: "drawing", phaseAt: serverNow(), duel: { ...(g.duel || {}), startQ: cell, drawAt: serverNow() } };
+    });
+    DBG.log("Startfrage ausgelost", { committed: res.committed, cell });
+    return res.committed;
+  } catch (e) { return fail("Auslosen fehlgeschlagen", e); }
+}
+export async function duelDrawDone() {
+  const room = store.room;
+  try {
+    const res = await runTransaction(roomRef("game"), g => {
+      if (!g || g.phase !== "drawing" || g.duel?.startQ == null) return;
+      const now = serverNow();
+      return { ...g, phase: "answering", qIndex: g.duel.startQ, phaseAt: now, questionStartAt: now, timer: freshTimer(room, now) };
+    });
+    DBG.log("Startfrage beginnt", { committed: res.committed });
+  } catch (e) { fail("Start der Frage fehlgeschlagen", e); }
+}
+// Feld wählen (Moderator bzw. Host schreibt den Spielzustand); by = Wähler
+export async function pickCell(cell, by) {
+  const room = store.room;
+  try {
+    const res = await runTransaction(roomRef("game"), g => {
+      const d = g?.duel;
+      if (!g || g.phase !== "board" || d?.startQ == null || d.picker !== by) return;
+      if (cell === d.startQ || d.picks?.["q" + cell] || !room.questions?.[cell]) return;
+      const now = serverNow(), turn = (d.turn || 0) + 1;
+      return { ...g, phase: "answering", qIndex: cell, phaseAt: now, questionStartAt: now, timer: freshTimer(room, now),
+        duel: { ...d, turn, picks: { ...(d.picks || {}), ["q" + cell]: { by, turn } } } };
+    });
+    DBG.log("Feld gewählt", { committed: res.committed, cell });
+    return res.committed;
+  } catch (e) { return fail("Wählen fehlgeschlagen", e); }
+}
+// Spieler ohne Schreibrecht auf den Spielzustand: Wunsch ablegen, Moderator/Host übernimmt ihn
+export async function requestPick(cell) {
+  const turn = duelOf(store.room).turn || 0;
+  try { await set(roomRef(`players/${uid()}/pick`), { turn, cell }); DBG.log("requestPick", { turn, cell }); }
+  catch (e) { fail("Wahl nicht gespeichert", e); }
 }
 
 // ── Pack-Vorlieben (für alle Partien gleich) ───────────────────────────────
@@ -339,7 +495,7 @@ export async function overrideJudgment(qi, playerUid, correct) {
   room.judgments[qi] = { ...(room.judgments[qi] || {}), [playerUid]: { v: correct ? "correct" : "wrong", by: uid() } };
   const res = computeResult(room, qi);
   try {
-    await update(roomRef(), { [`judgments/${qi}/${playerUid}`]: room.judgments[qi][playerUid], [`results/${qi}/points`]: res.points, [`results/${qi}/fastestUid`]: res.fastestUid });
+    await update(roomRef(), { [`judgments/${qi}/${playerUid}`]: room.judgments[qi][playerUid], [`results/${qi}/points`]: res.points, [`results/${qi}/ok`]: res.ok, [`results/${qi}/fastestUid`]: res.fastestUid });
     DBG.log("overrideJudgment", { qi, correct });
   } catch (e) { fail("Korrektur nicht gespeichert", e); }
 }

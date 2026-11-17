@@ -30,7 +30,9 @@ export function packPickerView(s) {
   const q = (pk.q || "").trim().toLowerCase();
   const filter = pk.filter || "all";
 
-  let list = Array.isArray(packs) ? packs.slice() : [];
+  const duel = s.room?.settings?.game === "duel";
+  let list = Array.isArray(packs) ? packs.filter(p => (p.mode === "duel") === duel) : [];
+  const total = list.length;
   const hiddenCount = list.filter(p => prefs[p.id]?.hidden).length;
   if (!pk.showHidden) list = list.filter(p => !prefs[p.id]?.hidden || p.id === sel);
   if (filter === "fav") list = list.filter(p => prefs[p.id]?.fav);
@@ -59,7 +61,7 @@ export function packPickerView(s) {
     }).join("");
 
   return `<div class="screen">
-    ${topBar("Fragenpaket", Array.isArray(packs) ? `${packs.length} Packs` : "", { back: "closePicker", connected: s.connected })}
+    ${topBar(duel ? "Duell-Pack" : "Fragenpaket", Array.isArray(packs) ? `${total} Packs` : "", { back: "closePicker", connected: s.connected })}
     <div class="search">
       <input class="inp" id="in-packsearch" data-input="packSearch" placeholder="Suchen …" aria-label="Packs durchsuchen" value="${esc(pk.q || "")}" autocomplete="off">
       <div class="seg3">${tabs.map(([k, l]) => `<button class="${k === filter ? "on" : ""}" data-act="packFilter" data-arg="${k}">${l}</button>`).join("")}</div>
