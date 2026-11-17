@@ -128,12 +128,11 @@ export function playerGameView(s, me) {
   }
   else if (phase === "shown") note = q.type === "open" ? "Der Moderator bewertet die Antworten …" : q.type === "estimate" && total > 1 ? (duel ? "Wer näher dran ist, liegt richtig …" : "Wer am nächsten dran ist, bekommt den Punkt …") : "Gleich wird aufgelöst …";
   else if (revealed && free && !spectator) {
-    const done = !!nextOf(room, qi)[s.uid];
-    const wait = waitingForNext(room, qi).filter(p => p.uid !== s.uid).map(p => esc(p.name));
+    // ohne Moderator schaltet einer weiter: der Host (fällt er aus, übernimmt automatisch der Nächste)
     const last = duel ? playOrder(room).length >= qCount(room) : qi + 1 >= qCount(room);
-    if (!done) actions = `<button class="btn btn-primary" data-act="markNext">${last ? "Zum Ergebnis" : duel ? "Zurück zum Brett" : "Weiter"}</button>`;
-    note = done ? (wait.length ? `Bereit ✓ · warte auf ${wait.join(", ")}` : "Bereit ✓") : (wait.length < players.filter(p => p.online).length - 1 ? "Die anderen warten auf dich" : "");
-    noteCls = done ? "ok" : "";
+    const label = last ? "Zum Ergebnis" : duel ? "Zurück zum Brett" : "Nächste Frage";
+    if (hostUid(room) === s.uid) actions = `<button class="btn btn-primary" data-act="next">${label}</button>`;
+    else note = `${esc(room.players?.[hostUid(room)]?.name || "Der Host")} schaltet weiter`;
   }
   else if (revealed) note = duel ? "Gleich geht es zurück zum Brett …" : "Warte auf die nächste Frage …";
 

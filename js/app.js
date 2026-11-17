@@ -22,7 +22,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.8.3";
+export const VERSION = "v4.8.4";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -172,7 +172,6 @@ function afterRender(s, key) {
       if (a && !judgmentOf(room, qi, s.uid)) doOnce(`auto:${base}`, () => A.autoJudgeAnswer(qi, s.uid, autoJudge(q, a.value)));
     }
     if (g.phase === "shown" && q && isOpenType(q) && unjudgedCount(room) === 0) doOnce(`reveal:${base}`, () => A.reveal(qi), 800);
-    if (g.phase === "revealed" && Object.keys(nextOf(room, qi)).length && !waitingForNext(room, qi).length) doOnce(`next:${base}`, () => A.nextQuestion(qi), 300);
   }
   // Lobby der Steuernden: Packliste einmal laden
   if (key === "modLobby") subscribePackData();
@@ -336,7 +335,7 @@ const handlers = {
   },
   showAnswers: () => A.showAnswers(store.room.game.qIndex),
   reveal: () => A.reveal(store.room.game.qIndex),
-  next: () => A.nextQuestion(store.room.game.qIndex),
+  next: (el) => { el.disabled = true; A.nextQuestion(store.room.game.qIndex); },
   judge: (el) => A.judge(store.room.game.qIndex, el.dataset.arg, el.dataset.val === "1"),
   resetAll: () => { setLocal({ menu: false }); if (confirm(`Raum „${ROOM_ID}“ komplett zurücksetzen? Eine laufende Partie geht verloren.`)) A.resetRoom(); },
   theme: () => {
