@@ -12,7 +12,8 @@ const short = n => esc(String(n || "").slice(0, 5));
 function cellHtml(room, qi, { clickable, hl }) {
   const q = room.questions?.[qi];
   if (!q) return `<span class="cell void"></span>`;
-  const played = isStartQ(room, qi) || pickOf(room, qi);
+  // während der Auslos-Animation das ausgeloste Feld noch nicht verraten
+  const played = (isStartQ(room, qi) && room.game?.phase !== "drawing") || pickOf(room, qi);
   const r = resultFor(room, qi);
   const pts = pointsOf(q);
   let cls = "cell", inner = `<span class="cell-pts">${pts}</span>`;

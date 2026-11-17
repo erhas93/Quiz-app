@@ -2,6 +2,7 @@
 import { esc, ranking, questionsOf, answerOf, resultFor, fmtMs, isFree, hostUid, isDuel, activePlayers, isFavFor } from "../model.js";
 import { topBar } from "./common.js";
 import { boardHtml, categoryTable } from "./duel.js";
+import { ownerSteersBotMod } from "../bots.js";
 
 // Lieblingsthema im normalen Spiel aufdecken
 function favNote(room, uid) {
@@ -15,7 +16,7 @@ export function resultsView(s, me) {
   const rk = ranking(room);
   const qs = questionsOf(room);
   const isMod = me.role === "moderator";
-  const controls = isMod || (isFree(room) && hostUid(room) === s.uid);  // ohne Moderator: der Host
+  const controls = isMod || (isFree(room) && hostUid(room) === s.uid) || ownerSteersBotMod(room, s.uid);  // ohne Moderator: der Host; Testraum: Besitzer für den Bot
   const solo = rk.length === 1;
   const pack = esc(room.settings?.packName || "");
 

@@ -235,6 +235,7 @@ export function summary(room) {
   return {
     status,
     mode: room?.meta?.mode || "moderated",
+    test: room?.meta?.test ? true : null,
     packName: room?.settings?.packName || null,
     playerNames: ps.map(p => p.name),
     moderator: moderatorOf(room)?.name || null,

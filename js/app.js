@@ -7,6 +7,11 @@ import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
 import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS } from "./model.js";
 import { duelBoardView, drawFrame } from "./views/duel.js";
+import { testSetupView } from "./views/overview.js";
+import { tick as botTick, startBotClock, createTestRoom, botModActions, ownerSteersBotMod, testOf } from "./bots.js";
+
+// Lobby-Steuerung: im Testraum „Ich spiele“ laufen die Einstellungen über den Bot-Moderator
+const C = () => botModActions() || A;
 import { overviewView } from "./views/overview.js";
 import { ICON } from "./views/common.js";
 import { vibrate, keepAwake, share, initNative, isApp, setBarStyle } from "./native.js";
@@ -17,13 +22,13 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.7";
+export const VERSION = "v4.8";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
 function pickView(s) {
   if (!s.loaded) return { key: "loading", html: `<div class="screen"><div class="body center"><div class="spin"></div></div></div>` };
-  if (!ROOM_ID) return { key: "overview", html: overviewView(s, serverNow()) };
+  if (!ROOM_ID) return s.local.testSetup ? { key: "testSetup", html: testSetupView(s) } : { key: "overview", html: overviewView(s, serverNow()) };
   const room = s.room;
   const status = room?.meta?.status || "none";
   const me = meIn(room, s.uid);
@@ -31,7 +36,7 @@ function pickView(s) {
   if (!me || status === "none" || status === "abandoned" || (status === "finished" && dismissed)) return { key: "home", html: homeView(s, serverNow()) };
   const steers = me.role === "moderator" || (isFree(room) && hostUid(room) === s.uid && me.role === "player");
   if (status === "lobby") {
-    if (steers) return s.local.picker ? { key: "modLobby", html: packPickerView(s) } : { key: "modLobby", html: modLobbyView(s, me) };
+    if (steers || ownerSteersBotMod(room, s.uid)) return s.local.picker ? { key: "modLobby", html: packPickerView(s) } : { key: "modLobby", html: modLobbyView(s, me) };
     if (me.role === "spectator") return { key: "specLobby", html: spectatorLobbyView(s, me) };
     return { key: "plLobby", html: playerLobbyView(s, me) };
   }
@@ -69,6 +74,7 @@ function render(s) {
 function banners(s) {
   let h = "";
   if (s.loaded && !s.connected) h += `<div class="banner warn">Verbindung getrennt – verbinde neu …</div>`;
+  if (ROOM_ID && testOf(s.room)) h += `<div class="test-badge">Testraum</div>`;
   if (s.local.error) h += `<div class="banner err"><span>${esc(s.local.error)}</span><button data-act="clearError">OK</button></div>`;
   return h;
 }
@@ -109,8 +115,16 @@ function afterRender(s, key) {
     createDone = true;
     clearCreateParam();
     const st = room?.meta?.status;
-    if (st !== "lobby" && st !== "running") A.createRoom(s.local.name, CREATE_MODE);
+    if (st !== "lobby" && st !== "running") {
+      if (CREATE_MODE === "test") {
+        let cfg = null;
+        try { cfg = JSON.parse(sessionStorage.getItem("quiz.v4.testRun") || "null"); } catch {}
+        if (cfg) createTestRoom(cfg, s.local.name);
+      } else A.createRoom(s.local.name, CREATE_MODE);
+    }
   }
+  // Testraum: Bots dieses Geräts weiterlaufen lassen
+  if (testOf(room)) { startBotClock(); botTick(); }
   // Verlassene Partie (alle seit 10 min offline) als abgebrochen markieren – einmal pro Raum
   if (isStale(room, now)) {
     const k = `${room.meta?.createdAt}`;
@@ -288,16 +302,16 @@ const handlers = {
   choosePack: (el) => { const p = (store.local.packs || []).find(x => x.id === el.dataset.arg); if (p) A.choosePack(p); },
   openPicker: () => setLocal({ picker: { q: "", filter: "all", showHidden: false } }),
   closePicker: () => setLocal({ picker: null }),
-  pickPack: (el) => { const p = (store.local.packs || []).find(x => x.id === el.dataset.arg); if (p) { A.choosePack(p); setLocal({ picker: null }); } },
+  pickPack: (el) => { const p = (store.local.packs || []).find(x => x.id === el.dataset.arg); if (p) { C().choosePack(p); setLocal({ picker: null }); } },
   packFilter: (el) => setLocal({ picker: { ...store.local.picker, filter: el.dataset.arg } }),
   toggleHidden: () => setLocal({ picker: { ...store.local.picker, showHidden: !store.local.picker?.showHidden } }),
   packFav: (el) => A.setPackPref(el.dataset.arg, "fav", !store.packPrefs?.[el.dataset.arg]?.fav),
   packHide: (el) => A.setPackPref(el.dataset.arg, "hidden", !store.packPrefs?.[el.dataset.arg]?.hidden),
-  startGame: (el) => { el.disabled = true; A.startGame(); },
-  closeRoom: () => { if (confirm("Partie für alle beenden und den Raum leeren?")) A.resetRoom(); },
-  newRound: () => A.newRound(),
-  timerMode: (el) => A.setTimer(el.dataset.arg),
-  timerSec: (el) => A.setTimer(null, Number(el.dataset.arg)),
+  startGame: (el) => { el.disabled = true; C().startGame(); },
+  closeRoom: () => { if (confirm("Partie für alle beenden und den Raum leeren?")) C().resetRoom(); },
+  newRound: () => C().newRound(),
+  timerMode: (el) => C().setTimer(el.dataset.arg),
+  timerSec: (el) => C().setTimer(null, Number(el.dataset.arg)),
   timerStart: () => A.timerStart(),
   timerPause: () => A.timerPause(),
   timerReset: () => A.timerReset(),
@@ -332,8 +346,27 @@ const handlers = {
   menu: () => setLocal({ menu: true }),
   closeMenu: (el, e) => { if (e.target === el) setLocal({ menu: false }); },
   toggleFact: () => toggleFact(),
-  gameMode: (el) => A.setGameMode(el.dataset.arg),
-  pickTimer: () => A.setPickTimer(!store.room?.settings?.pickTimer),
+  gameMode: (el) => C().setGameMode(el.dataset.arg),
+  pickTimer: () => C().setPickTimer(!store.room?.settings?.pickTimer),
+  testSetup: () => {
+    let t = null;
+    try { t = JSON.parse(localStorage.getItem("quiz.v4.testSetup") || "null"); } catch {}
+    setLocal({ testSetup: t || { scenario: "mod", bots: 2, acc: "mid", speed: "normal" } });
+  },
+  closeTestSetup: () => setLocal({ testSetup: null }),
+  testScenario: (el) => setLocal({ testSetup: { ...store.local.testSetup, scenario: el.dataset.arg } }),
+  testBots: (el) => setLocal({ testSetup: { ...store.local.testSetup, bots: Number(el.dataset.arg) } }),
+  testAcc: (el) => setLocal({ testSetup: { ...store.local.testSetup, acc: el.dataset.arg } }),
+  testSpeed: (el) => setLocal({ testSetup: { ...store.local.testSetup, speed: el.dataset.arg } }),
+  testStart: () => {
+    if (!String(store.local.name || "").trim()) return setLocal({ error: "Bitte zuerst deinen Namen eingeben", testSetup: null });
+    saveName();
+    const cfg = store.local.testSetup;
+    try { localStorage.setItem("quiz.v4.testSetup", JSON.stringify(cfg)); sessionStorage.setItem("quiz.v4.testRun", JSON.stringify(cfg)); } catch {}
+    let code = newRoomCode();
+    while (store.rooms?.[code]) code = newRoomCode();
+    goRoom(code, "test");
+  },
   fav: (el) => A.setFav(el.dataset.arg === "1"),
   favCat: (el) => { vibrate(10); A.toggleFavCat(Number(el.dataset.arg)); },
   confirmFavs: () => A.confirmFavs(true),
@@ -404,6 +437,7 @@ document.addEventListener("keydown", e => {
     onBack: () => {
       if (store.local.menu) { setLocal({ menu: false }); return true; }
       if (store.local.picker) { setLocal({ picker: null }); return true; }
+      if (!ROOM_ID && store.local.testSetup) { setLocal({ testSetup: null }); return true; }
       if (store.local.factOpen != null && store.local.factOpen === store.room?.game?.qIndex) { toggleFact(); return true; }
       const dbg = $("dbg-panel"); if (dbg && dbg.style.display !== "none") { DBG.toggle(); return true; }
       if (store.local.error) { setLocal({ error: null }); return true; }

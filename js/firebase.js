@@ -9,7 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { DBG } from "./debug.js";
 
-const app = initializeApp({
+const CONFIG = {
   apiKey: "AIzaSyCXDcsJocNsiOFY4QUWp8diFRGiYl-BoK8",
   authDomain: "quiz-app-82c51.firebaseapp.com",
   projectId: "quiz-app-82c51",
@@ -17,7 +17,8 @@ const app = initializeApp({
   messagingSenderId: "490424508080",
   appId: "1:490424508080:web:f93e1e14ae5c5b16076575",
   databaseURL: "https://quiz-app-82c51-default-rtdb.firebaseio.com"
-});
+};
+const app = initializeApp(CONFIG);
 
 export const db = getDatabase(app);
 export { ref, onValue, set, update, get, remove, runTransaction, onDisconnect, serverTimestamp };
@@ -25,7 +26,7 @@ export { ref, onValue, set, update, get, remove, runTransaction, onDisconnect, s
 // Raum aus der Adresse (?room=CODE); ohne Raum zeigt die App die Übersicht aller offenen Räume
 const params = new URLSearchParams(location.search);
 export const ROOM_ID = (params.get("room") || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 24) || null;
-export const CREATE_MODE = ["moderated", "players"].includes(params.get("create")) ? params.get("create") : null;
+export const CREATE_MODE = ["moderated", "players", "test"].includes(params.get("create")) ? params.get("create") : null;
 
 // Raumcode: 4 Großbuchstaben ohne leicht verwechselbare (I, O)
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -86,4 +87,25 @@ async function baseIdentity() {
     DBG.log("auth: Fallback auf lokale ID", { error: e.code || e.message, uid: uid.slice(0, 10) });
     return { uid, mode: "local", error: e.code || e.message };
   }
+}
+
+// Test-Bots: jeder Bot ist eine eigene Firebase-App mit eigener anonymer Anmeldung und eigener Verbindung –
+// für die Datenbank also wie ein weiteres Gerät. Die Anmeldung bleibt pro Gerät gespeichert (gleiche Bot-IDs).
+const botApps = new Map();
+export async function createBotIdentity(key) {
+  const name = `bot-${key}${TEST_SUFFIX ? "-" + TEST_SUFFIX : ""}`;
+  if (!botApps.has(name)) botApps.set(name, (async () => {
+    const bapp = initializeApp(CONFIG, name);
+    const bdb = getDatabase(bapp);
+    const auth = getAuth(bapp);
+    const user = await new Promise((resolve, reject) => {
+      const t = setTimeout(() => reject(new Error("Timeout bei der Bot-Anmeldung")), 8000);
+      const unsub = onAuthStateChanged(auth, u => { if (u) { clearTimeout(t); unsub(); resolve(u); } });
+      signInAnonymously(auth).catch(e => { clearTimeout(t); unsub(); reject(e); });
+    });
+    DBG.log("Bot angemeldet", { key, uid: user.uid.slice(0, 8) });
+    return { uid: user.uid, db: bdb };
+  })());
+  try { return await botApps.get(name); }
+  catch (e) { botApps.delete(name); throw e; }
 }

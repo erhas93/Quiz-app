@@ -89,7 +89,7 @@ export function modGameView(s, me) {
   return `<div class="screen">
     ${gameHeader(s, "mod")}
     <div class="body">${body}<div class="spacer"></div></div>
-    <div class="actions">${revealed ? feedbackRow(room, qi) : ""}<div class="foot-note">${note}</div><div class="actions-row">${timerBtns}${action}</div></div>
+    <div class="actions">${revealed && !room.meta?.test ? feedbackRow(room, qi) : ""}<div class="foot-note">${note}</div><div class="actions-row">${timerBtns}${action}</div></div>
     ${fact}
   </div>`;
 }

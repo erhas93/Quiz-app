@@ -20,7 +20,7 @@ export function overviewView(s, now) {
     const mode = r.mode === "players" ? "ohne Moderator" : r.moderator ? `Moderation: ${esc(r.moderator)}` : "mit Moderator";
     return `<button class="room-row" data-act="openRoom" data-arg="${esc(r.id)}">
       <span class="room-code">${esc(r.id.slice(0, 4))}</span>
-      <span class="pack-txt"><span class="pack-name">${st}${r.packName ? ` · ${esc(r.packName)}` : ""}</span>
+      <span class="pack-txt"><span class="pack-name">${r.test ? `<span class="test-tag">Test</span> ` : ""}${st}${r.packName ? ` · ${esc(r.packName)}` : ""}</span>
         <span class="pack-sub">${who} · ${mode}</span></span>${ICON.chev(20)}</button>`;
   }).join("") : `<div class="muted small" style="padding:6px 2px">Gerade ist kein Raum offen. Leg unten eine neue Partie an.</div>`;
 
@@ -38,6 +38,31 @@ export function overviewView(s, now) {
     <div class="actions">
       <button class="btn btn-primary" data-act="newRoom" data-arg="players">Neue Partie ohne Moderator</button>
       <button class="btn btn-gold" data-act="newRoom" data-arg="moderated">Neue Partie mit Moderator</button>
+      <button class="btn btn-text" data-act="testSetup">${ICON.bug(16)} Testraum mit Bots</button>
     </div>
+  </div>`;
+}
+
+// Testraum: Szenario, Anzahl Bots, Trefferquote, Tempo
+export const TEST_SCENARIOS = [
+  ["mod", "Ich moderiere", "Bots spielen"],
+  ["botmod", "Ich spiele", "Ein Bot moderiert, Bots als Gegner"],
+  ["free", "Ohne Moderator", "Ich steuere und spiele gegen Bots"]
+];
+export function testSetupView(s) {
+  const t = s.local.testSetup;
+  const seg = (act, cur, opts) => `<div class="seg3">${opts.map(([v, l]) => `<button class="${String(cur) === String(v) ? "on" : ""}" data-act="${act}" data-arg="${v}">${l}</button>`).join("")}</div>`;
+  return `<div class="screen">
+    ${topBar("Testraum", "mit simulierten Mitspielern", { back: "closeTestSetup", connected: s.connected })}
+    <div class="body">
+      <div class="card"><span class="label">Szenario</span>
+        ${TEST_SCENARIOS.map(([v, l, sub]) => `<button class="pack-row${t.scenario === v ? " sel" : ""}" data-act="testScenario" data-arg="${v}"><span class="pack-txt"><span class="pack-name">${l}</span><span class="pack-sub">${sub}</span></span>${t.scenario === v ? ICON.check(20) : ""}</button>`).join("")}</div>
+      <div class="card"><span class="label">${t.scenario === "mod" ? "Bot-Spieler" : "Bot-Gegner"}</span>${seg("testBots", t.bots, [[1, "1"], [2, "2"], [3, "3"]])}</div>
+      <div class="card"><span class="label">Trefferquote der Bots</span>${seg("testAcc", t.acc, [["low", "schwach"], ["mid", "mittel"], ["high", "stark"]])}</div>
+      <div class="card"><span class="label">Tempo der Bots</span>${seg("testSpeed", t.speed, [["fast", "schnell"], ["normal", "normal"]])}</div>
+      <div class="muted small" style="padding:0 4px">Fürs Kategorie-Duell 1 Bot wählen. Testräume zählen nicht für Statistik und Spielhistorie. Die Bots spielen nur, solange die App bei dir offen ist.</div>
+      <div class="spacer"></div>
+    </div>
+    <div class="actions"><button class="btn btn-primary" data-act="testStart">Testraum starten</button></div>
   </div>`;
 }
