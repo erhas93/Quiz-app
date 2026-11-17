@@ -27,7 +27,7 @@ function cellHtml(room, qi, { clickable, hl }) {
       inner = `<span class="cell-who">${who}</span><span class="cell-tag">${tag}</span>`;
     }
   } else if (played) { cls += " cur"; inner = `<span class="cell-pts">${pts}</span><span class="cell-tag">läuft</span>`; }
-  if (hl === qi) cls += " hl";
+  if (hl === qi) cls += " hl final";
   const can = clickable && !played;
   return `<button class="${cls}" id="cell-${qi}" ${can ? `data-act="pickCell" data-arg="${qi}"` : "disabled"} aria-label="${esc(q.cat || "")} ${DIFF_LABEL[q.diff] || ""}, ${pts} Punkte">${inner}</button>`;
 }
@@ -53,7 +53,7 @@ export function boardHtml(room, uid, { clickable = false, favEdit = false, showF
 export function duelTop(s, roleLabel = "") {
   const room = s.room, d = duelOf(room);
   const turn = d.turn || 0;
-  const sub = d.startQ == null ? "Kategorien vorstellen" : room.game?.phase === "drawing" ? "Startfrage wird ausgelost" : `Zug ${Math.min(turn + 1, DUEL_TURNS)} von ${DUEL_TURNS}`;
+  const sub = d.startQ == null ? "Kategorien vorstellen" : room.game?.phase === "drawing" ? "Startfrage wird ausgelost" : `Zug ${Math.min(room.game?.phase === "picked" ? turn : turn + 1, DUEL_TURNS)} von ${DUEL_TURNS}`;
   const specN = spectatorsOf(room).length;
   return `<div class="top"><div class="top-main"><div class="top-title sm">Kategorie-Duell${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div><div class="top-sub">${sub}</div></div>
     ${roleLabel}${menuBtn(s.connected)}</div>
@@ -73,6 +73,7 @@ export function duelBoardView(s, me) {
   const intro = g.phase === "board" && d.startQ == null;
   const drawing = g.phase === "drawing";
   const picking = g.phase === "board" && d.startQ != null;
+  const picked = g.phase === "picked";
   const pickerName = esc(nameOf(room, d.picker));
   const myTurn = picking && d.picker === s.uid;
   const mod = moderatorOf(room);
@@ -111,6 +112,13 @@ export function duelBoardView(s, me) {
     else note = `${pickerName} wählt …${timer}`;
     const pending = room.players?.[d.picker]?.pick;
     if (pending && pending.turn === (d.turn || 0) && !isMod) note = `${pickerName} hat gewählt …`;
+  }
+  if (picked) {
+    const q = room.questions?.[g.qIndex];
+    const by = pickOf(room, g.qIndex)?.by;
+    body += boardHtml(room, null, { hl: g.qIndex });
+    note = `${by === s.uid ? "Du hast" : `${esc(nameOf(room, by))} hat`} gewählt: ${esc(q?.cat || "")} · ${DIFF_LABEL[q?.diff] || ""} (${pointsOf(q)} P)`;
+    noteCls = "ok";
   }
   if (spectator) actions = `<button class="btn btn-text" data-act="leave">Zuschauen beenden</button>`;
 

@@ -5,7 +5,7 @@ import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS } from "./model.js";
 import { duelBoardView, drawFrame } from "./views/duel.js";
 import { testSetupView } from "./views/overview.js";
 import { tick as botTick, startBotClock, createTestRoom, botModActions, ownerSteersBotMod, testOf } from "./bots.js";
@@ -22,7 +22,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.8";
+export const VERSION = "v4.8.1";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -40,7 +40,7 @@ function pickView(s) {
     if (me.role === "spectator") return { key: "specLobby", html: spectatorLobbyView(s, me) };
     return { key: "plLobby", html: playerLobbyView(s, me) };
   }
-  if (status === "running" && isDuel(room) && (room.game?.phase === "board" || room.game?.phase === "drawing"))
+  if (status === "running" && isDuel(room) && ["board", "drawing", "picked"].includes(room.game?.phase))
     return { key: me.role === "moderator" ? "modGame" : "plGame", html: duelBoardView(s, me) };
   if (status === "running") return me.role === "moderator" ? { key: "modGame", html: modGameView(s, me) } : { key: "plGame", html: playerGameView(s, me) };
   if (status === "finished") return { key: "results", html: resultsView(s, me) };
@@ -210,7 +210,7 @@ function tick() {
 requestAnimationFrame(tick);
 
 // Duell: Auslos-Animation, Ende der Animation, Wähl-Timer (Zahl im Fuß, Ablauf durch Moderator/Host)
-let lastHl = null, drawDoneFor = null, pickExpiredFor = null;
+let lastHl = null, drawDoneFor = null, pickExpiredFor = null, pickedDoneFor = null;
 function duelTick(s, room, g) {
   const now = serverNow();
   const d = duelOf(room);
@@ -232,6 +232,10 @@ function duelTick(s, room, g) {
       const k = `${room.meta?.createdAt}:${d.drawAt}`;
       if (drawDoneFor !== k) { drawDoneFor = k; A.duelDrawDone(); }
     }
+  }
+  if (g?.phase === "picked" && steers && now - (g.phaseAt || now) >= PICKED_MS) {
+    const k = `${room.meta?.createdAt}:${d.turn || 0}`;
+    if (pickedDoneFor !== k) { pickedDoneFor = k; A.duelPickedDone(); }
   }
   if (g?.phase === "board" && d.startQ != null) {
     const picker = room.players?.[d.picker];

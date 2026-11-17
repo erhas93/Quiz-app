@@ -1,12 +1,12 @@
 // Testmodus: simulierte Mitspieler (Bots). Jeder Bot hat eine eigene Firebase-Anmeldung und nutzt dieselben
 // Aktionen wie ein echtes Gerät. Die Bots laufen nur im Browser des Besitzers des Testraums.
-import { createBotIdentity, ref, roomPath, set, onDisconnect, serverTimestamp, serverNow, ROOM_ID } from "./firebase.js";
+import { createBotIdentity, ref, roomPath, set, onValue, onDisconnect, serverTimestamp, serverNow, ROOM_ID } from "./firebase.js";
 import { store } from "./store.js";
 import { createActions } from "./actions.js";
 import * as A from "./actions.js";
 import { DBG } from "./debug.js";
 import { activePlayers, answerOf, judgmentOf, judgeTargetsOf, nextOf, allAnswered, unjudgedCount, timerLeft, autoJudge,
-  isFree, isDuel, duelOf, freeCells, duelBoard, favDone, PICK_SEC, DRAW_MS } from "./model.js";
+  isFree, isDuel, duelOf, freeCells, duelBoard, favDone, PICK_SEC, DRAW_MS, PICKED_MS } from "./model.js";
 
 const BOT_NAMES = ["Bot Alex", "Bot Kim", "Bot Sam"];
 const ACC = { low: 0.4, mid: 0.65, high: 0.85 };
@@ -27,6 +27,9 @@ function getBot(key, name, role) {
   bots.set(key, b);
   createBotIdentity(key).then(id => {
     b.uid = id.uid; b.db = id.db;
+    // Wichtig: Der Bot muss den Raum über seine eigene Verbindung beobachten. Sonst kennt sein lokaler
+    // Zwischenspeicher den Raum nicht, Transaktionen starten mit „leer“ und brechen ab (Start, Phasenwechsel …).
+    if (ROOM_ID) onValue(ref(id.db, roomPath()), () => { if (!b.synced) { b.synced = true; tick(); } });
     b.A = createActions({
       uid: () => b.uid,
       room: () => store.room,
@@ -43,7 +46,8 @@ const ready = key => bots.get(key)?.A ? bots.get(key) : null;
 
 // Aktionen für die Lobby-Steuerung im Szenario „Ich spiele“ (laufen über den Bot-Moderator)
 export function botModActions() {
-  return ownerSteersBotMod(store.room, store.uid) ? ready("mod")?.A || null : null;
+  const b = ready("mod");
+  return ownerSteersBotMod(store.room, store.uid) && b?.synced ? b.A : null;
 }
 
 // Einmal pro Schlüssel, optional verzögert
@@ -65,8 +69,8 @@ export async function createTestRoom(cfg, name) {
   if (cfg.scenario === "mod") return A.createRoom(name, "moderated", { test });
   if (cfg.scenario === "free") return A.createRoom(name, "players", { test });
   const m = getBot("mod", "Bot-Moderator", "moderator");
-  for (let i = 0; i < 40 && !m.A; i++) await new Promise(r => setTimeout(r, 150));
-  if (!m.A) return false;
+  for (let i = 0; i < 60 && !(m.A && m.synced); i++) await new Promise(r => setTimeout(r, 150));
+  if (!m.A || !m.synced) return false;
   return m.A.createRoom("Bot-Moderator", "moderated", { test });
 }
 
@@ -81,7 +85,7 @@ export function tick() {
   for (let i = 0; i < Math.min(3, t.bots || 1); i++) want.push([`p${i + 1}`, BOT_NAMES[i], "player"]);
   for (const [k, n, r] of want) {
     const b = getBot(k, n, r);
-    if (!b.A) continue;
+    if (!b.A || !b.synced) continue;
     presence(b, room);
     try { r === "moderator" ? stepMod(b, room, t) : stepPlayer(b, room, t, want.findIndex(w => w[0] === k)); }
     catch (e) { DBG.log(`${n}: Fehler im Ablauf`, e.message); }
@@ -208,6 +212,10 @@ function stepMod(b, room, t) {
   }
   if (g.phase === "drawing" && d.drawAt) {
     if (now >= d.drawAt + DRAW_MS) once(b, `drawn:${d.drawAt}`, 0, () => b.A.duelDrawDone());
+    return;
+  }
+  if (g.phase === "picked") {
+    if (now - (g.phaseAt || now) >= PICKED_MS) once(b, `picked:${base}:${d.turn || 0}`, 0, () => b.A.duelPickedDone());
     return;
   }
   if (isDuel(room) && g.phase === "board") {

@@ -310,6 +310,7 @@ export const isDuel = room => room?.settings?.game === "duel";
 export const DUEL_TURNS = 14;
 export const PICK_SEC = 20;
 export const DRAW_MS = 3600;   // Dauer der Auslos-Animation
+export const PICKED_MS = 2500; // Pause nach dem Wählen, bevor die Frage erscheint
 export const DIFF_LABEL = { 1: "leicht", 2: "mittel", 3: "schwer" };
 export const pointsOf = q => (q?.diff >= 1 && q?.diff <= 3 ? q.diff : 1);
 

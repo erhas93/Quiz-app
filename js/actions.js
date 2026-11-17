@@ -391,12 +391,25 @@ export function createActions(ctx) {
         if (!g || g.phase !== "board" || d?.startQ == null || d.picker !== by) return;
         if (cell === d.startQ || d.picks?.["q" + cell] || !room.questions?.[cell]) return;
         const now = serverNow(), turn = (d.turn || 0) + 1;
-        return { ...g, phase: "answering", qIndex: cell, phaseAt: now, questionStartAt: now, timer: freshTimer(room, now),
+        // erst kurz „gewählt“ zeigen, damit alle sehen, welches Feld es wurde
+        return { ...g, phase: "picked", qIndex: cell, phaseAt: now, timer: null,
           duel: { ...d, turn, picks: { ...(d.picks || {}), ["q" + cell]: { by, turn } } } };
       });
       DBG.log("Feld gewählt", { committed: res.committed, cell });
       return res.committed;
     } catch (e) { return fail("Wählen fehlgeschlagen", e); }
+  }
+  // Nach der kurzen Pause: gewähltes Feld → Frage
+  async function duelPickedDone() {
+    const room = ctx.room();
+    try {
+      const res = await runTransaction(ctx.roomRef("game"), g => {
+        if (!g || g.phase !== "picked") return;
+        const now = serverNow();
+        return { ...g, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now) };
+      });
+      DBG.log("Frage beginnt", { committed: res.committed });
+    } catch (e) { fail("Start der Frage fehlgeschlagen", e); }
   }
   // Spieler ohne Schreibrecht auf den Spielzustand: Wunsch ablegen, Moderator/Host übernimmt ihn
   async function requestPick(cell) {
@@ -551,7 +564,7 @@ export function createActions(ctx) {
     }
   }
 
-  return { createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
+  return { duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
 }
 
 const main = createActions({
@@ -571,4 +584,4 @@ const main = createActions({
     store.local.name = name;
   }
 });
-export const { createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;
+export const { duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;
