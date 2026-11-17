@@ -22,7 +22,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.8.1";
+export const VERSION = "v4.8.2";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -233,7 +233,8 @@ function duelTick(s, room, g) {
       if (drawDoneFor !== k) { drawDoneFor = k; A.duelDrawDone(); }
     }
   }
-  if (g?.phase === "picked" && steers && now - (g.phaseAt || now) >= PICKED_MS) {
+  // mit Moderator gibt er die Frage selbst frei, ohne Moderator geht es nach der Pause automatisch weiter
+  if (g?.phase === "picked" && steers && isFree(room) && now - (g.phaseAt || now) >= PICKED_MS) {
     const k = `${room.meta?.createdAt}:${d.turn || 0}`;
     if (pickedDoneFor !== k) { pickedDoneFor = k; A.duelPickedDone(); }
   }
@@ -377,6 +378,7 @@ const handlers = {
   unconfirmFavs: () => A.confirmFavs(false),
   duelDraw: (el) => { el.disabled = true; A.duelDraw(); },
   feedback: (el) => A.giveFeedback(el.dataset.arg),
+  releaseQ: (el) => { el.disabled = true; A.duelPickedDone(); },
   pickCell: (el) => {
     const room = store.room, d = duelOf(room), cell = Number(el.dataset.arg);
     const me = meIn(room, store.uid);

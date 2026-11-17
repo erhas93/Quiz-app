@@ -58,7 +58,25 @@ export function duelTop(s, roleLabel = "") {
   return `<div class="top"><div class="top-main"><div class="top-title sm">Kategorie-Duell${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div><div class="top-sub">${sub}</div></div>
     ${roleLabel}${menuBtn(s.connected)}</div>
     <div class="chips">${activePlayers(room).map(p => `<div class="chip ${sideOf(room, p.uid)}${p.uid === s.uid ? " me" : ""}${d.picker === p.uid && room.game?.phase === "board" && d.startQ != null ? " turn" : ""}">
-      <span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span><span class="chip-pts">${scoreOfDuel(room, p.uid)}</span></div>`).join("")}</div>`;
+      <span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span><span class="chip-pts">${scoreOfDuel(room, p.uid)}</span></div>`).join("")}</div>
+    ${raceBar(room)}`;
+}
+
+// Füllstand: Punkte jedes Spielers von 30 und was noch auf dem Brett liegt. Eine feste Siegmarke gibt es nicht,
+// weil bei der Startfrage beide punkten können – entschieden ist es, sobald der Vorsprung größer ist als der Rest.
+export function raceBar(room) {
+  const ps = activePlayers(room).slice(0, 2);
+  if (ps.length !== 2) return "";
+  const total = (room.questions || []).reduce((a, q) => a + (q ? pointsOf(q) : 0), 0) || 30;
+  const left = (room.questions || []).reduce((a, q, qi) => a + (q && !resultFor(room, qi) ? pointsOf(q) : 0), 0);
+  const sc = ps.map(p => scoreOfDuel(room, p.uid));
+  const lead = Math.abs(sc[0] - sc[1]);
+  const leader = sc[0] > sc[1] ? ps[0] : sc[1] > sc[0] ? ps[1] : null;
+  let txt = `Noch ${left} von ${total} Punkten auf dem Brett${leader ? ` · ${esc(leader.name)} führt mit ${lead}` : ""}`;
+  if (leader && lead > left) txt = `<b>${esc(leader.name)}</b> ist nicht mehr einzuholen`;
+  else if (!left) txt = leader ? `${esc(leader.name)} gewinnt` : "Unentschieden";
+  const bar = (p, i) => `<div class="race-row ${sideOf(room, p.uid)}"><span class="race-track"><i style="width:${Math.min(100, sc[i] / total * 100)}%"></i></span></div>`;
+  return `<div class="race">${ps.map(bar).join("")}<div class="race-txt">${txt}</div></div>`;
 }
 const scoreOfDuel = (room, uid) => Object.values(room.results || {}).reduce((a, r) => a + (r?.points?.[uid] || 0), 0);
 
@@ -119,6 +137,8 @@ export function duelBoardView(s, me) {
     body += boardHtml(room, null, { hl: g.qIndex });
     note = `${by === s.uid ? "Du hast" : `${esc(nameOf(room, by))} hat`} gewählt: ${esc(q?.cat || "")} · ${DIFF_LABEL[q?.diff] || ""} (${pointsOf(q)} P)`;
     noteCls = "ok";
+    if (isMod) actions = `<button class="btn btn-gold" data-act="releaseQ">Frage freigeben</button>`;
+    else if (!free) note += ` · ${mod ? esc(mod.name) : "der Moderator"} gibt die Frage frei`;
   }
   if (spectator) actions = `<button class="btn btn-text" data-act="leave">Zuschauen beenden</button>`;
 
