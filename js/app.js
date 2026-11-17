@@ -22,7 +22,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.8.4";
+export const VERSION = "v4.8.6";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
@@ -75,6 +75,11 @@ function banners(s) {
   let h = "";
   if (s.loaded && !s.connected) h += `<div class="banner warn">Verbindung getrennt – verbinde neu …</div>`;
   if (ROOM_ID && testOf(s.room)) h += `<div class="test-badge">Testraum</div>`;
+  if (s.local.update) h += `<div class="banner warn"><span>Neue Version ${esc(s.local.update)} verfügbar</span><button data-act="reload">Neu laden</button></div>`;
+  else if (ROOM_ID && s.room?.players) {
+    const odd = Object.entries(s.room.players).filter(([u, p]) => p?.v && p.v !== VERSION && p.role !== "spectator" && !p.left).map(([, p]) => `${esc(p.name)} (${esc(p.v)})`);
+    if (odd.length) h += `<div class="banner warn"><span>Andere App-Version bei ${odd.join(", ")} – dort bitte neu laden</span></div>`;
+  }
   if (s.local.error) h += `<div class="banner err"><span>${esc(s.local.error)}</span><button data-act="clearError">OK</button></div>`;
   return h;
 }
@@ -96,12 +101,17 @@ function menuSheet(s) {
 let revealVibed = null;
 let lockRequested = null, abandonChecked = null, createDone = false;
 const once = new Set();   // Automatik-Schritte nur einmal je Schlüssel auslösen
+// Schlüssel pro Runde: nach „Neue Runde“ im selben Raum gibt es dieselben Fragenummern wieder
+const roundKey = room => `${room?.meta?.createdAt}:${room?.meta?.startedAt || 0}`;
+
 function doOnce(key, fn, delay = 0) {
   if (once.has(key)) return;
   once.add(key);
   delay ? setTimeout(fn, delay) : fn();
 }
 function afterRender(s, key) {
+  // eigene App-Version im Raum vermerken
+  { const meP = s.room?.players?.[s.uid]; if (ROOM_ID && meP && meP.v !== VERSION) doOnce(`ver:${s.room?.meta?.createdAt}:${meP.joinedAt || 0}`, () => A.setVersion(VERSION)); }
   syncPresence(s);
   keepAwake(key === "modGame" || key === "plGame");
   if (!ROOM_ID) { if (s.loaded) A.cleanupRooms(s.rooms); return; }
@@ -132,7 +142,7 @@ function afterRender(s, key) {
   }
   // Spieler: kurze Vibration beim Auflösen (richtig: einmal, falsch: doppelt)
   if (key === "plGame" && g?.phase === "revealed" && me?.role === "player") {
-    const k = `${room.meta?.createdAt}:${g.qIndex}`;
+    const k = `${roundKey(room)}:${g.qIndex}`;
     if (revealVibed !== k && resultFor(room, g.qIndex)) {
       revealVibed = k;
       vibrate(resultFor(room, g.qIndex)?.points?.[s.uid] ? 80 : [60, 80, 60]);
@@ -151,18 +161,18 @@ function afterRender(s, key) {
 
   // Automatisch sperren, sobald alle eingeloggt haben (Moderator bzw. Host)
   if (steers && room.meta?.status === "running" && g?.phase === "answering" && allAnswered(room, free)) {
-    const k = `${room.meta?.createdAt}:${g.qIndex}`;
+    const k = `${roundKey(room)}:${g.qIndex}`;
     if (lockRequested !== k) { lockRequested = k; A.lockAnswers(g.qIndex); }
   }
   // Duell: Wahl eines Spielers übernehmen (er selbst darf den Spielzustand nicht schreiben)
   if (steers && room.meta?.status === "running" && isDuel(room) && g?.phase === "board") {
     const d = duelOf(room);
     const req = d.picker && room.players?.[d.picker]?.pick;
-    if (req && req.turn === (d.turn || 0)) doOnce(`pick:${room.meta?.createdAt}:${d.turn || 0}`, () => A.pickCell(req.cell, d.picker));
+    if (req && req.turn === (d.turn || 0)) doOnce(`pick:${roundKey(room)}:${d.turn || 0}`, () => A.pickCell(req.cell, d.picker));
   }
   // Host ohne Moderator: Ablauf automatisch weiterschalten
   if (isHost && room.meta?.status === "running" && g) {
-    const qi = g.qIndex, base = `${room.meta?.createdAt}:${qi}`;
+    const qi = g.qIndex, base = `${roundKey(room)}:${qi}`;
     const q = room.questions?.[qi];
     if (g.phase === "locked") doOnce(`show:${base}`, () => A.showAnswers(qi), 400);
     if (g.phase === "shown" && q && !isOpenType(q)) doOnce(`reveal:${base}`, () => A.reveal(qi), 2200);
@@ -198,7 +208,7 @@ function tick() {
       if (bar) { bar.style.width = Math.max(0, left / sec * 100) + "%"; bar.style.background = left <= 5 ? "var(--c5)" : left <= 10 ? "var(--c4)" : "var(--c2)"; }
       const steers = meIn(room, s.uid)?.role === "moderator" || (isFree(room) && hostUid(room) === s.uid);
       if (left <= 0 && g.phase === "answering" && g.timer?.running && steers) {
-        const k = `${room.meta?.createdAt}:${g.qIndex}:${g.timer.startAt}`;
+        const k = `${roundKey(room)}:${g.qIndex}:${g.timer.startAt}`;
         if (expiredFor !== k) { expiredFor = k; A.timerExpired(g.qIndex); vibrate(200); }
       }
     }
@@ -234,7 +244,7 @@ function duelTick(s, room, g) {
   }
   // mit Moderator gibt er die Frage selbst frei, ohne Moderator geht es nach der Pause automatisch weiter
   if (g?.phase === "picked" && steers && isFree(room) && now - (g.phaseAt || now) >= PICKED_MS) {
-    const k = `${room.meta?.createdAt}:${d.turn || 0}`;
+    const k = `${roundKey(room)}:${d.turn || 0}`;
     if (pickedDoneFor !== k) { pickedDoneFor = k; A.duelPickedDone(); }
   }
   if (g?.phase === "board" && d.startQ != null) {
@@ -246,7 +256,7 @@ function duelTick(s, room, g) {
     const el = $("pnum");
     if (el) el.textContent = Math.ceil(left);
     if (left <= 0 && steers && picker) {
-      const k = `${room.meta?.createdAt}:${d.turn || 0}`;
+      const k = `${roundKey(room)}:${d.turn || 0}`;
       if (pickExpiredFor !== k) {
         pickExpiredFor = k;
         const cells = freeCells(room);
@@ -357,6 +367,7 @@ const handlers = {
     try { t = JSON.parse(localStorage.getItem("quiz.v4.testSetup") || "null"); } catch {}
     setLocal({ testSetup: t || { scenario: "mod", bots: 2, acc: "mid", speed: "normal" } });
   },
+  reload: () => location.reload(),
   closeTestSetup: () => setLocal({ testSetup: null }),
   testScenario: (el) => setLocal({ testSetup: { ...store.local.testSetup, scenario: el.dataset.arg } }),
   testBots: (el) => setLocal({ testSetup: { ...store.local.testSetup, bots: Number(el.dataset.arg) } }),
@@ -451,9 +462,22 @@ document.addEventListener("keydown", e => {
       if (ROOM_ID && !(me && store.room?.meta?.status === "running")) { goOverview(); return true; }
       return false;
     },
-    onResume: () => { DBG.log("App wieder im Vordergrund"); rerender(); }
+    onResume: () => { DBG.log("App wieder im Vordergrund"); checkUpdate(); rerender(); }
   });
   if (isApp()) { DBG.log("läuft in der Android-App"); setBarStyle(document.documentElement.getAttribute("data-theme") === "light"); }
   // Zeitabhängige Anzeigen (offline seit …, abgebrochen) regelmäßig auffrischen
   setInterval(rerender, 15000);
+  checkUpdate();
+  setInterval(checkUpdate, 5 * 60 * 1000);
 })();
+
+// Neue Version auf dem Server? (version.json ohne Cache, Vergleich mit der Build-Kennung aus index.html)
+async function checkUpdate() {
+  try {
+    const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
+    const j = await r.json();
+    if (window.__BUILD && j.build && j.build !== window.__BUILD) {
+      if (store.local.update !== j.version) { DBG.log("Neue Version verfügbar", j); store.local.update = j.version || "neu"; rerender(); }
+    }
+  } catch {}
+}
