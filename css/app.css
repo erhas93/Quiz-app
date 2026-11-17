@@ -321,5 +321,9 @@ button{cursor:pointer}
 .race-track i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;transition:width .5s}
 .race-row.pa i{background:var(--blue)}.race-row.pb i{background:var(--c4)}
 .race-mark{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--c3);border-radius:2px}
-.race-txt{font-size:12px;color:var(--text3);text-align:center;margin-top:1px}
+.race-txt{font-size:13.5px;color:var(--text3);text-align:center;margin-top:1px}
 .race-txt b{color:var(--c3)}
+/* Duell: Hinweis unter dem Brett (wer wählt, was gewählt wurde) gut lesbar */
+.screen.duel .foot-note{font-size:clamp(16px,4.6vw,19px);font-weight:700;line-height:1.35;color:var(--text);padding:4px 4px 2px}
+.screen.duel .foot-note.ok{color:var(--c2)}
+.screen.duel .foot-note #pnum{display:inline-block;min-width:1.4em;color:var(--c3)}
