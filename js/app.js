@@ -22,7 +22,7 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.8.6";
+export const VERSION = "v4.8.7";
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────

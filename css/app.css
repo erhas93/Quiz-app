@@ -327,3 +327,6 @@ button{cursor:pointer}
 .screen.duel .foot-note{font-size:clamp(16px,4.6vw,19px);font-weight:700;line-height:1.35;color:var(--text);padding:4px 4px 2px}
 .screen.duel .foot-note.ok{color:var(--c2)}
 .screen.duel .foot-note #pnum{display:inline-block;min-width:1.4em;color:var(--c3)}
+.cell.fp{border-style:dashed;opacity:.8}
+.cell.fp.on{border-style:solid;border-color:var(--c3);background:var(--gold-bg);opacity:1}
+.brow.favrow .bcat.edit{box-shadow:0 0 0 1px var(--c3)}

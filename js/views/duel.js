@@ -45,7 +45,12 @@ export function boardHtml(room, uid, { clickable = false, favEdit = false, showF
       const stars = showFavs ? showFavs.filter(u => favCatsOf(room, u).includes(ci)).map(u => `<span class="bfav ${sideOf(room, u)}">★</span>`).join("") : (fav ? `<span class="bfav">★</span>` : "");
       cat = `<span class="bcat"><span class="bname">${esc(r.cat)}</span>${stars}</span>`;
     }
-    return `<div class="brow">${cat}${r.cells.map(qi => qi == null ? `<span class="cell void"></span>` : cellHtml(room, qi, { clickable, hl })).join("")}</div>`;
+    // Beim Auswählen der Lieblingskategorien schaltet die ganze Zeile (Name und Felder) um –
+    // viele tippen intuitiv auf die Felder statt auf den Namen
+    const cells = favEdit
+      ? r.cells.map(qi => qi == null ? `<span class="cell void"></span>` : `<button class="cell fp${fav ? " on" : ""}" data-act="favCat" data-arg="${ci}" aria-pressed="${fav}"><span class="cell-pts">${pointsOf(room.questions[qi])}</span></button>`).join("")
+      : r.cells.map(qi => qi == null ? `<span class="cell void"></span>` : cellHtml(room, qi, { clickable, hl })).join("");
+    return `<div class="brow${favEdit && fav ? " favrow" : ""}">${cat}${cells}</div>`;
   }).join("")}</div>`;
 }
 
@@ -100,7 +105,7 @@ export function duelBoardView(s, me) {
   if (intro) {
     const edit = me.role === "player" && !favDone(room, s.uid);
     const waiting = players.filter(p => !favDone(room, p.uid));
-    body += edit ? `<div class="notice gold">Tippe deine Lieblingskategorien an – keine, eine oder mehrere. Die anderen sehen das erst am Ende.</div>` : "";
+    body += edit ? `<div class="notice gold">Tippe auf die Zeilen deiner Lieblingskategorien (★) – keine, eine oder mehrere. Die anderen sehen das erst am Ende.</div>` : "";
     body += boardHtml(room, me.role === "player" ? s.uid : null, { favEdit: edit });
     const status = players.map(p => `${esc(p.name)} ${favDone(room, p.uid) ? "✓" : "…"}`).join(" · ");
     const allDone = !waiting.filter(p => p.online).length;
