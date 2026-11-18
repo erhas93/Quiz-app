@@ -1,5 +1,5 @@
 // Lobby für Moderator, Spieler und Zuschauer – alles auf einem Bildschirm
-import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC } from "../model.js";
+import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC, duelRule } from "../model.js";
 import { ROOM_ID } from "../firebase.js";
 import { topBar, slots, spectatorLine, ICON } from "./common.js";
 import { playStats, packLine } from "./packs.js";
@@ -24,6 +24,9 @@ function modeCard(room) {
   const n = activePlayers(room).length;
   return `<div class="card"><div class="card-h"><span class="label">Spielmodus</span>${duel && n !== 2 ? `<span class="muted small">braucht genau 2 Spieler</span>` : ""}</div>
     <div class="seg3"><button class="${duel ? "" : "on"}" data-act="gameMode" data-arg="classic">Klassisch</button><button class="${duel ? "on" : ""}" data-act="gameMode" data-arg="duel">Kategorie-Duell</button></div>
+    ${duel ? `<span class="label" style="margin-top:12px">Punkte</span>
+      <div class="seg3"><button class="${duelRule(room) === "picker" ? "on" : ""}" data-act="duelRule" data-arg="picker">Wähler hat Vorrang</button><button class="${duelRule(room) === "all" ? "on" : ""}" data-act="duelRule" data-arg="all">Jeder Richtige</button></div>
+      <div class="muted small" style="margin-top:6px">${duelRule(room) === "all" ? "Jeder, der richtig liegt, bekommt die Punkte des Feldes – die Partie bleibt länger offen." : "Der Wähler bekommt die Punkte, wenn er richtig liegt. Liegt er falsch, kann der Gegner sie klauen."}</div>` : ""}
     ${duel ? `<button class="toggle-row" data-act="pickTimer" aria-pressed="${!!room.settings?.pickTimer}"><span>Wähl-Timer (${PICK_SEC} s)</span><span class="switch${room.settings?.pickTimer ? " on" : ""}"></span></button>` : ""}</div>`;
 }
 
@@ -81,7 +84,7 @@ export function playerLobbyView(s, me) {
       <div class="card"><label class="label" for="in-lobbyname">Dein Name</label>
         <input class="inp" id="in-lobbyname" data-input="name" data-commit="setName" maxlength="20" value="${esc(me.name)}"></div>
       ${playersCard(room, s.uid)}
-      <div class="card"><span class="label">${isDuel(room) ? "Kategorie-Duell · Duell-Pack" : "Fragenpaket"}</span>
+      <div class="card"><span class="label">${isDuel(room) ? `Kategorie-Duell · ${duelRule(room) === "all" ? "jeder Richtige punktet" : "Wähler hat Vorrang"}` : "Fragenpaket"}</span>
         <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
       ${favCard(room, s.uid)}
       <div class="spacer"></div>

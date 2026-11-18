@@ -1,6 +1,6 @@
 // Kategorie-Duell: Spielbrett (Vorstellen, Lieblingskategorien, Auslosen, Wählen) und Bausteine fürs Duell
 import { esc, activePlayers, duelBoard, duelOf, pickOf, isStartQ, resultFor, favCatsOf, favDone, isFree, hostUid, moderatorOf,
-  DUEL_TURNS, PICK_SEC, DRAW_MS, DIFF_LABEL, pointsOf, playOrder, spectatorsOf } from "../model.js";
+  DUEL_TURNS, PICK_SEC, DRAW_MS, DIFF_LABEL, pointsOf, playOrder, spectatorsOf, duelRule } from "../model.js";
 import { menuBtn, ICON } from "./common.js";
 import { ROOM_ID } from "../firebase.js";
 
@@ -161,6 +161,7 @@ export function duelStakeLine(room, qi, uid) {
   const pts = pointsOf(q);
   if (isStartQ(room, qi)) return `<div class="stake">Startfrage · jeder Richtige bekommt ${pts} ${pts === 1 ? "Punkt" : "Punkte"} · wer gewinnt, wählt zuerst</div>`;
   const by = pickOf(room, qi)?.by;
+  if (duelRule(room) === "all") return `<div class="stake ${sideOf(room, by)}">${by === uid ? "Deine Wahl" : `${esc(nameOf(room, by))}s Wahl`} · jeder Richtige bekommt ${pts} ${pts === 1 ? "Punkt" : "Punkte"}</div>`;
   const opp = activePlayers(room).find(p => p.uid !== by);
   const who = by === uid ? "Du spielst" : `${esc(nameOf(room, by))} spielt`;
   const steal = opp ? (opp.uid === uid ? "bei Fehler kannst du klauen" : `bei Fehler klaut ${esc(opp.name)}`) : "";
@@ -183,6 +184,13 @@ export function duelOutcome(room, qi, uid) {
   }
   const by = r.by, opp = activePlayers(room).find(p => p.uid !== by)?.uid;
   const byName = esc(nameOf(room, by)), oppName = esc(nameOf(room, opp));
+  if (r.rule === "all") {
+    const won = activePlayers(room).filter(p => r.points?.[p.uid]).map(p => p.uid);
+    const others = won.filter(u => u !== uid).map(u => esc(nameOf(room, u)));
+    const sub = others.length ? `${others.join(" & ")} ${others.length > 1 ? "punkten" : "punktet"} auch` : "";
+    if (uid && room.players?.[uid]?.role === "player") return mine ? { kind: "ok", big: `Richtig! +${pts}`, sub } : { kind: "no", big: "Leider falsch", sub: others.length ? `${others.join(" & ")} holt ${pts}` : "" };
+    return { kind: "neutral", big: won.length ? `${won.map(u => esc(nameOf(room, u))).join(" & ")} ${won.length > 1 ? "holen" : "holt"} ${pts}` : "Niemand punktet", sub: "" };
+  }
   if (uid === by) return mine ? { kind: "ok", big: `Richtig! +${pts}`, sub: "" } : { kind: "no", big: r.stolen ? `Falsch – ${oppName} klaut ${pts}` : "Leider falsch", sub: "" };
   if (uid === opp) return mine ? { kind: "ok", big: `Geklaut! +${pts}`, sub: `${byName} lag falsch` } : { kind: r.points?.[by] ? "no" : "neutral", big: r.points?.[by] ? `${byName} holt ${pts}` : "Beide falsch", sub: "" };
   if (r.points?.[by]) return { kind: "neutral", big: `${byName} holt ${pts}`, sub: "" };

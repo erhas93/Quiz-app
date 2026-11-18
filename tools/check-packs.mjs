@@ -122,7 +122,35 @@ export function checkAll() {
   return results;
 }
 
+// Ähnliche Fragen über alle Packs finden (für neue Packs): node tools/check-packs.mjs --similar <packId>
+// Treffer: viele gemeinsame Inhaltswörter (Jaccard ≥ 0,45) oder gleiche Lösung mit gemeinsamem Inhaltswort.
+const STOP = new Set("der die das den dem des ein eine einer eines einem einen und oder aber mit von vom zu zum zur im in ins an am auf aus bei für über unter nach vor wie was wer wo wann welche welcher welches welchem welchen wieviel viele viel ist sind war waren wird wurde wurden hat hatte haben gilt als auch nicht noch nur sich es er sie man heute laut etwa rund ungefähr jahr jahre jahren meter kilometer gibt heißt hieß nennt genannt bekannt erste ersten welchem".split(" "));
+const words = t => new Set(String(t || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9ß ]+/g, " ").split(/\s+/).filter(w => w.length > 2 && !STOP.has(w)));
+const solution = q => String(q.type === "estimate" || q.type === "open" ? q.answer : q.a?.[q.r] ?? "").toLowerCase().trim();
+function similar(id) {
+  const all = checkAll().filter(r => r.pack?.questions);
+  const me = all.find(r => r.id === id);
+  if (!me) { console.error(`Pack „${id}“ nicht gefunden`); process.exit(1); }
+  const hits = [];
+  for (const [i, q] of me.pack.questions.entries()) {
+    const wq = words(q.q);
+    for (const r of all) for (const [j, o] of r.pack.questions.entries()) {
+      if (r.id === id && j <= i) continue;
+      const wo = words(o.q);
+      const common = [...wq].filter(w => wo.has(w));
+      const jac = common.length / (new Set([...wq, ...wo]).size || 1);
+      const sameSol = solution(q) && solution(q) === solution(o);
+      if (jac >= 0.45 || (sameSol && common.length)) hits.push({ jac, a: `${id} #${i + 1}: ${q.q}`, b: `${r.id} #${j + 1}: ${o.q}`, why: sameSol ? "gleiche Lösung" : `${Math.round(jac * 100)} % gleiche Wörter` });
+    }
+  }
+  hits.sort((x, y) => y.jac - x.jac);
+  for (const h of hits) console.log(`! ${h.why}\n    ${h.a}\n    ${h.b}`);
+  console.log(`\n${hits.length} ähnliche Fragen gefunden`);
+}
+
 function main() {
+  const si = process.argv.indexOf("--similar");
+  if (si > 0) return similar(process.argv[si + 1]);
   const results = checkAll();
   const errs = results.filter(r => r.errors.length);
   if (args.has("--json")) {

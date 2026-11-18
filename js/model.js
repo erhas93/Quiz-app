@@ -124,6 +124,10 @@ export function computeResult(room, qi) {
     return { points, ok, fastestUid, startWinner: startWinner(points, fastestUid, uids) };
   }
   const by = pickOf(room, qi)?.by;
+  if (duelRule(room) === "all") {
+    for (const u of uids) if (ok[u]) points[u] = pts;
+    return { points, ok, fastestUid, by: by || null, stolen: false, rule: "all" };
+  }
   const opp = uids.find(u => u !== by);
   let stolen = false;
   if (by && ok[by]) points[by] = pts;
@@ -307,6 +311,8 @@ export const isSoloFree = room => isFree(room) && activePlayers(room).length ===
 // game.duel = { startQ, drawAt, picker, turn, picks: { "q<qi>": { by, turn } } }
 // (Schlüssel mit Buchstaben, sonst macht Firebase aus Zahlen-Schlüsseln Arrays)
 export const isDuel = room => room?.settings?.game === "duel";
+// Punkte-Regel im Duell: "picker" = Wähler hat Vorrang (Gegner klaut nur bei Fehler), "all" = jeder Richtige punktet
+export const duelRule = room => (room?.settings?.duelRule === "all" ? "all" : "picker");
 export const DUEL_TURNS = 14;
 export const PICK_SEC = 20;
 export const DRAW_MS = 3600;   // Dauer der Auslos-Animation

@@ -366,6 +366,7 @@ const handlers = {
   toggleFact: () => toggleFact(),
   gameMode: (el) => C().setGameMode(el.dataset.arg),
   pickTimer: () => C().setPickTimer(!store.room?.settings?.pickTimer),
+  duelRule: (el) => C().setDuelRule(el.dataset.arg),
   testSetup: () => {
     let t = null;
     try { t = JSON.parse(localStorage.getItem("quiz.v4.testSetup") || "null"); } catch {}
