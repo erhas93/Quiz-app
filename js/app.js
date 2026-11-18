@@ -1,5 +1,5 @@
 // Einstieg: Identität, Abo auf den Raum, Rendern, Ereignisse
-import { initIdentity, ROOM_ID, CREATE_MODE, serverNow, goRoom, goOverview, newRoomCode, normCode, clearCreateParam } from "./firebase.js";
+import { db, ref, get, initIdentity, ROOM_ID, CREATE_MODE, serverNow, goRoom, goOverview, newRoomCode, normCode, clearCreateParam } from "./firebase.js";
 import { store, subscribe, onRender, rerender, setLocal, subscribePackData } from "./store.js";
 import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
@@ -8,6 +8,7 @@ import { loadPackList } from "./packs.js";
 import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS } from "./model.js";
 import { duelBoardView, drawFrame } from "./views/duel.js";
 import { testSetupView } from "./views/overview.js";
+import { statsView } from "./views/stats.js";
 import { tick as botTick, startBotClock, createTestRoom, botModActions, ownerSteersBotMod, testOf } from "./bots.js";
 
 // Lobby-Steuerung: im Testraum „Ich spiele“ laufen die Einstellungen über den Bot-Moderator
@@ -22,11 +23,13 @@ import { modGameView } from "./views/moderator.js";
 import { resultsView } from "./views/results.js";
 import { packPickerView } from "./views/packs.js";
 
-export const VERSION = "v4.8.7";
+import { VERSION } from "./version.js";
+export { VERSION };
 const $ = id => document.getElementById(id);
 
 // ── Welche Ansicht? Nur aus dem Zustand abgeleitet ─────────────────────────
 function pickView(s) {
+  if (s.local.stats) return { key: "stats", html: statsView(s) };
   if (!s.loaded) return { key: "loading", html: `<div class="screen"><div class="body center"><div class="spin"></div></div></div>` };
   if (!ROOM_ID) return s.local.testSetup ? { key: "testSetup", html: testSetupView(s) } : { key: "overview", html: overviewView(s, serverNow()) };
   const room = s.room;
@@ -91,6 +94,7 @@ function menuSheet(s) {
     <div class="sheet-grip"></div>
     <button class="sheet-item" data-act="theme">${ICON.theme()}${light ? "Dunkles Design" : "Helles Design"}</button>
     <button class="sheet-item browser-only" data-act="fullscreen">${ICON.full()}Vollbild</button>
+    <button class="sheet-item" data-act="stats">${ICON.search()}Statistik</button>
     <button class="sheet-item" data-act="debug">${ICON.bug()}Debug-Log</button>
     ${ROOM_ID ? `<button class="sheet-item" data-act="overview">${ICON.back()}Zur Raumübersicht</button>
     <button class="sheet-item danger" data-act="resetAll">${ICON.trash()}Raum zurücksetzen</button>` : ""}
@@ -322,7 +326,7 @@ const handlers = {
   packFav: (el) => A.setPackPref(el.dataset.arg, "fav", !store.packPrefs?.[el.dataset.arg]?.fav),
   packHide: (el) => A.setPackPref(el.dataset.arg, "hidden", !store.packPrefs?.[el.dataset.arg]?.hidden),
   startGame: (el) => { el.disabled = true; C().startGame(); },
-  closeRoom: () => { if (confirm("Partie für alle beenden und den Raum leeren?")) C().resetRoom(); },
+  closeRoom: () => { if (confirm(`Raum ${ROOM_ID} für alle auflösen? Alle landen wieder in der Raumübersicht.`)) C().resetRoom(); },
   newRound: () => C().newRound(),
   timerMode: (el) => C().setTimer(el.dataset.arg),
   timerSec: (el) => C().setTimer(null, Number(el.dataset.arg)),
@@ -368,6 +372,21 @@ const handlers = {
     setLocal({ testSetup: t || { scenario: "mod", bots: 2, acc: "mid", speed: "normal" } });
   },
   reload: () => location.reload(),
+  stats: async () => {
+    setLocal({ menu: false, stats: { loading: true } });
+    try {
+      const [snap, list] = await Promise.all([get(ref(db, "questionStats")), loadPackList().catch(() => [])]);
+      const names = Object.fromEntries((Array.isArray(list) ? list : []).map(p => [p.id, `${p.emoji ? p.emoji + " " : ""}${p.name}`]));
+      setLocal({ stats: { data: snap.val() || {}, names } });
+    } catch (e) { setLocal({ stats: { error: e.message } }); }
+  },
+  closeStats: () => setLocal({ stats: null }),
+  statsOpen: (el) => setLocal({ stats: { ...store.local.stats, open: store.local.stats?.open === el.dataset.arg ? null : el.dataset.arg } }),
+  statsCopy: async () => {
+    const txt = JSON.stringify(store.local.stats?.data || {});
+    try { await navigator.clipboard.writeText(txt); setLocal({ error: "Rohdaten kopiert – einfach im Chat einfügen." }); }
+    catch { await share(txt, ""); }
+  },
   closeTestSetup: () => setLocal({ testSetup: null }),
   testScenario: (el) => setLocal({ testSetup: { ...store.local.testSetup, scenario: el.dataset.arg } }),
   testBots: (el) => setLocal({ testSetup: { ...store.local.testSetup, bots: Number(el.dataset.arg) } }),
@@ -401,7 +420,7 @@ const handlers = {
   },
   invite: async () => {
     const url = `https://erhas93.github.io/Quiz-app/?room=${ROOM_ID}`;
-    const r = await share(`Komm in die Quiz-Lobby von ${store.local.name || "uns"} – Raumcode ${ROOM_ID}`, url);
+    const r = await share(`Komm in meinen Quiz-Raum ${ROOM_ID}${store.local.name ? ` (${store.local.name})` : ""}`, url);
     if (r === "kopiert") setLocal({ error: "Link kopiert – einfach verschicken." });
   }
 };
@@ -453,6 +472,7 @@ document.addEventListener("keydown", e => {
     onBack: () => {
       if (store.local.menu) { setLocal({ menu: false }); return true; }
       if (store.local.picker) { setLocal({ picker: null }); return true; }
+      if (store.local.stats) { setLocal({ stats: null }); return true; }
       if (!ROOM_ID && store.local.testSetup) { setLocal({ testSetup: null }); return true; }
       if (store.local.factOpen != null && store.local.factOpen === store.room?.game?.qIndex) { toggleFact(); return true; }
       const dbg = $("dbg-panel"); if (dbg && dbg.style.display !== "none") { DBG.toggle(); return true; }

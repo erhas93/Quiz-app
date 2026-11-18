@@ -14,7 +14,7 @@ export function homeView(s, now = Date.now()) {
   if (sm.status === "lobby") {
     const mod = sm.moderator;
     card = `<div class="card">
-        <span class="label">Lobby offen</span>
+        <span class="label">Vorbereitung – Partie startet bald</span>
         <div class="status-big">${isFree(room) ? "Ohne Moderator – alle spielen" : mod ? `${esc(mod)} moderiert` : "Noch kein Moderator"}</div>
         ${sm.packName ? `<div class="muted small">Fragenpaket: ${esc(sm.packName)}</div>` : ""}
         ${slots(room, s.uid)}${spectatorLine(room)}
@@ -40,14 +40,14 @@ export function homeView(s, now = Date.now()) {
       const top = rk.filter(p => p.rank === 1).map(p => esc(p.name)).join(" & ");
       last = `<div class="muted small">Letzte Partie${sm.packName ? ` (${esc(sm.packName)})` : ""}: ${rk.length > 1 ? `gewonnen von ${top}` : rk.length ? `${esc(rk[0].name)} mit ${rk[0].score} Punkten` : "beendet"}</div>`;
     }
-    card = `<div class="card"><span class="label">Status</span><div class="status-big">Keine Partie aktiv</div>${last}</div>
+    card = `<div class="card"><span class="label">Status</span><div class="status-big">Gerade keine Partie</div>${last}</div>
       <div class="card">${nameInput}</div>`;
     actions = `<button class="btn btn-primary" data-act="createRoom" data-arg="players">Neue Partie ohne Moderator</button>
       <button class="btn btn-gold" data-act="createRoom" data-arg="moderated">Neue Partie mit Moderator</button>`;
   }
 
   return `<div class="screen">
-    ${topBar(`Raum <span class="code-badge">${esc(ROOM_ID)}</span>`, "", { back: "overview", connected: s.connected })}
+    ${topBar(`Raum <span class="code-badge">${esc(ROOM_ID)}</span>`, sm.status === "lobby" ? "Vorbereitung" : sm.status === "running" ? "Partie läuft" : "frei für eine neue Partie", { back: "overview", connected: s.connected })}
     <div class="body center">${card}</div>
     <div class="actions">${actions}</div>
   </div>`;

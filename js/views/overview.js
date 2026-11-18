@@ -1,4 +1,5 @@
 // Raumübersicht (Startseite ohne ?room): offene Räume, Beitreten per Code, neue Partie
+import { VERSION } from "../version.js";
 import { esc } from "../model.js";
 import { topBar, ICON } from "./common.js";
 
@@ -16,16 +17,16 @@ export function overviewView(s, now) {
   const rows = list.length ? list.map(r => {
     const names = (r.playerNames || []).map(esc);
     const who = names.length ? names.join(r.status === "running" ? " vs. " : ", ") : "noch keine Spieler";
-    const st = r.status === "lobby" ? (r.game === "duel" ? "Lobby offen · Duell" : "Lobby offen") : r.game === "duel" ? "Kategorie-Duell läuft" : `läuft · Frage ${(r.qIndex ?? 0) + 1}/${r.qCount || "–"}`;
+    const st = r.status === "lobby" ? (r.game === "duel" ? "Vorbereitung · Duell" : "Vorbereitung") : r.game === "duel" ? "Kategorie-Duell läuft" : `läuft · Frage ${(r.qIndex ?? 0) + 1}/${r.qCount || "–"}`;
     const mode = r.mode === "players" ? "ohne Moderator" : r.moderator ? `Moderation: ${esc(r.moderator)}` : "mit Moderator";
     return `<button class="room-row" data-act="openRoom" data-arg="${esc(r.id)}">
       <span class="room-code">${esc(r.id.slice(0, 4))}</span>
       <span class="pack-txt"><span class="pack-name">${r.test ? `<span class="test-tag">Test</span> ` : ""}${st}${r.packName ? ` · ${esc(r.packName)}` : ""}</span>
         <span class="pack-sub">${who} · ${mode}</span></span>${ICON.chev(20)}</button>`;
-  }).join("") : `<div class="muted small" style="padding:6px 2px">Gerade ist kein Raum offen. Leg unten eine neue Partie an.</div>`;
+  }).join("") : `<div class="muted small" style="padding:6px 2px">Gerade ist kein Raum offen. Eröffne unten einen neuen Raum.</div>`;
 
   return `<div class="screen">
-    ${topBar("Quiz App", "Räume", { connected: s.connected })}
+    ${topBar("Quiz App", `Raumübersicht · ${VERSION}`, { connected: s.connected })}
     <div class="body">
       <div class="card"><label class="label" for="in-name">Dein Name</label>
         <input class="inp" id="in-name" data-input="name" maxlength="20" placeholder="Name eingeben" value="${esc(s.local.name)}"></div>
@@ -36,8 +37,8 @@ export function overviewView(s, now) {
       <div class="spacer"></div>
     </div>
     <div class="actions">
-      <button class="btn btn-primary" data-act="newRoom" data-arg="players">Neue Partie ohne Moderator</button>
-      <button class="btn btn-gold" data-act="newRoom" data-arg="moderated">Neue Partie mit Moderator</button>
+      <button class="btn btn-primary" data-act="newRoom" data-arg="players">Neuer Raum ohne Moderator</button>
+      <button class="btn btn-gold" data-act="newRoom" data-arg="moderated">Neuer Raum mit Moderator</button>
       <button class="btn btn-text" data-act="testSetup">${ICON.bug(16)} Testraum mit Bots</button>
     </div>
   </div>`;

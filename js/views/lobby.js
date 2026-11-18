@@ -54,7 +54,7 @@ export function modLobbyView(s) {
 
   const invite = `<button class="btn btn-ghost btn-sm" data-act="invite">${ICON.share(16)} Einladen</button>`;
   return `<div class="screen">
-    ${topBar("Lobby", `${code()} · ${free ? "ohne Moderator · du steuerst" : `${esc(moderatorOf(room)?.name || "Du")} moderiert`}`, { back: "overview", connected: s.connected })}
+    ${topBar(code(), `Vorbereitung · ${free ? "ohne Moderator, du steuerst" : `${esc(moderatorOf(room)?.name || "Du")} moderiert`}`, { back: "overview", connected: s.connected })}
     <div class="body">
       ${playersCard(room, s.uid, invite)}
       ${modeCard(room)}
@@ -65,7 +65,7 @@ export function modLobbyView(s) {
     </div>
     <div class="actions">
       <button class="btn btn-primary" data-act="startGame" ${startDisabled ? "disabled" : ""}>${startLabel}</button>
-      <button class="btn btn-text danger" data-act="closeRoom">Partie auflösen</button>
+      <button class="btn btn-text danger" data-act="closeRoom">Raum auflösen</button>
     </div>
   </div>`;
 }
@@ -76,7 +76,7 @@ export function playerLobbyView(s, me) {
   const host = room.players?.[hostUid(room)]?.name;
   const sub = free ? `ohne Moderator${host ? ` · ${esc(host)} steuert` : ""}` : `${esc(moderatorOf(room)?.name || "Noch kein Moderator")}${moderatorOf(room) ? " moderiert" : ""}`;
   return `<div class="screen">
-    ${topBar("Lobby", `${code()} · ${sub}`, { back: "overview", connected: s.connected })}
+    ${topBar(code(), `Vorbereitung · ${sub}`, { back: "overview", connected: s.connected })}
     <div class="body">
       <div class="card"><label class="label" for="in-lobbyname">Dein Name</label>
         <input class="inp" id="in-lobbyname" data-input="name" data-commit="setName" maxlength="20" value="${esc(me.name)}"></div>
@@ -88,7 +88,7 @@ export function playerLobbyView(s, me) {
     </div>
     <div class="actions">
       <button class="btn ${me.ready ? "btn-primary" : "btn-ghost"}" data-act="toggleReady">${me.ready ? `${ICON.check(20)} Bereit` : "Ich bin bereit"}</button>
-      <button class="btn btn-text" data-act="leave">Lobby verlassen</button>
+      <button class="btn btn-text" data-act="leave">Raum verlassen</button>
     </div>
   </div>`;
 }
@@ -97,7 +97,7 @@ export function spectatorLobbyView(s) {
   const room = s.room;
   const full = activePlayers(room).length >= MAX_PLAYERS;
   return `<div class="screen">
-    ${topBar("Lobby", `${code()} · du schaust zu`, { back: "overview", connected: s.connected })}
+    ${topBar(code(), "Vorbereitung · du schaust zu", { back: "overview", connected: s.connected })}
     <div class="body">
       ${playersCard(room, s.uid)}
       <div class="card"><span class="label">Fragenpaket</span>
@@ -105,7 +105,7 @@ export function spectatorLobbyView(s) {
       <div class="spacer"></div>
     </div>
     <div class="actions">
-      ${full ? `<div class="foot-note">Die Lobby ist voll.</div>` : `<button class="btn btn-primary" data-act="joinPlayer">Doch mitspielen</button>`}
+      ${full ? `<div class="foot-note">Alle Spielerplätze sind belegt.</div>` : `<button class="btn btn-primary" data-act="joinPlayer">Doch mitspielen</button>`}
       <button class="btn btn-text" data-act="leave">Zuschauen beenden</button>
     </div>
   </div>`;

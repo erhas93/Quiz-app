@@ -1,4 +1,5 @@
 // Ergebnis: Rangliste (bzw. Einzelspieler-Statistik), Bonus, Zeittabelle pro Frage
+import { ROOM_ID } from "../firebase.js";
 import { esc, ranking, questionsOf, answerOf, resultFor, fmtMs, isFree, hostUid, isDuel, activePlayers, isFavFor } from "../model.js";
 import { topBar } from "./common.js";
 import { boardHtml, categoryTable } from "./duel.js";
@@ -62,12 +63,12 @@ export function resultsView(s, me) {
 
   const actions = controls
     ? `<button class="btn btn-primary" data-act="newRound">Neue Runde, gleiche Spieler</button>
-       <button class="btn btn-text danger" data-act="closeRoom">Partie beenden</button>`
+       <button class="btn btn-text danger" data-act="closeRoom">Raum auflösen</button>`
     : `<div class="foot-note">${isFree(room) ? "Der Host" : "Der Moderator"} kann eine neue Runde starten.</div>
        <button class="btn btn-ghost" data-act="dismiss">Zurück zum Start</button>`;
 
   return `<div class="screen">
-    ${topBar("Ergebnis", pack, { connected: s.connected })}
+    ${topBar("Ergebnis", `Raum ${esc(ROOM_ID)}${pack ? ` · ${pack}` : ""}`, { connected: s.connected })}
     <div class="body">${head}${bonus}${duelCards || table}</div>
     <div class="actions">${actions}</div>
   </div>`;

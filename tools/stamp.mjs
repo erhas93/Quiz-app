@@ -27,7 +27,7 @@ for (const f of files) {
 }
 const css = readFileSync(join(root, "css/app.css"), "utf8");
 const build = h(all + css);
-const version = (readFileSync(join(root, "js/app.js"), "utf8").match(/VERSION = "([^"]+)"/) || [])[1] || "?";
+const version = (readFileSync(join(root, "js/version.js"), "utf8").match(/VERSION = "([^"]+)"/) || [])[1] || "?";
 
 let html = readFileSync(join(root, "index.html"), "utf8");
 const block = `<!-- stamp:start -->

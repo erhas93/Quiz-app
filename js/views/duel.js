@@ -2,6 +2,7 @@
 import { esc, activePlayers, duelBoard, duelOf, pickOf, isStartQ, resultFor, favCatsOf, favDone, isFree, hostUid, moderatorOf,
   DUEL_TURNS, PICK_SEC, DRAW_MS, DIFF_LABEL, pointsOf, playOrder, spectatorsOf } from "../model.js";
 import { menuBtn, ICON } from "./common.js";
+import { ROOM_ID } from "../firebase.js";
 
 // Spieler A/B bekommen feste Farben (Sitzreihenfolge)
 export const sideOf = (room, uid) => { const i = activePlayers(room).findIndex(p => p.uid === uid); return i === 0 ? "pa" : i === 1 ? "pb" : ""; };
@@ -60,7 +61,7 @@ export function duelTop(s, roleLabel = "") {
   const turn = d.turn || 0;
   const sub = d.startQ == null ? "Kategorien vorstellen" : room.game?.phase === "drawing" ? "Startfrage wird ausgelost" : `Zug ${Math.min(room.game?.phase === "picked" ? turn : turn + 1, DUEL_TURNS)} von ${DUEL_TURNS}`;
   const specN = spectatorsOf(room).length;
-  return `<div class="top"><div class="top-main"><div class="top-title sm">Kategorie-Duell${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div><div class="top-sub">${sub}</div></div>
+  return `<div class="top"><div class="top-main"><div class="top-title sm">Kategorie-Duell${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div><div class="top-sub">Raum ${esc(ROOM_ID)} · ${sub}</div></div>
     ${roleLabel}${menuBtn(s.connected)}</div>
     <div class="chips">${activePlayers(room).map(p => `<div class="chip ${sideOf(room, p.uid)}${p.uid === s.uid ? " me" : ""}${d.picker === p.uid && room.game?.phase === "board" && d.startQ != null ? " turn" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span><span class="chip-pts">${scoreOfDuel(room, p.uid)}</span></div>`).join("")}</div>
