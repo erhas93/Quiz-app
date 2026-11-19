@@ -1,5 +1,6 @@
 // Gemeinsame Bausteine der Ansichten (Design A · Kompakt)
-import { esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking, isDuel, playOrder, isStartQ, pickOf, DUEL_TURNS, DIFF_LABEL, pointsOf } from "../model.js";
+import { serverNow } from "../firebase.js";
+import { isHints, hintLevel, hintPoints, HINT_MAX, esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking, isDuel, playOrder, isStartQ, pickOf, DUEL_TURNS, DIFF_LABEL, pointsOf } from "../model.js";
 
 export const L = i => String.fromCharCode(65 + i);
 
@@ -111,10 +112,10 @@ function playerChips(room, uid) {
   const qi = g.qIndex ?? 0;
   const answers = answersFor(room, qi);
   const open = g.phase === "answering" || g.phase === "locked";
-  const lead = speedLead(room)?.leader?.uid;
+  const lead = isHints(room) ? null : speedLead(room)?.leader?.uid;
   return `<div class="chips">${activePlayers(room).map((p, pi) => {
     let st = "";
-    if (open) st = answers[p.uid] ? `<span class="chip-st ok" aria-label="eingeloggt">${ICON.check(16)}</span>` : `<span class="chip-st">…</span>`;
+    if (open) st = answers[p.uid] ? `<span class="chip-st ok" aria-label="eingeloggt">${isHints(room) ? `${hintPoints(answers[p.uid].h)} P ` : ""}${ICON.check(16)}</span>` : `<span class="chip-st">…</span>`;
     if (open && jokerOf(room, p.uid)?.q === qi) st = `<span class="chip-st gold">50:50</span>` + st;
     const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
     return `<div class="chip ${side}${p.uid === uid ? " me" : ""}">
@@ -131,12 +132,12 @@ function modChips(room) {
   const q = room.questions?.[qi];
   const answers = answersFor(room, qi);
   const res = resultFor(room, qi);
-  const mcOpen = q && !isOpenType(q) && g.phase === "answering";
+  const mcOpen = q && !isOpenType(q) && g.phase === "answering" && !isHints(room);
   return `<div class="chips">${activePlayers(room).map((p, pi) => {
     const a = answers[p.uid];
     const j = jokerOf(room, p.uid);
     const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
-    let sub = a ? `${fmtMs(a.ms)} ✓` : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
+    let sub = a ? (isHints(room) ? `bei ${hintPoints(a.h)} P ✓` : `${fmtMs(a.ms)} ✓`) : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
     if (a && res?.fastestUid === p.uid) sub = `${fmtMs(a.ms)} ⚡`;
     let jk = "";
     if (j && j.q === qi) jk = `<span class="chip-st gold">50:50 aktiv</span>`;
@@ -154,6 +155,22 @@ export function questionCard(q, compact = false) {
   if (q.diff) type += `<span class="q-type diff d${q.diff}">${DIFF_LABEL[q.diff] || ""} · ${pointsOf(q)} P</span>`;
   const cat = q.cat || type ? `<div class="q-cat">${q.cat ? esc(q.cat) : ""}${type}</div>` : "";
   return `<div class="q-card${compact ? " compact" : ""}">${cat}<div class="q-text">${esc(q.q)}</div></div>`;
+}
+
+// Hinweis-Modus: eingeblendete Hinweise (Moderator sieht alle vorab, abgedunkelt) und aktuelle Punktzahl
+export function hintsBlock(room, q, { all = false } = {}) {
+  if (!isHints(room) || !Array.isArray(q?.hints)) return "";
+  const n = hintLevel(room), phase = room.game?.phase;
+  const over = phase === "shown" || phase === "revealed";
+  const fresh = serverNow() - (room.game?.hintAt || 0) < 1500;   // nur kurz nach dem Einblenden animieren
+  const items = q.hints.slice(0, HINT_MAX).map((h, i) => {
+    if (i < n || over) return `<div class="hint${i === n - 1 && !over && fresh ? " new" : ""}${i >= n ? " late" : ""}"><span class="hint-n">${i + 1}</span><span class="hint-t">${esc(h)}</span></div>`;
+    if (all) return `<div class="hint ahead"><span class="hint-n">${i + 1}</span><span class="hint-t">${esc(h)}</span></div>`;
+    return `<div class="hint hidden"><span class="hint-n">${i + 1}</span><span class="hint-t">Hinweis ${i + 1} · noch verdeckt</span></div>`;
+  }).join("");
+  const pts = hintPoints(n);
+  const head = phase === "answering" ? `<div class="hint-pts">Wer jetzt richtig tippt: <b>${pts} ${pts === 1 ? "Punkt" : "Punkte"}</b></div>` : "";
+  return `<div class="hints">${head}${items}</div>`;
 }
 
 // Hintergrund: kleiner Reiter am rechten Rand; ein Tipp schiebt eine eigene Seite mit den Fakten herein,

@@ -6,7 +6,7 @@ import { createActions } from "./actions.js";
 import * as A from "./actions.js";
 import { DBG } from "./debug.js";
 import { activePlayers, answerOf, judgmentOf, judgeTargetsOf, nextOf, allAnswered, unjudgedCount, timerLeft, autoJudge,
-  isFree, isDuel, duelOf, freeCells, duelBoard, favDone, PICK_SEC, DRAW_MS, PICKED_MS } from "./model.js";
+  isHints, hintLevel, isFree, isDuel, duelOf, freeCells, duelBoard, favDone, PICK_SEC, DRAW_MS, PICKED_MS } from "./model.js";
 
 const BOT_NAMES = ["Bot Alex", "Bot Kim", "Bot Sam"];
 const ACC = { low: 0.4, mid: 0.65, high: 0.85 };
@@ -155,6 +155,13 @@ function stepPlayer(b, room, t, idx) {
       });
     return;
   }
+  // Hinweis-Modus: Bot wartet bis zu einem zufälligen Hinweis (bessere Bots tippen früher)
+  if (isHints(room) && g.phase === "answering" && q && !answerOf(room, qi, b.uid)) {
+    const key = `want:${base}:${qi}`;
+    if (b[key] == null) { const p = ACC[t.acc] ?? 0.65; b[key] = Math.min(3, Math.floor(Math.random() * 4 * (1.15 - p))); }
+    if (hintLevel(room) >= b[key]) once(b, `ans:${base}:${qi}`, rnd(1200, 3500) * sp, () => { const r = store.room; if (r?.game?.qIndex === qi) return b.A.submitAnswer(qi, botAnswer(q, t)); });
+    return;
+  }
   if (g.phase === "answering" && q && !answerOf(room, qi, b.uid)) {
     let ms = rnd(2000, 9000) * sp;
     const left = timerLeft(room, serverNow());
@@ -226,6 +233,13 @@ function stepMod(b, room, t) {
     return;
   }
   const key = `${base}:${qi}`;
+  if (g.phase === "answering" && isHints(room)) {
+    // Bot-Moderator: alle paar Sekunden einen Hinweis; haben alle getippt, die übrigen zügig aufdecken, dann zeigen
+    const n = hintLevel(room), all = allAnswered(room, true);
+    if (n < 3) once(b, `hint:${key}:${n}`, (all ? 1500 : 6000) * sp, () => b.A.nextHint(qi));
+    else if (all) once(b, `show:${key}`, 2000 * sp, () => b.A.showAnswers(qi));
+    return;
+  }
   if (g.phase === "answering") {
     const mode = room.settings?.timerMode || "none";
     if (mode === "manual" && !g.timer?.running && !g.timer?.pauseLeft) once(b, `tstart:${key}`, 1200 * sp, () => b.A.timerStart());

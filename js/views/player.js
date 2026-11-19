@@ -1,7 +1,7 @@
 // Spieler- und Zuschaueransicht während der Partie
-import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount, isDuel, playOrder } from "../model.js";
+import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount, isDuel, playOrder, isHints, hintPoints } from "../model.js";
 import { duelStakeLine, duelOutcome } from "./duel.js";
-import { gameHeader, questionCard, factPanel, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
+import { hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
 
 export function playerGameView(s, me) {
   const room = s.room;
@@ -46,13 +46,14 @@ export function playerGameView(s, me) {
     if (spectator) body += resultBanner("neutral", "Aufgelöst", st);
     else {
       const pts = resultFor(room, qi)?.points?.[s.uid];
-      const fast = resultFor(room, qi)?.fastestUid === s.uid && total > 1;
-      body += pts ? resultBanner("ok", "Richtig! +1", `${st}${fast ? " · schnellste Antwort ⚡" : ""}`)
+      const fast = resultFor(room, qi)?.fastestUid === s.uid && total > 1 && !isHints(room);
+      body += pts ? resultBanner("ok", `Richtig! +${pts}`, `${st}${fast ? " · schnellste Antwort ⚡" : ""}`)
         : resultBanner("no", mine ? "Leider falsch" : "Keine Antwort", st);
     }
   }
 
   body += questionCard(q, revealed);
+  body += hintsBlock(room, q);
 
   if (!isOpenType(q)) {
     // ── Multiple Choice ──
@@ -115,8 +116,13 @@ export function playerGameView(s, me) {
   if (spectator) note = phase === "answering" || phase === "locked" ? `${done} von ${total} eingeloggt` : phase === "shown" ? "Antworten werden gezeigt" : "";
   else if (phase === "answering" && !mine) {
     const others = players.filter(p => p.uid !== s.uid && answers[p.uid]).map(p => esc(p.name));
+    if (isHints(room)) {
+      const t = players.filter(p => p.uid !== s.uid && answers[p.uid]).map(p => `${esc(p.name)} hat bei ${hintPoints(answers[p.uid].h)} ${hintPoints(answers[p.uid].h) === 1 ? "Punkt" : "Punkten"} getippt`);
+      note = t.length ? t.join(" · ") : "Noch niemand hat getippt";
+    } else
     note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} eingeloggt` : (total > 1 ? "Noch niemand eingeloggt" : "");
   } else if (phase === "locked" && !mine) note = "Zeit abgelaufen – keine Antwort";
+  else if ((phase === "answering" || phase === "locked") && isHints(room)) { note = `Getippt bei ${hintPoints(mine?.h)} ${hintPoints(mine?.h) === 1 ? "Punkt" : "Punkten"} ✓ · ${done < total ? `warte auf die anderen (${done}/${total})` : "der Moderator löst auf"}`; noteCls = "ok"; }
   else if (phase === "answering" || phase === "locked") { note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Eingeloggt ✓ · gleich wird aufgelöst"; noteCls = "ok"; }
   else if (phase === "shown" && solo && isOpenType(q)) note = "Wird automatisch bewertet …";
   else if (phase === "shown" && free && isOpenType(q)) {

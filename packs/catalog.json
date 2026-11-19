@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-17T06:09:37.773Z",
+  "generated": "2026-11-19T18:30:37.023Z",
   "packs": [
     {
       "id": "allgemeinwissen-vi",
@@ -26,7 +26,7 @@
         "open": 2
       },
       "hash": "475364b23e",
-      "updated": "2026-07-15T20:51:10+02:00",
+      "updated": "2026-11-15T11:52:37+01:00",
       "warnings": 2
     },
     {
@@ -112,7 +112,7 @@
         "open": 0
       },
       "hash": "2e45a8a438",
-      "updated": "2026-07-13T19:10:36+02:00",
+      "updated": "2026-11-15T11:52:37+01:00",
       "warnings": 3
     },
     {
@@ -126,8 +126,24 @@
         "open": 2
       },
       "hash": "5d2d4af758",
-      "updated": "2026-07-15T20:50:54+02:00",
+      "updated": "2026-11-15T11:52:37+01:00",
       "warnings": 1
+    },
+    {
+      "id": "hinweise-querbeet-1",
+      "name": "Hinweise: Querbeet 1",
+      "emoji": "🔍",
+      "count": 15,
+      "mode": "hints",
+      "cats": null,
+      "types": {
+        "mc": 10,
+        "estimate": 3,
+        "open": 2
+      },
+      "hash": "8b5760490c",
+      "updated": null,
+      "warnings": 0
     },
     {
       "id": "technischer-test-demo",
@@ -140,7 +156,7 @@
         "open": 1
       },
       "hash": "126b72a394",
-      "updated": "2026-07-14T13:03:08+02:00",
+      "updated": "2026-11-15T11:52:37+01:00",
       "warnings": 0
     },
     {
@@ -154,7 +170,7 @@
         "open": 2
       },
       "hash": "b3bd1fed94",
-      "updated": "2026-07-15T20:55:11+02:00",
+      "updated": "2026-11-15T11:52:37+01:00",
       "warnings": 5
     }
   ]

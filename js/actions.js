@@ -4,7 +4,7 @@ import { db, ref, roomRef, roomPath, ROOM_ID, set, update, remove, runTransactio
 import { store, rerender } from "./store.js";
 import { DBG } from "./debug.js";
 import { loadPack } from "./packs.js";
-import { MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf } from "./model.js";
+import { isHints, MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf } from "./model.js";
 
 // Alle Aktionen hängen an einem Kontext (Identität, Datenbank, Raum). Die App nutzt den Hauptkontext,
 // die Test-Bots je einen eigenen mit eigener Anmeldung – so laufen sie über exakt dieselben Wege.
@@ -148,8 +148,9 @@ export function createActions(ctx) {
   async function setGameMode(mode) {
     const st = ctx.room()?.settings || {};
     const patch = { game: mode };
-    const packIsDuel = st.packMode === "duel";
-    if (st.packId && packIsDuel !== (mode === "duel")) Object.assign(patch, { packId: null, packName: null, packMode: null });
+    const want = mode === "duel" ? "duel" : mode === "hints" ? "hints" : null;
+    if (st.packId && (st.packMode || null) !== want) Object.assign(patch, { packId: null, packName: null, packMode: null });
+    if (mode === "hints") patch.timerMode = "none";   // Tempo bestimmt der Moderator über die Hinweise
     try { await update(ctx.roomRef("settings"), patch); DBG.log("setGameMode", mode); } catch (e) { fail("Modus nicht gespeichert", e); }
   }
   async function setDuelRule(rule) {
@@ -182,14 +183,17 @@ export function createActions(ctx) {
     if (duel && activePlayers(room).length !== 2) return fail("Das Kategorie-Duell braucht genau 2 Spieler");
     let pack;
     try { pack = await loadPack(packId); } catch (e) { return fail("Pack konnte nicht geladen werden", e); }
-    if (duel !== (pack.mode === "duel")) return fail(duel ? "Bitte ein Duell-Pack wählen" : "Duell-Packs gehen nur im Kategorie-Duell");
+    const hints = isHints(room);
+    if (hints && room.meta?.mode !== "moderated") return fail("Der Hinweis-Modus geht nur mit Moderator");
+    const want = duel ? "duel" : hints ? "hints" : null;
+    if ((pack.mode || null) !== want) return fail(duel ? "Bitte ein Duell-Pack wählen" : hints ? "Bitte ein Hinweis-Pack wählen" : "Dieses Pack gehört zu einem anderen Spielmodus");
     const questions = pack.questions.map(q => JSON.parse(JSON.stringify(q)));
     try {
       // 1. Fragen und Startzustand schreiben (noch in der Lobby, für andere unsichtbar)
       const now = serverNow();
       const game = duel
         ? { qIndex: -1, phase: "board", phaseAt: now, duel: { turn: 0 } }   // erst das Brett zeigen, Kategorien vorstellen
-        : { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now) };
+        : { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now), ...(hints ? { hint: 0, hintAt: now } : {}) };
       const reset = {};
       for (const p of activePlayers(room)) Object.assign(reset, { [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: null, [`players/${p.uid}/pick`]: null });
       await update(ctx.roomRef(), {
@@ -267,6 +271,7 @@ export function createActions(ctx) {
           if (x.a && typeof x.a.ms === "number") { c.ms = (c.ms || 0) + x.a.ms; c.msN = (c.msN || 0) + 1; }
           if (x.fav === true) { c.fav = (c.fav || 0) + 1; if (x.ok) c.favRight = (c.favRight || 0) + 1; }
           if (x.fav === false) { c.nofav = (c.nofav || 0) + 1; if (x.ok) c.nofavRight = (c.nofavRight || 0) + 1; }
+        if (x.a && typeof x.a.h === "number") { const k = "h" + x.a.h; c[k] = (c[k] || 0) + 1; if (x.ok) c[k + "r"] = (c[k + "r"] || 0) + 1; }
         }
         c.mode = room.settings?.game || "classic";
         c.last = serverNow();
@@ -316,7 +321,7 @@ export function createActions(ctx) {
     }
     if (qi + 1 >= total) return finishGame(qi);
     const now = serverNow();
-    return transition(["revealed"], qi, { phase: "answering", qIndex: qi + 1, questionStartAt: now, timer: freshTimer(room, now) }, "nächste Frage");
+    return transition(["revealed"], qi, { phase: "answering", qIndex: qi + 1, questionStartAt: now, timer: freshTimer(room, now), ...(isHints(room) ? { hint: 0, hintAt: now } : {}) }, "nächste Frage");
   }
 
   async function finishGame(qi) {
@@ -407,6 +412,17 @@ export function createActions(ctx) {
     } catch (e) { return fail("Wählen fehlgeschlagen", e); }
   }
   // Nach der kurzen Pause: gewähltes Feld → Frage
+  // Hinweis-Modus: nächsten Hinweis einblenden (nur Moderator; vor dem Zeigen der Antworten)
+  async function nextHint(qi) {
+    try {
+      const res = await runTransaction(ctx.roomRef("game"), g => {
+        if (!g || g.qIndex !== qi || g.phase !== "answering" || (g.hint || 0) >= 3) return;
+        return { ...g, hint: (g.hint || 0) + 1, hintAt: serverNow() };
+      });
+      DBG.log("Hinweis eingeblendet", { committed: res.committed, qi });
+      return res.committed;
+    } catch (e) { return fail("Hinweis nicht eingeblendet", e); }
+  }
   async function duelPickedDone() {
     const room = ctx.room();
     try {
@@ -492,7 +508,7 @@ export function createActions(ctx) {
     try {
       const res = await runTransaction(ctx.roomRef(`answers/${qi}/${uid()}`), cur => {
         if (cur) return; // bereits eingeloggt
-        return { value, at: now, ms };
+        return g.hint != null ? { value, at: now, ms, h: g.hint || 0 } : { value, at: now, ms };
       });
       DBG.log("submitAnswer", { qi, committed: res.committed, ms });
       return res.committed;
@@ -571,7 +587,7 @@ export function createActions(ctx) {
     }
   }
 
-  return { setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
+  return { nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
 }
 
 const main = createActions({
@@ -591,4 +607,4 @@ const main = createActions({
     store.local.name = name;
   }
 });
-export const { setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;
+export const { nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;

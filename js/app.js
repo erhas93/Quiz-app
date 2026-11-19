@@ -177,7 +177,8 @@ function afterRender(s, key) {
   }
 
   // Automatisch sperren, sobald alle eingeloggt haben (Moderator bzw. Host)
-  if (steers && room.meta?.status === "running" && g?.phase === "answering" && allAnswered(room, free)) {
+  // automatisch sperren, sobald alle eingeloggt sind – nicht im Hinweis-Modus (dort entscheidet der Moderator)
+  if (steers && room.meta?.status === "running" && g?.phase === "answering" && room.settings?.game !== "hints" && allAnswered(room, free)) {
     const k = `${roundKey(room)}:${g.qIndex}`;
     if (lockRequested !== k) { lockRequested = k; A.lockAnswers(g.qIndex); }
   }
@@ -421,6 +422,7 @@ const handlers = {
   unconfirmFavs: () => A.confirmFavs(false),
   duelDraw: (el) => { el.disabled = true; A.duelDraw(); },
   feedback: (el) => A.giveFeedback(el.dataset.arg),
+  nextHint: (el) => { el.disabled = true; A.nextHint(store.room.game.qIndex); },
   releaseQ: (el) => { el.disabled = true; A.duelPickedDone(); },
   pickCell: (el) => {
     const room = store.room, d = duelOf(room), cell = Number(el.dataset.arg);

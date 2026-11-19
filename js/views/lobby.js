@@ -1,5 +1,5 @@
 // Lobby für Moderator, Spieler und Zuschauer – alles auf einem Bildschirm
-import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC, duelRule } from "../model.js";
+import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC, duelRule, isHints } from "../model.js";
 import { ROOM_ID } from "../firebase.js";
 import { topBar, slots, spectatorLine, ICON } from "./common.js";
 import { playStats, packLine } from "./packs.js";
@@ -22,8 +22,12 @@ function favCard(room, uid) {
 function modeCard(room) {
   const duel = isDuel(room);
   const n = activePlayers(room).length;
+  const hints = isHints(room), free = isFree(room);
+  const g = room.settings?.game || "classic";
   return `<div class="card"><div class="card-h"><span class="label">Spielmodus</span>${duel && n !== 2 ? `<span class="muted small">braucht genau 2 Spieler</span>` : ""}</div>
-    <div class="seg3"><button class="${duel ? "" : "on"}" data-act="gameMode" data-arg="classic">Klassisch</button><button class="${duel ? "on" : ""}" data-act="gameMode" data-arg="duel">Kategorie-Duell</button></div>
+    <div class="seg3"><button class="${g === "classic" ? "on" : ""}" data-act="gameMode" data-arg="classic">Klassisch</button><button class="${duel ? "on" : ""}" data-act="gameMode" data-arg="duel">Duell</button><button class="${hints ? "on" : ""}" data-act="gameMode" data-arg="hints" ${free ? "disabled" : ""}>Hinweise</button></div>
+    ${free ? `<div class="muted small" style="margin-top:6px">Der Hinweis-Modus geht nur mit Moderator.</div>` : ""}
+    ${hints ? `<div class="muted small" style="margin-top:6px">Du blendest bis zu 3 Hinweise ein. Wer früher richtig tippt, bekommt mehr: 4 – 3 – 2 – 1 Punkte.</div>` : ""}
     ${duel ? `<span class="label" style="margin-top:12px">Punkte</span>
       <div class="seg3"><button class="${duelRule(room) === "picker" ? "on" : ""}" data-act="duelRule" data-arg="picker">Wähler hat Vorrang</button><button class="${duelRule(room) === "all" ? "on" : ""}" data-act="duelRule" data-arg="all">Jeder Richtige</button></div>
       <div class="muted small" style="margin-top:6px">${duelRule(room) === "all" ? "Jeder, der richtig liegt, bekommt die Punkte des Feldes – die Partie bleibt länger offen." : "Der Wähler bekommt die Punkte, wenn er richtig liegt. Liegt er falsch, kann der Gegner sie klauen."}</div>` : ""}
@@ -45,7 +49,7 @@ export function modLobbyView(s) {
         <span class="pack-ico">${esc(cur?.emoji || "❓")}</span>
         <span class="pack-txt"><span class="pack-name">${esc(room.settings?.packName || sel)}</span>
           <span class="pack-sub">${cur ? `${cur.count} Fragen · ${packLine(cur, playStats(s.history))}` : "Ändern"}</span></span>${ICON.chev(20)}</button>`
-    : `<button class="pack-row" data-act="openPicker"><span class="pack-ico">?</span><span class="pack-txt"><span class="pack-name">${duel ? "Duell-Pack wählen" : "Fragenpaket wählen"}</span><span class="pack-sub">${Array.isArray(packs) ? `${packs.filter(p => (p.mode === "duel") === duel).length} Packs verfügbar` : "lädt …"}</span></span>${ICON.chev(20)}</button>`;
+    : `<button class="pack-row" data-act="openPicker"><span class="pack-ico">?</span><span class="pack-txt"><span class="pack-name">${duel ? "Duell-Pack wählen" : isHints(room) ? "Hinweis-Pack wählen" : "Fragenpaket wählen"}</span><span class="pack-sub">${Array.isArray(packs) ? `${packs.filter(p => (p.mode || null) === (duel ? "duel" : isHints(room) ? "hints" : null)).length} Packs verfügbar` : "lädt …"}</span></span>${ICON.chev(20)}</button>`;
 
   let startLabel, startDisabled = false;
   if (!players.length) { startLabel = "Warte auf Spieler …"; startDisabled = true; }
@@ -63,7 +67,7 @@ export function modLobbyView(s) {
       ${modeCard(room)}
       <div class="card"><span class="label">Fragenpaket</span>${pack}</div>
       ${favCard(room, s.uid)}
-      ${timerCard(room, free)}
+      ${isHints(room) ? "" : timerCard(room, free)}
       <div class="spacer"></div>
     </div>
     <div class="actions">
@@ -84,7 +88,7 @@ export function playerLobbyView(s, me) {
       <div class="card"><label class="label" for="in-lobbyname">Dein Name</label>
         <input class="inp" id="in-lobbyname" data-input="name" data-commit="setName" maxlength="20" value="${esc(me.name)}"></div>
       ${playersCard(room, s.uid)}
-      <div class="card"><span class="label">${isDuel(room) ? `Kategorie-Duell · ${duelRule(room) === "all" ? "jeder Richtige punktet" : "Wähler hat Vorrang"}` : "Fragenpaket"}</span>
+      <div class="card"><span class="label">${isHints(room) ? "Hinweis-Modus · 4 – 3 – 2 – 1 Punkte" : isDuel(room) ? `Kategorie-Duell · ${duelRule(room) === "all" ? "jeder Richtige punktet" : "Wähler hat Vorrang"}` : "Fragenpaket"}</span>
         <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
       ${favCard(room, s.uid)}
       <div class="spacer"></div>

@@ -70,7 +70,8 @@ export function answeredCount(room) {
 // Richtig/falsch für eine Antwort: MC automatisch, Schätzen/Freitext über Bewertung
 // Schätzfragen ab 2 Spielern: wer am nächsten dran ist, bekommt den Punkt (bei Gleichstand alle Nächsten).
 // Allein gilt die Toleranzregel (autoJudge), solange niemand von Hand bewertet hat.
-export const estimateByDistance = (room, q) => q?.type === "estimate" && activePlayers(room).length >= 2;
+// Hinweis-Modus: Schätzfragen zählen mit Toleranz (jeder kann richtig liegen), nicht nach Abstand
+export const estimateByDistance = (room, q) => q?.type === "estimate" && activePlayers(room).length >= 2 && !isHints(room);
 export function closestUids(room, qi) {
   const q = room?.questions?.[qi];
   const target = Number(q?.answer);
@@ -114,6 +115,10 @@ export function computeResult(room, qi) {
     points[p.uid] = c ? 1 : 0;
     const a = answerOf(room, qi, p.uid);
     if (c && a && typeof a.ms === "number" && a.ms < fastestMs) { fastestMs = a.ms; fastestUid = p.uid; }
+  }
+  if (isHints(room)) {
+    for (const u of Object.keys(points)) points[u] = ok[u] ? hintPoints(answerOf(room, qi, u)?.h) : 0;
+    return { points, ok, fastestUid };
   }
   if (!isDuel(room)) return { points, ok, fastestUid };
   const pts = pointsOf(room.questions?.[qi]);
@@ -311,6 +316,12 @@ export const isSoloFree = room => isFree(room) && activePlayers(room).length ===
 // game.duel = { startQ, drawAt, picker, turn, picks: { "q<qi>": { by, turn } } }
 // (Schlüssel mit Buchstaben, sonst macht Firebase aus Zahlen-Schlüsseln Arrays)
 export const isDuel = room => room?.settings?.game === "duel";
+// ── Hinweis-Modus ──────────────────────────────────────────────────────────
+// game.hint = Zahl der eingeblendeten Hinweise (0–3); jede Antwort merkt sich ihren Stand in a.h
+export const isHints = room => room?.settings?.game === "hints";
+export const HINT_MAX = 3;
+export const hintLevel = room => Math.min(HINT_MAX, room?.game?.hint || 0);
+export const hintPoints = h => Math.max(1, HINT_MAX + 1 - (h || 0));   // 4 – 3 – 2 – 1
 // Punkte-Regel im Duell: "picker" = Wähler hat Vorrang (Gegner klaut nur bei Fehler), "all" = jeder Richtige punktet
 export const duelRule = room => (room?.settings?.duelRule === "all" ? "all" : "picker");
 export const DUEL_TURNS = 14;
@@ -373,7 +384,8 @@ export function isFavFor(room, qi, uid) {
 // Feste Kennung je Frage aus dem Fragetext (FNV-1a), damit Werte auch bei geänderter Reihenfolge passen
 export function questionKey(q) {
   let h = 0x811c9dc5;
-  const s = String(q?.q || "").toLowerCase().replace(/\s+/g, " ").trim();
+  // Hinweis-Fragen teilen sich oft den Fragetext („Gesucht ist eine Jahreszahl.“) → 1. Hinweis gehört dazu
+  const s = String((q?.q || "") + (Array.isArray(q?.hints) ? " " + q.hints[0] : "")).toLowerCase().replace(/\s+/g, " ").trim();
   for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   return "q" + h.toString(36);
 }

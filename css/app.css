@@ -342,3 +342,15 @@ button{cursor:pointer}
 .sq-m{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;margin-top:3px}
 .sq-d{font-weight:700;color:var(--c3)}
 .brand-logo{width:26px;height:26px;border-radius:7px;vertical-align:-5px;margin-right:8px}
+/* Hinweis-Modus */
+.hints{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.hint-pts{font-size:13.5px;color:var(--text2);text-align:center}
+.hint-pts b{color:var(--c3);font-size:15px}
+.hint{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--gold-line);font-size:15px;line-height:1.35}
+.hint-n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--c3);color:#132028;font-size:12.5px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.hint.hidden{border-style:dashed;border-color:var(--line);color:var(--text3);font-size:13.5px}
+.hint.hidden .hint-n,.hint.ahead .hint-n{background:var(--bg3);color:var(--text3)}
+.hint.ahead{opacity:.55;border-style:dashed;border-color:var(--line)}
+.hint.late{opacity:.7}
+.hint.new{animation:hintIn .45s cubic-bezier(.2,1.2,.4,1)}
+@keyframes hintIn{from{transform:translateY(-6px) scale(.97);opacity:0}to{transform:none;opacity:1}}

@@ -1,0 +1,231 @@
+{
+  "name": "Hinweise: Querbeet 1",
+  "emoji": "🔍",
+  "mode": "hints",
+  "questions": [
+    {
+      "q": "Welches Land ist gesucht?",
+      "a": [
+        "Portugal",
+        "Spanien",
+        "Italien",
+        "Griechenland"
+      ],
+      "r": 0,
+      "hints": [
+        "Hier liegt der westlichste Punkt des europäischen Festlands.",
+        "Seine Seefahrer fanden Ende des 15. Jahrhunderts den Seeweg nach Indien.",
+        "Seine Hauptstadt ist Lissabon."
+      ],
+      "fact": "Der westlichste Punkt des Festlands ist das Cabo da Roca. Vasco da Gama erreichte 1498 als erster Europäer auf dem Seeweg Indien."
+    },
+    {
+      "q": "Welches Tier ist gesucht?",
+      "a": [
+        "Seepferdchen",
+        "Seestern",
+        "Oktopus",
+        "Hummer"
+      ],
+      "r": 2,
+      "hints": [
+        "Es hat drei Herzen und blaues Blut.",
+        "Es kann Farbe und Hautstruktur in Sekundenbruchteilen ändern.",
+        "Es hat acht Arme."
+      ],
+      "fact": "Zwei Herzen pumpen Blut durch die Kiemen, eines durch den Körper. Blau ist das Blut wegen des kupferhaltigen Hämocyanins (Hemocyanin)."
+    },
+    {
+      "q": "Gesucht ist eine Jahreszahl.",
+      "type": "estimate",
+      "answer": 1969,
+      "hints": [
+        "In diesem Jahr ging das Arpanet in Betrieb, der Vorläufer des Internets.",
+        "Im August fand das Woodstock-Festival statt.",
+        "Im Juli betrat erstmals ein Mensch den Mond."
+      ],
+      "fact": "Am 29. Oktober 1969 wurde die erste Nachricht über das Arpanet verschickt – das System stürzte nach den ersten zwei Buchstaben ab."
+    },
+    {
+      "q": "Welcher Erfinder ist gesucht?",
+      "a": [
+        "Thomas Edison",
+        "Nikola Tesla",
+        "Alexander Graham Bell",
+        "Guglielmo Marconi"
+      ],
+      "r": 1,
+      "hints": [
+        "Die Einheit der magnetischen Flussdichte trägt seinen Namen.",
+        "Im sogenannten Stromkrieg (War of the Currents) kämpfte er für den Wechselstrom.",
+        "Ein bekannter Hersteller von Elektroautos ist nach ihm benannt."
+      ],
+      "fact": "Nikola Tesla arbeitete kurz für Thomas Edison, bevor die beiden zu Rivalen wurden: Edison setzte auf Gleich-, Tesla auf Wechselstrom."
+    },
+    {
+      "q": "Welche Stadt ist gesucht?",
+      "a": [
+        "Amsterdam",
+        "Brügge",
+        "Stockholm",
+        "Venedig"
+      ],
+      "r": 3,
+      "hints": [
+        "Ihre Häuser stehen auf Millionen Holzpfählen, und in der Altstadt gibt es keine Autos.",
+        "Jedes Jahr findet hier ein berühmter Karneval mit kunstvollen Masken statt.",
+        "Gondeln fahren durch ihren Canal Grande."
+      ],
+      "fact": "Die Pfähle aus Lärche und Eiche stecken im sauerstoffarmen Schlamm der Lagune und verrotten deshalb kaum – manche sind über 1.000 Jahre alt."
+    },
+    {
+      "q": "Welcher Alltagsgegenstand ist gesucht?",
+      "a": [
+        "Reißverschluss",
+        "Klettverschluss",
+        "Druckknopf",
+        "Sicherheitsnadel"
+      ],
+      "r": 1,
+      "hints": [
+        "Ein Schweizer Ingenieur kam nach einem Spaziergang mit seinem Hund auf die Idee.",
+        "Die NASA nutzte ihn, damit in der Schwerelosigkeit nichts davonschwebt.",
+        "Er besteht aus einer Seite mit Häkchen und einer mit Schlaufen."
+      ],
+      "fact": "George de Mestral wunderte sich in den 1940er-Jahren über die Kletten im Fell seines Hundes und untersuchte sie unter dem Mikroskop. Der Markenname Velcro verbindet „velours“ und „crochet“."
+    },
+    {
+      "q": "Gesucht ist ein Planet.",
+      "type": "open",
+      "answer": "Saturn",
+      "alt": [
+        "Saturnus"
+      ],
+      "hints": [
+        "Seine mittlere Dichte ist geringer als die von Wasser.",
+        "Sein größter Mond Titan hat eine dichte Atmosphäre.",
+        "Er ist bekannt für seine auffälligen Ringe."
+      ],
+      "fact": "Die Ringe sind nur wenige zehn bis einige hundert Meter dick, aber Hunderttausende Kilometer breit. Sie bestehen größtenteils aus Wassereis."
+    },
+    {
+      "q": "Welche Band ist gesucht?",
+      "a": [
+        "The Beatles",
+        "The Rolling Stones",
+        "Queen",
+        "ABBA"
+      ],
+      "r": 2,
+      "hints": [
+        "Ihr Gitarrist hat einen Doktortitel in Astrophysik.",
+        "Ihr Auftritt beim Live-Aid-Konzert 1985 gilt als einer der besten der Rockgeschichte.",
+        "Ihr Sänger war Freddie Mercury."
+      ],
+      "fact": "Brian May brach seine Doktorarbeit über interplanetaren Staub in den 1970ern für die Band ab und schloss sie 2007 ab."
+    },
+    {
+      "q": "Welches chemische Element ist gesucht?",
+      "a": [
+        "Helium",
+        "Wasserstoff",
+        "Neon",
+        "Argon"
+      ],
+      "r": 0,
+      "hints": [
+        "Es wurde zuerst im Licht der Sonne entdeckt, bevor man es auf der Erde fand.",
+        "Bei normalem Druck wird es selbst nahe dem absoluten Nullpunkt nicht fest.",
+        "Es lässt Luftballons steigen und Stimmen piepsig klingen."
+      ],
+      "fact": "Bei der Sonnenfinsternis 1868 fiel Astronomen eine unbekannte gelbe Spektrallinie auf. Der Name kommt vom griechischen „helios“ für Sonne."
+    },
+    {
+      "q": "Gesucht ist eine Zahl.",
+      "type": "estimate",
+      "answer": 88,
+      "hints": [
+        "So viele Sternbilder sind am Himmel offiziell festgelegt.",
+        "So viele Tasten hat ein modernes Klavier.",
+        "Sie liegt zwischen 80 und 90 und besteht aus zwei gleichen Ziffern."
+      ],
+      "fact": "Die Internationale Astronomische Union (IAU) legte die 88 Sternbilder 1922 fest. Beim Klavier sind es 52 weiße und 36 schwarze Tasten.",
+      "tol": 1
+    },
+    {
+      "q": "Welches Bauwerk ist gesucht?",
+      "a": [
+        "Kolosseum",
+        "Pantheon",
+        "Akropolis",
+        "Hagia Sophia"
+      ],
+      "r": 3,
+      "hints": [
+        "Fast tausend Jahre lang war sie die größte Kirche der Welt.",
+        "Nach der Eroberung ihrer Stadt 1453 wurde sie zur Moschee umgebaut.",
+        "Sie steht in Istanbul."
+      ],
+      "fact": "Die Hagia Sophia wurde 537 unter Kaiser Justinian geweiht. Ihre Kuppel misst über 30 Meter im Durchmesser."
+    },
+    {
+      "q": "Welche Sportart ist gesucht?",
+      "a": [
+        "Tennis",
+        "Badminton",
+        "Squash",
+        "Tischtennis"
+      ],
+      "r": 1,
+      "hints": [
+        "Der schnellste je gemessene Schlag dieser Sportart lag bei über 500 km/h.",
+        "Das Spielgerät besteht aus 16 Gänsefedern.",
+        "Gespielt wird mit einem Federball über ein hohes Netz."
+      ],
+      "fact": "Der Weltrekord liegt bei 565 km/h, aufgestellt 2023 von Satwiksairaj Rankireddy. Der Federball wird danach aber schnell langsamer, weil die Federn stark bremsen."
+    },
+    {
+      "q": "Gesucht ist eine Jahreszahl.",
+      "type": "estimate",
+      "answer": 1492,
+      "hints": [
+        "Im selben Jahr wurde in Nürnberg der älteste erhaltene Globus fertig.",
+        "In diesem Jahr endete mit dem Fall Granadas die Reconquista.",
+        "Christoph Kolumbus erreichte in diesem Jahr Amerika."
+      ],
+      "fact": "Der Behaim-Globus zeigt noch kein Amerika – er entstand, kurz bevor Kolumbus' Schiffe zurückkehrten."
+    },
+    {
+      "q": "Welcher Film ist gesucht?",
+      "a": [
+        "Terminator",
+        "Ghostbusters",
+        "Zurück in die Zukunft",
+        "Indiana Jones"
+      ],
+      "r": 2,
+      "hints": [
+        "Für die Zeitreise braucht man 1,21 Gigawatt.",
+        "Die Hauptfigur landet im Jahr 1955 und begegnet ihren eigenen Eltern.",
+        "Die Zeitmaschine ist ein umgebauter DeLorean."
+      ],
+      "fact": "„Zurück in die Zukunft“ (Back to the Future) kam 1985 ins Kino. Im Drehbuch war die Zeitmaschine zuerst ein Kühlschrank."
+    },
+    {
+      "q": "Gesucht ist ein Maler.",
+      "type": "open",
+      "answer": "Salvador Dalí",
+      "alt": [
+        "Dali",
+        "Dalí",
+        "Salvador Dali"
+      ],
+      "hints": [
+        "Er trug einen markant nach oben gezwirbelten Schnurrbart.",
+        "Er gehörte zu den bekanntesten Vertretern des Surrealismus.",
+        "Sein Bild mit zerfließenden Uhren heißt „Die Beständigkeit der Erinnerung“."
+      ],
+      "fact": "Das Bild mit den weichen Uhren (The Persistence of Memory) entstand 1931 und ist nur etwa 24 × 33 Zentimeter groß."
+    }
+  ]
+}

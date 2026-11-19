@@ -1,6 +1,6 @@
 // Moderatoransicht während der Partie
-import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, verdictOf, estimateByDistance, isDuel, playOrder } from "../model.js";
-import { gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON, resultBanner } from "./common.js";
+import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, verdictOf, estimateByDistance, isDuel, playOrder, isHints, hintLevel, hintPoints, HINT_MAX } from "../model.js";
+import { hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON, resultBanner } from "./common.js";
 import { duelStakeLine, duelOutcome } from "./duel.js";
 
 // Feedback zur Schwierigkeit (nur Moderator, nach dem Auflösen) – fließt in die Statistik
@@ -30,6 +30,7 @@ export function modGameView(s, me) {
   if (duel && !revealed) body += duelStakeLine(room, qi, null);
   if (duel && revealed) { const o = duelOutcome(room, qi, null); if (o) body += resultBanner(o.kind === "neutral" ? "neutral" : o.kind, o.big, o.sub); }
   body += questionCard(q);
+  body += hintsBlock(room, q, { all: true });
 
   if (!isOpenType(q)) {
     // Markierungen zeigen live, wer was gewählt hat
@@ -67,7 +68,14 @@ export function modGameView(s, me) {
 
   // Hinweiszeile + Aktionsknopf (+ Timer-Steuerung bei manuellem Timer)
   let note = "", action = "";
-  if (phase === "answering") { note = total ? `${done} von ${total} eingeloggt` : ""; action = `<button class="btn btn-ghost" data-act="showAnswers">Antworten zeigen</button>`; }
+  if (phase === "answering" && isHints(room)) {
+    // Hinweis-Modus: Moderator blendet Hinweise ein; zeigen erst, wenn alle getippt haben
+    const n = hintLevel(room), all = done >= total && total > 0;
+    note = `${done} von ${total} getippt · ${n ? `Hinweis ${n} von ${HINT_MAX}` : "noch kein Hinweis"}${all && n < HINT_MAX ? " · du kannst die übrigen Hinweise noch aufdecken" : ""}`;
+    action = (n < HINT_MAX ? `<button class="btn ${all ? "btn-ghost" : "btn-gold"}" data-act="nextHint">Hinweis ${n + 1}</button>` : "")
+      + `<button class="btn ${all ? "btn-primary" : "btn-ghost"}" data-act="showAnswers" ${all ? "" : "disabled"}>${all ? "Antworten zeigen" : "Warte auf Tipps"}</button>`;
+  }
+  else if (phase === "answering") { note = total ? `${done} von ${total} eingeloggt` : ""; action = `<button class="btn btn-ghost" data-act="showAnswers">Antworten zeigen</button>`; }
   else if (phase === "locked") { note = "Alle eingeloggt"; action = `<button class="btn btn-primary" data-act="showAnswers">Antworten zeigen</button>`; }
   else if (phase === "shown") {
     const open = unjudgedCount(room);

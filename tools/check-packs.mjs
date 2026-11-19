@@ -5,6 +5,7 @@
 //   node tools/check-packs.mjs --write  prüfen und packs/index.json + packs/catalog.json schreiben
 //   node tools/check-packs.mjs --json   Ergebnis als JSON ausgeben
 //
+// Hinweis-Packs ("mode": "hints"): je Frage "hints" mit genau 3 Hinweisen (schwer → leicht), keiner nennt die Lösung.
 // Duell-Packs ("mode": "duel"): 15 Fragen, 5 Kategorien ("cat") mit je einer Frage pro Stufe ("diff" 1–3).
 // Fehler (blockieren): kaputtes JSON, fehlende Pflichtfelder, ungültige Typen/Antworten.
 // Warnungen (blockieren nicht): Regeln aus den Pack-Richtlinien (Anzahl, Typen-Mix,
@@ -67,13 +68,22 @@ export function checkPack(id, raw) {
       if (typeof q.answer !== "string" || !q.answer.trim()) errors.push(`${n}: Freitextfrage braucht "answer" als Text`);
       if (q.alt != null && (!Array.isArray(q.alt) || q.alt.some(x => typeof x !== "string" || !x.trim()))) errors.push(`${n}: "alt" (weitere richtige Antworten) muss eine Liste von Texten sein`);
     }
-    const key = norm(q.q);
+    const key = norm(q.q + (Array.isArray(q.hints) ? " " + q.hints[0] : ""));   // Hinweis-Fragen: Frage + 1. Hinweis
     if (key) { if (seen.has(key)) errors.push(`${n}: gleicher Fragetext wie Frage ${seen.get(key) + 1}`); else seen.set(key, i); }
   });
 
   // Duell-Packs: genau 5 Kategorien mit je einer Frage pro Stufe (diff 1–3)
   let cats = null;
-  if (p.mode != null && p.mode !== "duel") errors.push(`Unbekannter Modus "${p.mode}" (erlaubt: duel)`);
+  if (p.mode != null && p.mode !== "duel" && p.mode !== "hints") errors.push(`Unbekannter Modus "${p.mode}" (erlaubt: duel, hints)`);
+  // Hinweis-Packs: genau 3 Hinweise je Frage, keiner verrät die Lösung wörtlich
+  if (p.mode === "hints") qs.forEach((q, i) => {
+    if (!q || typeof q !== "object") return;
+    if (!Array.isArray(q.hints) || q.hints.length !== 3 || q.hints.some(h => typeof h !== "string" || !h.trim()))
+      return errors.push(`Frage ${i + 1}: Hinweis-Frage braucht genau 3 Hinweise ("hints")`);
+    const sols = [q.type === "estimate" || q.type === "open" ? q.answer : q.a?.[q.r], ...(Array.isArray(q.alt) ? q.alt : [])]
+      .map(x => String(x ?? "").toLowerCase().trim()).filter(x => x.length >= 3);
+    q.hints.forEach((h, k) => { const t = h.toLowerCase(); for (const sol of sols) if (t.includes(sol)) errors.push(`Frage ${i + 1}, Hinweis ${k + 1}: verrät die Lösung „${sol}“`); });
+  });
   if (p.mode === "duel") {
     const byCat = new Map();
     qs.forEach((q, i) => {
@@ -133,14 +143,15 @@ function similar(id) {
   if (!me) { console.error(`Pack „${id}“ nicht gefunden`); process.exit(1); }
   const hits = [];
   for (const [i, q] of me.pack.questions.entries()) {
-    const wq = words(q.q);
+    const text = x => [x.q, ...(Array.isArray(x.hints) ? x.hints : [])].join(" ");
+    const wq = words(text(q));
     for (const r of all) for (const [j, o] of r.pack.questions.entries()) {
       if (r.id === id && j <= i) continue;
-      const wo = words(o.q);
+      const wo = words(text(o));
       const common = [...wq].filter(w => wo.has(w));
       const jac = common.length / (new Set([...wq, ...wo]).size || 1);
       const sameSol = solution(q) && solution(q) === solution(o);
-      if (jac >= 0.45 || (sameSol && common.length)) hits.push({ jac, a: `${id} #${i + 1}: ${q.q}`, b: `${r.id} #${j + 1}: ${o.q}`, why: sameSol ? "gleiche Lösung" : `${Math.round(jac * 100)} % gleiche Wörter` });
+      if (jac >= 0.45 || (sameSol && common.length)) hits.push({ jac, a: `${id} #${i + 1}: ${text(q).slice(0, 140)}`, b: `${r.id} #${j + 1}: ${text(o).slice(0, 140)}`, why: sameSol ? "gleiche Lösung" : `${Math.round(jac * 100)} % gleiche Wörter` });
     }
   }
   hits.sort((x, y) => y.jac - x.jac);
