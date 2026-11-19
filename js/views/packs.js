@@ -33,7 +33,7 @@ export function packPickerView(s) {
   const game = s.room?.settings?.game || "classic";
   const duel = game === "duel";
   const want = duel ? "duel" : game === "hints" ? "hints" : null;
-  let list = Array.isArray(packs) ? packs.filter(p => (p.mode || null) === want) : [];
+  let list = Array.isArray(packs) ? packs.filter(p => (p.mode || null) === want || (want === "hints" && p.hints)) : [];
   const total = list.length;
   const hiddenCount = list.filter(p => prefs[p.id]?.hidden).length;
   if (!pk.showHidden) list = list.filter(p => !prefs[p.id]?.hidden || p.id === sel);

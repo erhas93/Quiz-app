@@ -13,11 +13,11 @@
       ],
       "r": 0,
       "hints": [
-        "Hier liegt der westlichste Punkt des europäischen Festlands.",
+        "Hier wurde der älteste noch tätige Buchladen der Welt gegründet.",
         "Seine Seefahrer fanden Ende des 15. Jahrhunderts den Seeweg nach Indien.",
-        "Seine Hauptstadt ist Lissabon."
+        "Hier liegt der westlichste Punkt des europäischen Festlands."
       ],
-      "fact": "Der westlichste Punkt des Festlands ist das Cabo da Roca. Vasco da Gama erreichte 1498 als erster Europäer auf dem Seeweg Indien."
+      "fact": "Die Livraria Bertrand in Lissabon gibt es seit 1732. Der westlichste Punkt des Festlands ist das Cabo da Roca, und Vasco da Gama erreichte 1498 als erster Europäer auf dem Seeweg Indien."
     },
     {
       "q": "Welches Tier ist gesucht?",
@@ -29,11 +29,11 @@
       ],
       "r": 2,
       "hints": [
-        "Es hat drei Herzen und blaues Blut.",
+        "Wird ein Arm abgetrennt, kann er sich noch eine Weile selbstständig bewegen und auf Reize reagieren.",
         "Es kann Farbe und Hautstruktur in Sekundenbruchteilen ändern.",
-        "Es hat acht Arme."
+        "Es hat acht Arme und gilt als besonders intelligent."
       ],
-      "fact": "Zwei Herzen pumpen Blut durch die Kiemen, eines durch den Körper. Blau ist das Blut wegen des kupferhaltigen Hämocyanins (Hemocyanin)."
+      "fact": "Rund zwei Drittel seiner Nervenzellen sitzen in den Armen – deshalb reagieren sie auch abgetrennt noch eine Zeit lang. Farbe und Struktur ändert es über Tausende Farbzellen (Chromatophoren) in der Haut."
     },
     {
       "q": "Gesucht ist eine Jahreszahl.",
@@ -56,11 +56,11 @@
       ],
       "r": 1,
       "hints": [
-        "Die Einheit der magnetischen Flussdichte trägt seinen Namen.",
+        "Er behauptete, Funksignale vom Mars empfangen zu haben.",
         "Im sogenannten Stromkrieg (War of the Currents) kämpfte er für den Wechselstrom.",
-        "Ein bekannter Hersteller von Elektroautos ist nach ihm benannt."
+        "Die Einheit der magnetischen Flussdichte und ein Hersteller von Elektroautos tragen seinen Namen."
       ],
-      "fact": "Nikola Tesla arbeitete kurz für Thomas Edison, bevor die beiden zu Rivalen wurden: Edison setzte auf Gleich-, Tesla auf Wechselstrom."
+      "fact": "Nikola Tesla glaubte 1899 in Colorado Springs, Signale vom Mars aufgefangen zu haben. Mit Thomas Edison stritt er im Stromkrieg: Edison setzte auf Gleich-, Tesla auf Wechselstrom."
     },
     {
       "q": "Welche Stadt ist gesucht?",
@@ -72,11 +72,11 @@
       ],
       "r": 3,
       "hints": [
-        "Ihre Häuser stehen auf Millionen Holzpfählen, und in der Altstadt gibt es keine Autos.",
+        "Ihre Altstadt verteilt sich auf über 100 kleine Inseln.",
         "Jedes Jahr findet hier ein berühmter Karneval mit kunstvollen Masken statt.",
         "Gondeln fahren durch ihren Canal Grande."
       ],
-      "fact": "Die Pfähle aus Lärche und Eiche stecken im sauerstoffarmen Schlamm der Lagune und verrotten deshalb kaum – manche sind über 1.000 Jahre alt."
+      "fact": "Venedig steht auf 118 kleinen Inseln, verbunden durch über 400 Brücken. Die Häuser ruhen auf Millionen Holzpfählen im Lagunenschlamm."
     },
     {
       "q": "Welcher Alltagsgegenstand ist gesucht?",
@@ -118,11 +118,11 @@
       ],
       "r": 2,
       "hints": [
+        "Ihr bekanntester Song war mit fast sechs Minuten zunächst zu lang fürs Radio und wurde trotzdem ein Welthit.",
         "Ihr Gitarrist hat einen Doktortitel in Astrophysik.",
-        "Ihr Auftritt beim Live-Aid-Konzert 1985 gilt als einer der besten der Rockgeschichte.",
         "Ihr Sänger war Freddie Mercury."
       ],
-      "fact": "Brian May brach seine Doktorarbeit über interplanetaren Staub in den 1970ern für die Band ab und schloss sie 2007 ab."
+      "fact": "„Bohemian Rhapsody“ (1975) dauert fast sechs Minuten. Brian May brach seine Doktorarbeit über interplanetaren Staub in den 1970ern für die Band ab und schloss sie 2007 ab."
     },
     {
       "q": "Welches chemische Element ist gesucht?",
@@ -162,11 +162,11 @@
       ],
       "r": 3,
       "hints": [
+        "Ihre Hauptkuppel stürzte nur rund 20 Jahre nach der Einweihung bei einem Erdbeben teilweise ein.",
         "Fast tausend Jahre lang war sie die größte Kirche der Welt.",
-        "Nach der Eroberung ihrer Stadt 1453 wurde sie zur Moschee umgebaut.",
-        "Sie steht in Istanbul."
+        "Sie steht in Istanbul und war lange eine Moschee."
       ],
-      "fact": "Die Hagia Sophia wurde 537 unter Kaiser Justinian geweiht. Ihre Kuppel misst über 30 Meter im Durchmesser."
+      "fact": "Die Hagia Sophia wurde 537 unter Kaiser Justinian geweiht; 558 stürzte die erste Kuppel nach Erdbeben teilweise ein. Die heutige Kuppel misst über 30 Meter im Durchmesser."
     },
     {
       "q": "Welche Sportart ist gesucht?",
@@ -221,11 +221,11 @@
         "Salvador Dali"
       ],
       "hints": [
-        "Er trug einen markant nach oben gezwirbelten Schnurrbart.",
-        "Er gehörte zu den bekanntesten Vertretern des Surrealismus.",
+        "Er entwarf das Logo eines bekannten Lollis, das bis heute verwendet wird.",
+        "Er gehörte zu den bekanntesten Vertretern des Surrealismus und trug einen markant gezwirbelten Schnurrbart.",
         "Sein Bild mit zerfließenden Uhren heißt „Die Beständigkeit der Erinnerung“."
       ],
-      "fact": "Das Bild mit den weichen Uhren (The Persistence of Memory) entstand 1931 und ist nur etwa 24 × 33 Zentimeter groß."
+      "fact": "Dalí entwarf 1969 das Logo von Chupa Chups. Das Bild mit den weichen Uhren (The Persistence of Memory) entstand 1931 und ist nur etwa 24 × 33 Zentimeter groß."
     }
   ]
 }

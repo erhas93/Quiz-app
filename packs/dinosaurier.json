@@ -13,14 +13,24 @@
       "r": 1,
       "cat": "Erdgeschichte",
       "type": "mc",
-      "fact": "Das Mesozoikum dauerte von vor etwa 252 bis vor 66 Millionen Jahren und gliedert sich in Trias, Jura und Kreide. In dieser Zeit entwickelten sich die Dinosaurier, dominierten das Land und starben – bis auf die Vögel – am Ende wieder aus."
+      "fact": "Das Mesozoikum dauerte von vor etwa 252 bis vor 66 Millionen Jahren und gliedert sich in Trias, Jura und Kreide. In dieser Zeit entwickelten sich die Dinosaurier, dominierten das Land und starben – bis auf die Vögel – am Ende wieder aus.",
+      "hints": [
+        "Es begann vor rund 252 Millionen Jahren nach dem größten Massenaussterben der Erdgeschichte.",
+        "Es umfasst Trias, Jura und Kreide.",
+        "Sein deutscher Name lautet „Erdmittelalter“."
+      ]
     },
     {
       "q": "Vor wie vielen Millionen Jahren starben die Dinosaurier (außer den Vögeln) aus?",
       "answer": 66,
       "cat": "Aussterben",
       "type": "estimate",
-      "fact": "Vor rund 66 Millionen Jahren endete die Kreidezeit mit einem Massenaussterben, bei dem etwa drei Viertel aller Tier- und Pflanzenarten verschwanden. Als Hauptursache gilt der Einschlag eines etwa zehn Kilometer großen Asteroiden."
+      "fact": "Vor rund 66 Millionen Jahren endete die Kreidezeit mit einem Massenaussterben, bei dem etwa drei Viertel aller Tier- und Pflanzenarten verschwanden. Als Hauptursache gilt der Einschlag eines etwa zehn Kilometer großen Asteroiden.",
+      "hints": [
+        "Weltweit findet man in Gesteinsschichten aus dieser Zeit auffällig viel Iridium.",
+        "Es geschah am Ende der Kreidezeit.",
+        "Die Zahl liegt zwischen 60 und 70."
+      ]
     },
     {
       "q": "In welchem Abschnitt der Erdgeschichte lebte Tyrannosaurus rex?",
@@ -33,7 +43,12 @@
       "r": 2,
       "cat": "Arten",
       "type": "mc",
-      "fact": "Tyrannosaurus rex lebte vor etwa 68 bis 66 Millionen Jahren. Der Stegosaurus starb schon rund 80 Millionen Jahre früher aus – zeitlich lebte T. rex damit näher am heutigen Menschen als am Stegosaurus."
+      "fact": "Tyrannosaurus rex lebte vor etwa 68 bis 66 Millionen Jahren. Der Stegosaurus starb schon rund 80 Millionen Jahre früher aus – zeitlich lebte T. rex damit näher am heutigen Menschen als am Stegosaurus.",
+      "hints": [
+        "Zwischen ihm und Stegosaurus liegt mehr Zeit als zwischen ihm und uns.",
+        "Er lebte erst kurz vor dem großen Aussterben.",
+        "Er lebte vor etwa 68 bis 66 Millionen Jahren."
+      ]
     },
     {
       "q": "Was bedeutet das Wort „Dinosaurier“ wörtlich übersetzt?",
@@ -46,7 +61,12 @@
       "r": 0,
       "cat": "Forschung",
       "type": "mc",
-      "fact": "Der britische Anatom Richard Owen prägte den Begriff 1842 aus den griechischen Wörtern „deinos“ (schrecklich, gewaltig) und „sauros“ (Echse). „Donnerechse“ ist dagegen die Bedeutung von Brontosaurus."
+      "fact": "Der britische Anatom Richard Owen prägte den Begriff 1842 aus den griechischen Wörtern „deinos“ (schrecklich, gewaltig) und „sauros“ (Echse). „Donnerechse“ ist dagegen die Bedeutung von Brontosaurus.",
+      "hints": [
+        "Der Begriff wurde 1842 aus dem Griechischen gebildet.",
+        "Geprägt hat ihn der britische Forscher Richard Owen.",
+        "„Deinos“ heißt so viel wie „furchtbar“."
+      ]
     },
     {
       "q": "Welche heute lebende Tiergruppe stammt direkt von den Dinosauriern ab?",
@@ -59,7 +79,12 @@
       "r": 3,
       "cat": "Evolution",
       "type": "mc",
-      "fact": "Vögel sind Nachfahren kleiner, gefiederter Raubdinosaurier (Theropoden) und gelten wissenschaftlich selbst als Dinosaurier. Krokodile sind zwar eng verwandt, gehören aber zu einer eigenen Linie der Archosaurier."
+      "fact": "Vögel sind Nachfahren kleiner, gefiederter Raubdinosaurier (Theropoden) und gelten wissenschaftlich selbst als Dinosaurier. Krokodile sind zwar eng verwandt, gehören aber zu einer eigenen Linie der Archosaurier.",
+      "hints": [
+        "Diese Tiere haben hohle, besonders leichte Knochen.",
+        "Viele Raubsaurier trugen bereits Federn.",
+        "Ein Huhn ist näher mit T. rex verwandt als ein Krokodil."
+      ]
     },
     {
       "q": "Wie heißt der berühmte „Urvogel“, dessen Fossilien bei Solnhofen in Bayern gefunden wurden?",
@@ -70,6 +95,11 @@
       "alt": [
         "Archeopteryx",
         "Urvogel"
+      ],
+      "hints": [
+        "Das erste Skelett wurde 1861 gefunden, kurz nach Darwins Werk über die Entstehung der Arten.",
+        "Es hatte Federn, aber auch Zähne und einen langen Knochenschwanz.",
+        "Der Name bedeutet „alte Feder“."
       ]
     },
     {
@@ -83,7 +113,12 @@
       "r": 2,
       "cat": "Arten",
       "type": "mc",
-      "fact": "Flugsaurier (Pterosauria) wie der Pteranodon waren zwar nahe Verwandte, zählen aber nicht zu den Dinosauriern. Auch Meeresreptilien wie Plesiosaurier oder Ichthyosaurier waren keine Dinosaurier."
+      "fact": "Flugsaurier (Pterosauria) wie der Pteranodon waren zwar nahe Verwandte, zählen aber nicht zu den Dinosauriern. Auch Meeresreptilien wie Plesiosaurier oder Ichthyosaurier waren keine Dinosaurier.",
+      "hints": [
+        "Sein Name bedeutet „Flügel ohne Zahn“.",
+        "Er trug einen langen Knochenkamm am Hinterkopf.",
+        "Er segelte mit über sechs Metern Flügelspannweite über das Meer."
+      ]
     },
     {
       "q": "Wo liegt der Chicxulub-Krater, der mit dem Aussterben der Dinosaurier in Verbindung gebracht wird?",
@@ -96,7 +131,12 @@
       "r": 3,
       "cat": "Aussterben",
       "type": "mc",
-      "fact": "Der Krater hat einen Durchmesser von rund 180 Kilometern und liegt teils unter der Halbinsel Yucatán, teils im Golf von Mexiko. Er wurde erst um 1990 eindeutig als Einschlagkrater vom Ende der Kreidezeit identifiziert."
+      "fact": "Der Krater hat einen Durchmesser von rund 180 Kilometern und liegt teils unter der Halbinsel Yucatán, teils im Golf von Mexiko. Er wurde erst um 1990 eindeutig als Einschlagkrater vom Ende der Kreidezeit identifiziert.",
+      "hints": [
+        "Der Krater liegt etwa zur Hälfte unter dem Meer.",
+        "Er wurde bei der Suche nach Erdöl entdeckt.",
+        "Er liegt auf einer Halbinsel am Golf von Mexiko."
+      ]
     },
     {
       "q": "Wie viele Hörner hatte ein Triceratops am Kopf?",
@@ -109,7 +149,12 @@
       "r": 2,
       "cat": "Arten",
       "type": "mc",
-      "fact": "Der Name Triceratops bedeutet „Dreihorngesicht“: zwei lange Hörner über den Augen und ein kürzeres auf der Nase. Dazu kam ein großer Knochenschild am Hinterkopf."
+      "fact": "Der Name Triceratops bedeutet „Dreihorngesicht“: zwei lange Hörner über den Augen und ein kürzeres auf der Nase. Dazu kam ein großer Knochenschild am Hinterkopf.",
+      "hints": [
+        "Wer Griechisch kann, liest die Zahl schon im Namen.",
+        "Zwei lange Hörner saßen über den Augen.",
+        "Dazu kam ein kürzeres Horn auf der Nase."
+      ]
     },
     {
       "q": "Wie lang wurde ein ausgewachsener Tyrannosaurus rex ungefähr (in Metern)?",
@@ -117,7 +162,12 @@
       "cat": "Arten",
       "type": "estimate",
       "fact": "Große Exemplare wie das berühmte Skelett „Sue“ in Chicago erreichten rund 12 bis 13 Meter Länge und wogen wohl 8 bis 9 Tonnen. Seine Bisskraft gilt als eine der stärksten aller Landtiere.",
-      "tol": 2
+      "tol": 2,
+      "hints": [
+        "Allein sein Schädel war etwa 1,5 Meter lang.",
+        "Er war ungefähr so lang wie ein Linienbus.",
+        "Die Länge liegt zwischen 10 und 14 Metern."
+      ]
     },
     {
       "q": "Welcher Dinosaurier hatte Knochenplatten auf dem Rücken und Stacheln am Schwanz?",
@@ -130,7 +180,12 @@
       "r": 0,
       "cat": "Arten",
       "type": "mc",
-      "fact": "Die Schwanzstacheln des Stegosaurus heißen im Englischen „Thagomizer“ – ein Begriff, der 1982 aus einem Cartoon der Reihe „The Far Side“ von Gary Larson stammt und später von Paläontologen übernommen wurde."
+      "fact": "Die Schwanzstacheln des Stegosaurus heißen im Englischen „Thagomizer“ – ein Begriff, der 1982 aus einem Cartoon der Reihe „The Far Side“ von Gary Larson stammt und später von Paläontologen übernommen wurde.",
+      "hints": [
+        "Sein Gehirn war im Verhältnis zum Körper winzig, etwa so groß wie eine Walnuss.",
+        "Die Stacheln am Schwanz nennt man scherzhaft „Thagomizer“.",
+        "Er lebte im Jura und trug große Knochenplatten in zwei Reihen."
+      ]
     },
     {
       "q": "Wie groß war ein Velociraptor in Wirklichkeit ungefähr?",
@@ -143,14 +198,24 @@
       "r": 1,
       "cat": "Arten",
       "type": "mc",
-      "fact": "Der echte Velociraptor war etwa truthahngroß, rund 15 Kilogramm schwer und trug Federn. Die großen „Raptoren“ aus dem Film Jurassic Park sind eher dem deutlich größeren Deinonychus nachempfunden."
+      "fact": "Der echte Velociraptor war etwa truthahngroß, rund 15 Kilogramm schwer und trug Federn. Die großen „Raptoren“ aus dem Film Jurassic Park sind eher dem deutlich größeren Deinonychus nachempfunden.",
+      "hints": [
+        "Er trug Federn.",
+        "Er wog nur etwa 15 Kilogramm.",
+        "Im Film „Jurassic Park“ wurde er viel größer dargestellt als in Wirklichkeit."
+      ]
     },
     {
       "q": "In welchem Jahr kam der Film „Jurassic Park“ in die Kinos?",
       "answer": 1993,
       "cat": "Dinosaurier im Film",
       "type": "estimate",
-      "fact": "Steven Spielbergs Film nach dem Roman von Michael Crichton erschien 1993 und war damals der erfolgreichste Film aller Zeiten. Seine computeranimierten Dinosaurier gelten als Meilenstein der Filmtricktechnik."
+      "fact": "Steven Spielbergs Film nach dem Roman von Michael Crichton erschien 1993 und war damals der erfolgreichste Film aller Zeiten. Seine computeranimierten Dinosaurier gelten als Meilenstein der Filmtricktechnik.",
+      "hints": [
+        "Im selben Jahr trat der Vertrag von Maastricht in Kraft, mit dem die Europäische Union entstand.",
+        "Der Film kam drei Jahre nach Michael Crichtons Roman ins Kino.",
+        "Im selben Jahr kam auch „Schindlers Liste“ vom selben Regisseur."
+      ]
     },
     {
       "q": "In welchem Land wurde 1824 erstmals ein Dinosaurier wissenschaftlich beschrieben?",
@@ -163,7 +228,12 @@
       "r": 1,
       "cat": "Forschung",
       "type": "mc",
-      "fact": "Der englische Geologe William Buckland beschrieb 1824 den Megalosaurus anhand von Knochenfunden aus der Gegend von Oxford. Den Begriff „Dinosaurier“ gab es damals noch nicht – er entstand erst 1842."
+      "fact": "Der englische Geologe William Buckland beschrieb 1824 den Megalosaurus anhand von Knochenfunden aus der Gegend von Oxford. Den Begriff „Dinosaurier“ gab es damals noch nicht – er entstand erst 1842.",
+      "hints": [
+        "Der beschriebene Saurier hieß Megalosaurus.",
+        "Beschrieben hat ihn ein Geologe aus Oxford.",
+        "In der Hauptstadt dieses Landes steht das Natural History Museum mit seiner berühmten Dinosaurierhalle."
+      ]
     },
     {
       "q": "Welcher Dinosaurier steht im Berliner Naturkundemuseum als eines der höchsten aufgebauten Dinosaurierskelette der Welt?",
@@ -175,6 +245,11 @@
         "Brachiosaurus",
         "Brachiosaurus brancai",
         "Giraffatitan brancai"
+      ],
+      "hints": [
+        "Das Skelett stammt aus Ausgrabungen in Tansania zu Beginn des 20. Jahrhunderts.",
+        "Er wurde lange einer bekannten nordamerikanischen Gattung von Langhalssauriern zugeordnet.",
+        "Sein heutiger Name bedeutet „riesige Giraffe“."
       ]
     }
   ]

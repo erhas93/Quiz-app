@@ -49,7 +49,7 @@ export function modLobbyView(s) {
         <span class="pack-ico">${esc(cur?.emoji || "❓")}</span>
         <span class="pack-txt"><span class="pack-name">${esc(room.settings?.packName || sel)}</span>
           <span class="pack-sub">${cur ? `${cur.count} Fragen · ${packLine(cur, playStats(s.history))}` : "Ändern"}</span></span>${ICON.chev(20)}</button>`
-    : `<button class="pack-row" data-act="openPicker"><span class="pack-ico">?</span><span class="pack-txt"><span class="pack-name">${duel ? "Duell-Pack wählen" : isHints(room) ? "Hinweis-Pack wählen" : "Fragenpaket wählen"}</span><span class="pack-sub">${Array.isArray(packs) ? `${packs.filter(p => (p.mode || null) === (duel ? "duel" : isHints(room) ? "hints" : null)).length} Packs verfügbar` : "lädt …"}</span></span>${ICON.chev(20)}</button>`;
+    : `<button class="pack-row" data-act="openPicker"><span class="pack-ico">?</span><span class="pack-txt"><span class="pack-name">${duel ? "Duell-Pack wählen" : isHints(room) ? "Hinweis-Pack wählen" : "Fragenpaket wählen"}</span><span class="pack-sub">${Array.isArray(packs) ? `${packs.filter(p => (p.mode || null) === (duel ? "duel" : isHints(room) ? "hints" : null) || (isHints(room) && p.hints)).length} Packs verfügbar` : "lädt …"}</span></span>${ICON.chev(20)}</button>`;
 
   let startLabel, startDisabled = false;
   if (!players.length) { startLabel = "Warte auf Spieler …"; startDisabled = true; }

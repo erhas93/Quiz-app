@@ -13,14 +13,24 @@
       "r": 2,
       "cat": "Geschichte",
       "type": "mc",
-      "fact": "Giuseppe „Nino“ Farina gewann 1950 im Alfa Romeo den ersten WM-Titel. Er gewann auch das allererste WM-Rennen am 13. Mai 1950 in Silverstone, bei dem sogar das britische Königspaar zuschaute."
+      "fact": "Giuseppe „Nino“ Farina gewann 1950 im Alfa Romeo den ersten WM-Titel. Er gewann auch das allererste WM-Rennen am 13. Mai 1950 in Silverstone, bei dem sogar das britische Königspaar zuschaute.",
+      "hints": [
+        "Er fuhr in dieser Saison für Alfa Romeo.",
+        "Er war Italiener.",
+        "Sein Onkel gründete das Designstudio Pininfarina."
+      ]
     },
     {
       "q": "In welchem Jahr fand die erste Formel-1-Weltmeisterschaft statt?",
       "answer": 1950,
       "cat": "Geschichte",
       "type": "estimate",
-      "fact": "Die erste Saison 1950 umfasste nur sieben Rennen, darunter die 500 Meilen von Indianapolis, die damals offiziell zur WM zählten, aber von fast keinem Formel-1-Team bestritten wurden."
+      "fact": "Die erste Saison 1950 umfasste nur sieben Rennen, darunter die 500 Meilen von Indianapolis, die damals offiziell zur WM zählten, aber von fast keinem Formel-1-Team bestritten wurden.",
+      "hints": [
+        "Das erste Rennen fand in Silverstone statt.",
+        "Die Meisterschaft startete fünf Jahre nach Ende des Zweiten Weltkriegs.",
+        "Es war genau die Mitte des 20. Jahrhunderts."
+      ]
     },
     {
       "q": "Wie heißt die langsamste Kurve im Formel-1-Kalender, die in Monaco liegt?",
@@ -33,7 +43,12 @@
       "r": 0,
       "cat": "Strecken",
       "type": "mc",
-      "fact": "Durch die enge Haarnadel vor dem Fairmont-Hotel (Fairmont Hairpin) fahren die Autos nur mit etwa 50 km/h. Damit sie überhaupt herumkommen, bekommen die Teams in Monaco teils speziell angepasste Lenkungen mit größerem Einschlag."
+      "fact": "Durch die enge Haarnadel vor dem Fairmont-Hotel (Fairmont Hairpin) fahren die Autos nur mit etwa 50 km/h. Damit sie überhaupt herumkommen, bekommen die Teams in Monaco teils speziell angepasste Lenkungen mit größerem Einschlag.",
+      "hints": [
+        "Sie wird mit nur rund 50 km/h durchfahren.",
+        "Sie ist eine enge 180-Grad-Kehre.",
+        "Sie ist nach dem Hotel benannt, an dem sie vorbeiführt."
+      ]
     },
     {
       "q": "Welches Team hat die meisten Konstrukteurs-Weltmeistertitel gewonnen?",
@@ -46,7 +61,12 @@
       "r": 2,
       "cat": "Teams",
       "type": "mc",
-      "fact": "Ferrari ist zudem das einzige Team, das seit der ersten Saison 1950 ununterbrochen in der Formel 1 antritt. Der Konstrukteurstitel wird erst seit 1958 vergeben."
+      "fact": "Ferrari ist zudem das einzige Team, das seit der ersten Saison 1950 ununterbrochen in der Formel 1 antritt. Der Konstrukteurstitel wird erst seit 1958 vergeben.",
+      "hints": [
+        "Als einziges Team ist es seit der ersten Saison 1950 ununterbrochen dabei.",
+        "Sein Sitz liegt in Maranello.",
+        "Sein Wappentier ist ein springendes Pferd."
+      ]
     },
     {
       "q": "Wofür stand die Abkürzung „DRS“ bei den Heckflügeln?",
@@ -59,7 +79,12 @@
       "r": 1,
       "cat": "Technik",
       "type": "mc",
-      "fact": "Das Drag Reduction System öffnete ab 2011 eine Klappe im Heckflügel, um auf Geraden den Luftwiderstand zu senken und Überholen zu erleichtern. Mit dem Reglement 2026 wurde DRS durch verstellbare Flügel an Front und Heck (aktive Aerodynamik) ersetzt."
+      "fact": "Das Drag Reduction System öffnete ab 2011 eine Klappe im Heckflügel, um auf Geraden den Luftwiderstand zu senken und Überholen zu erleichtern. Mit dem Reglement 2026 wurde DRS durch verstellbare Flügel an Front und Heck (aktive Aerodynamik) ersetzt.",
+      "hints": [
+        "Es wurde 2011 eingeführt, um Überholen zu erleichtern.",
+        "Es öffnet eine Klappe im Heckflügel und senkt so den Luftwiderstand.",
+        "Das „D“ steht für das englische Wort für Luftwiderstand."
+      ]
     },
     {
       "q": "Wie heißt die italienische Rennstrecke, die als „Tempel der Geschwindigkeit“ (Temple of Speed) gilt?",
@@ -70,6 +95,11 @@
       "alt": [
         "Autodromo Nazionale Monza",
         "Autodromo di Monza"
+      ],
+      "hints": [
+        "Die Strecke liegt in einem königlichen Park nördlich von Mailand.",
+        "Hier findet traditionell der Große Preis von Italien statt.",
+        "Die Ferrari-Fans, die Tifosi, stürmen hier nach dem Rennen die Strecke."
       ]
     },
     {
@@ -83,7 +113,12 @@
       "r": 3,
       "cat": "Strecken",
       "type": "mc",
-      "fact": "Die Bergauf-Kombination in den belgischen Ardennen wird mit über 300 km/h durchfahren und gilt als Mutprobe für Fahrer. Spa ist mit rund 7 Kilometern zudem die längste Strecke im aktuellen Kalender."
+      "fact": "Die Bergauf-Kombination in den belgischen Ardennen wird mit über 300 km/h durchfahren und gilt als Mutprobe für Fahrer. Spa ist mit rund 7 Kilometern zudem die längste Strecke im aktuellen Kalender.",
+      "hints": [
+        "Mit rund 7 Kilometern ist sie die längste Strecke im aktuellen Kalender.",
+        "Oft regnet es hier nur auf einem Teil der Strecke.",
+        "Sie liegt in den Ardennen in Belgien."
+      ]
     },
     {
       "q": "Welcher Deutsche wurde 2010 mit 23 Jahren jüngster Weltmeister der Formel-1-Geschichte?",
@@ -96,7 +131,12 @@
       "r": 1,
       "cat": "Fahrer",
       "type": "mc",
-      "fact": "Sebastian Vettel holte den Titel im Red Bull beim Saisonfinale in Abu Dhabi, obwohl er vor dem Rennen nur Dritter der WM-Wertung war. Bis 2013 gewann er vier Titel in Folge."
+      "fact": "Sebastian Vettel holte den Titel im Red Bull beim Saisonfinale in Abu Dhabi, obwohl er vor dem Rennen nur Dritter der WM-Wertung war. Bis 2013 gewann er vier Titel in Folge.",
+      "hints": [
+        "Er gab seinen Rennautos weibliche Spitznamen.",
+        "Er wurde viermal in Folge Weltmeister.",
+        "Er stammt aus Heppenheim und fuhr später für Ferrari."
+      ]
     },
     {
       "q": "Wie viele Runden umfasst der Große Preis von Monaco?",
@@ -104,7 +144,12 @@
       "cat": "Strecken",
       "type": "estimate",
       "fact": "Die Stadtstrecke ist nur gut 3,3 Kilometer lang, deshalb sind 78 Runden nötig, um auf rund 260 Kilometer Renndistanz zu kommen. Monaco ist damit das kürzeste Rennen der Saison – die Mindestdistanz der übrigen Rennen liegt bei 305 Kilometern.",
-      "tol": 3
+      "tol": 3,
+      "hints": [
+        "Die Gesamtdistanz liegt bei rund 260 Kilometern.",
+        "Eine Runde ist etwa 3,3 Kilometer lang.",
+        "Es sind knapp 80 Runden."
+      ]
     },
     {
       "q": "Was bedeutet die blaue Flagge für einen Fahrer?",
@@ -117,7 +162,12 @@
       "r": 3,
       "cat": "Regeln",
       "type": "mc",
-      "fact": "Die blaue Flagge fordert einen überrundeten Fahrer auf, das schnellere Auto vorbeizulassen; wer drei blaue Flaggen ignoriert, riskiert eine Strafe. Die rote Flagge unterbricht dagegen das Rennen, die rot-gelb gestreifte warnt vor rutschiger Fahrbahn."
+      "fact": "Die blaue Flagge fordert einen überrundeten Fahrer auf, das schnellere Auto vorbeizulassen; wer drei blaue Flaggen ignoriert, riskiert eine Strafe. Die rote Flagge unterbricht dagegen das Rennen, die rot-gelb gestreifte warnt vor rutschiger Fahrbahn.",
+      "hints": [
+        "Wer sie mehrfach ignoriert, bekommt eine Strafe.",
+        "Gegen Rennende sieht man sie besonders oft.",
+        "Sie gilt Fahrern, die gleich überrundet werden."
+      ]
     },
     {
       "q": "Wie viele Punkte bekommt der Sieger eines Grand Prix (seit 2010)?",
@@ -130,7 +180,12 @@
       "r": 2,
       "cat": "Regeln",
       "type": "mc",
-      "fact": "Seit 2010 gibt es 25-18-15-12-10-8-6-4-2-1 Punkte für die ersten zehn. Davor bekam der Sieger nur 10 Punkte – Ergebnisse aus verschiedenen Epochen lassen sich deshalb kaum direkt vergleichen."
+      "fact": "Seit 2010 gibt es 25-18-15-12-10-8-6-4-2-1 Punkte für die ersten zehn. Davor bekam der Sieger nur 10 Punkte – Ergebnisse aus verschiedenen Epochen lassen sich deshalb kaum direkt vergleichen.",
+      "hints": [
+        "Seit 2010 bekommen die ersten zehn Punkte.",
+        "Der Zweite bekommt 18 Punkte.",
+        "Der Sieger bekommt sieben Punkte mehr als der Zweite."
+      ]
     },
     {
       "q": "Wie viele Sekunden dauert ein sehr schneller Boxenstopp mit Wechsel aller vier Reifen?",
@@ -138,7 +193,12 @@
       "cat": "Technik",
       "type": "estimate",
       "fact": "Rund 20 Mechaniker sind an einem Stopp beteiligt. Den Rekord hält McLaren mit 1,80 Sekunden beim Großen Preis von Katar 2023. Nachtanken ist in der Formel 1 übrigens seit 2010 verboten.",
-      "tol": 0.5
+      "tol": 0.5,
+      "hints": [
+        "Am Auto arbeiten dabei rund 20 Mechaniker gleichzeitig.",
+        "Der Rekord liegt bei 1,80 Sekunden.",
+        "Die Zeit liegt deutlich unter drei Sekunden."
+      ]
     },
     {
       "q": "Welcher Fahrer hat die meisten Grand-Prix-Siege errungen?",
@@ -151,7 +211,12 @@
       "r": 0,
       "cat": "Fahrer",
       "type": "mc",
-      "fact": "Lewis Hamilton feierte 2021 in Sotschi als erster Fahrer überhaupt seinen 100. Grand-Prix-Sieg. Michael Schumacher hatte zuvor mit 91 Siegen lange als unerreichbar gegolten."
+      "fact": "Lewis Hamilton feierte 2021 in Sotschi als erster Fahrer überhaupt seinen 100. Grand-Prix-Sieg. Michael Schumacher hatte zuvor mit 91 Siegen lange als unerreichbar gegolten.",
+      "hints": [
+        "Er trägt den Titel „Sir“.",
+        "Er gewann sieben WM-Titel, genauso viele wie Michael Schumacher.",
+        "Er stammt aus Stevenage in England."
+      ]
     },
     {
       "q": "Welcher Fahrer gewann 2021 im letzten Rennen in Abu Dhabi seinen ersten WM-Titel?",
@@ -161,6 +226,11 @@
       "fact": "Verstappen überholte Lewis Hamilton in der letzten Runde nach einer umstrittenen Safety-Car-Entscheidung. Die Rennleitung wurde danach umgebaut, Rennleiter Michael Masi verlor seinen Posten.",
       "alt": [
         "Verstappen"
+      ],
+      "hints": [
+        "Bei seinem ersten Grand-Prix-Sieg war er erst 18 Jahre alt.",
+        "Sein Vater fuhr ebenfalls Formel 1.",
+        "Er ist Niederländer und fährt für Red Bull."
       ]
     },
     {
@@ -174,7 +244,12 @@
       "r": 1,
       "cat": "Technik",
       "type": "mc",
-      "fact": "Der Halo aus Titan war anfangs wegen seines Aussehens umstritten. Spätestens seit Romain Grosjeans Feuerunfall 2020 in Bahrain, bei dem er Grosjean wohl das Leben rettete, ist er allgemein anerkannt."
+      "fact": "Der Halo aus Titan war anfangs wegen seines Aussehens umstritten. Spätestens seit Romain Grosjeans Feuerunfall 2020 in Bahrain, bei dem er Grosjean wohl das Leben rettete, ist er allgemein anerkannt.",
+      "hints": [
+        "Er besteht aus Titan und wiegt nur rund 7 Kilogramm.",
+        "Nach Romain Grosjeans Feuerunfall 2020 galt er als Lebensretter.",
+        "Der Name erinnert an einen Heiligenschein."
+      ]
     }
   ]
 }

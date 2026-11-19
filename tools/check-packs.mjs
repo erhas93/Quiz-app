@@ -75,8 +75,12 @@ export function checkPack(id, raw) {
   // Duell-Packs: genau 5 Kategorien mit je einer Frage pro Stufe (diff 1–3)
   let cats = null;
   if (p.mode != null && p.mode !== "duel" && p.mode !== "hints") errors.push(`Unbekannter Modus "${p.mode}" (erlaubt: duel, hints)`);
-  // Hinweis-Packs: genau 3 Hinweise je Frage, keiner verrät die Lösung wörtlich
-  if (p.mode === "hints") qs.forEach((q, i) => {
+  // Hinweise: Pflicht in Hinweis-Packs; klassische Packs sind hinweis-tauglich, wenn ALLE Fragen welche haben
+  const withHints = qs.filter(q => q && Array.isArray(q.hints)).length;
+  const hintsReady = p.mode === "hints" || (!p.mode && qs.length > 0 && withHints === qs.length);
+  if (!p.mode && withHints && withHints < qs.length) warnings.push(`Hinweis-Modus: erst ${withHints} von ${qs.length} Fragen haben Hinweise – Pack noch nicht hinweis-tauglich`);
+  if (p.mode === "hints" || withHints) qs.forEach((q, i) => {
+    if (p.mode !== "hints" && !Array.isArray(q?.hints)) return;
     if (!q || typeof q !== "object") return;
     if (!Array.isArray(q.hints) || q.hints.length !== 3 || q.hints.some(h => typeof h !== "string" || !h.trim()))
       return errors.push(`Frage ${i + 1}: Hinweis-Frage braucht genau 3 Hinweise ("hints")`);
@@ -111,7 +115,7 @@ export function checkPack(id, raw) {
     const unused = pos.map((c, k) => c === 0 ? L[k] : null).filter(Boolean);
     if (unused.length) warnings.push(`Richtige Antwort nie auf ${unused.join(", ")}`);
   }
-  return { id, pack: p, errors, warnings, types, positions: pos, count: qs.length, keys: [...seen.keys()], mode: p.mode || null, cats };
+  return { id, pack: p, errors, warnings, types, positions: pos, count: qs.length, keys: [...seen.keys()], mode: p.mode || null, cats, hintsReady };
 }
 
 export function checkAll() {
@@ -183,7 +187,7 @@ function main() {
     const catalog = {
       generated: new Date().toISOString(),
       packs: ok.map(r => ({
-        id: r.id, name: r.pack.name, emoji: r.pack.emoji || "", count: r.count, ...(r.mode ? { mode: r.mode, cats: r.cats } : {}),
+        id: r.id, name: r.pack.name, emoji: r.pack.emoji || "", count: r.count, ...(r.mode ? { mode: r.mode, cats: r.cats } : {}), ...(r.hintsReady && !r.mode ? { hints: true } : {}),
         types: r.types, hash: r.hash, updated: gitDate(path.join("packs", r.file)), warnings: r.warnings.length
       }))
     };

@@ -140,7 +140,7 @@ export function createActions(ctx) {
   }
 
   async function choosePack(pack) {
-    try { await update(ctx.roomRef("settings"), { packId: pack.id, packName: pack.name, packMode: pack.mode || null }); DBG.log("choosePack", pack.id); }
+    try { await update(ctx.roomRef("settings"), { packId: pack.id, packName: pack.name, packMode: pack.mode || null, packHints: !!pack.hints }); DBG.log("choosePack", pack.id); }
     catch (e) { fail("Pack nicht gespeichert", e); }
   }
 
@@ -149,7 +149,8 @@ export function createActions(ctx) {
     const st = ctx.room()?.settings || {};
     const patch = { game: mode };
     const want = mode === "duel" ? "duel" : mode === "hints" ? "hints" : null;
-    if (st.packId && (st.packMode || null) !== want) Object.assign(patch, { packId: null, packName: null, packMode: null });
+    const keep = (st.packMode || null) === want || (mode === "hints" && !st.packMode && st.packHints) || (mode === "classic" && st.packMode === "hints");
+    if (st.packId && !keep) Object.assign(patch, { packId: null, packName: null, packMode: null, packHints: null });
     if (mode === "hints") patch.timerMode = "none";   // Tempo bestimmt der Moderator über die Hinweise
     try { await update(ctx.roomRef("settings"), patch); DBG.log("setGameMode", mode); } catch (e) { fail("Modus nicht gespeichert", e); }
   }
@@ -186,7 +187,8 @@ export function createActions(ctx) {
     const hints = isHints(room);
     if (hints && room.meta?.mode !== "moderated") return fail("Der Hinweis-Modus geht nur mit Moderator");
     const want = duel ? "duel" : hints ? "hints" : null;
-    if ((pack.mode || null) !== want) return fail(duel ? "Bitte ein Duell-Pack wählen" : hints ? "Bitte ein Hinweis-Pack wählen" : "Dieses Pack gehört zu einem anderen Spielmodus");
+    const hintsOk = hints && !pack.mode && pack.questions.every(q => Array.isArray(q.hints) && q.hints.length === 3);
+    if ((pack.mode || null) !== want && !hintsOk) return fail(duel ? "Bitte ein Duell-Pack wählen" : hints ? "Bitte ein Hinweis-Pack wählen" : "Dieses Pack gehört zu einem anderen Spielmodus");
     const questions = pack.questions.map(q => JSON.parse(JSON.stringify(q)));
     try {
       // 1. Fragen und Startzustand schreiben (noch in der Lobby, für andere unsichtbar)

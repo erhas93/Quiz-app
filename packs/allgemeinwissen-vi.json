@@ -13,7 +13,12 @@
       "r": 1,
       "cat": "Architektur",
       "type": "mc",
-      "fact": "Antoni Gaudí übernahm den Bau 1883, ein Jahr nach der Grundsteinlegung, und arbeitete bis zu seinem Tod 1926 daran. Die Kirche ist bis heute nicht vollständig fertiggestellt und wird überwiegend aus Spenden und Eintrittsgeldern finanziert."
+      "fact": "Antoni Gaudí übernahm den Bau 1883, ein Jahr nach der Grundsteinlegung, und arbeitete bis zu seinem Tod 1926 daran. Die Kirche ist bis heute nicht vollständig fertiggestellt und wird überwiegend aus Spenden und Eintrittsgeldern finanziert.",
+      "hints": [
+        "Er starb 1926, nachdem ihn in Barcelona eine Straßenbahn erfasst hatte.",
+        "Er stammte aus Katalonien und baute fast nur in Barcelona.",
+        "Von ihm stammen auch der Park Güell und die Casa Batlló."
+      ]
     },
     {
       "q": "Welche dieser Früchte ist botanisch gesehen eine Beere?",
@@ -26,7 +31,12 @@
       "r": 3,
       "cat": "Botanik",
       "type": "mc",
-      "fact": "Botanisch ist eine Beere eine Frucht, deren gesamte Fruchtwand fleischig ist – das trifft auf Banane, Tomate und sogar Gurke zu. Die Erdbeere ist dagegen eine Sammelnussfrucht, Himbeere und Brombeere sind Sammelsteinfrüchte."
+      "fact": "Botanisch ist eine Beere eine Frucht, deren gesamte Fruchtwand fleischig ist – das trifft auf Banane, Tomate und sogar Gurke zu. Die Erdbeere ist dagegen eine Sammelnussfrucht, Himbeere und Brombeere sind Sammelsteinfrüchte.",
+      "hints": [
+        "Botanisch trägt eine Beere ihre Samen im Fruchtfleisch, nicht außen auf der Schale.",
+        "Erdbeere, Himbeere und Brombeere sind botanisch Sammelfrüchte.",
+        "Die gesuchte Frucht wächst an großen Stauden und wird meist gelb gekauft."
+      ]
     },
     {
       "q": "Wie hoch ist die Zugspitze, Deutschlands höchster Berg (in Metern)?",
@@ -34,7 +44,12 @@
       "cat": "Geografie",
       "type": "estimate",
       "fact": "Die Zugspitze im Wettersteingebirge ist 2.962 Meter hoch; über ihren Gipfel verläuft die Grenze zu Österreich. Seit 1926 führt eine Seilbahn hinauf, heute unter anderem die Seilbahn Zugspitze mit einer der höchsten Stahlbaustützen der Welt.",
-      "tol": 50
+      "tol": 50,
+      "hints": [
+        "Auf dem Gipfel steht eine Wetterwarte, und eine Zahnradbahn fährt fast bis hinauf.",
+        "Der Berg ist rund 800 Meter niedriger als der Großglockner (3.798 m).",
+        "Die Höhe liegt knapp unter 3.000 Metern."
+      ]
     },
     {
       "q": "Welcher römische Kaiser ließ einen Grenzwall quer durch Nordengland errichten?",
@@ -47,7 +62,12 @@
       "r": 0,
       "cat": "Geschichte",
       "type": "mc",
-      "fact": "Der Hadrianswall (Hadrian’s Wall) entstand ab dem Jahr 122 n. Chr. und war rund 117 Kilometer lang. Er markierte die Nordgrenze der römischen Provinz Britannien und gehört heute zum UNESCO-Welterbe."
+      "fact": "Der Hadrianswall (Hadrian’s Wall) entstand ab dem Jahr 122 n. Chr. und war rund 117 Kilometer lang. Er markierte die Nordgrenze der römischen Provinz Britannien und gehört heute zum UNESCO-Welterbe.",
+      "hints": [
+        "Er ließ in Rom das Pantheon in seiner heutigen Form errichten.",
+        "Er regierte von 117 bis 138 n. Chr. als Nachfolger Trajans.",
+        "Sein Grabmal ist die heutige Engelsburg in Rom."
+      ]
     },
     {
       "q": "Welcher ist der längste Fluss Europas?",
@@ -60,7 +80,12 @@
       "r": 2,
       "cat": "Geografie",
       "type": "mc",
-      "fact": "Die Wolga ist rund 3.530 Kilometer lang und fließt vollständig durch Russland, bevor sie ins Kaspische Meer mündet. Die Donau folgt mit knapp 2.850 Kilometern auf Platz zwei."
+      "fact": "Die Wolga ist rund 3.530 Kilometer lang und fließt vollständig durch Russland, bevor sie ins Kaspische Meer mündet. Die Donau folgt mit knapp 2.850 Kilometern auf Platz zwei.",
+      "hints": [
+        "Er mündet in ein Binnenmeer ohne Verbindung zum Ozean.",
+        "An seinen Ufern liegen Kasan und Samara.",
+        "Er fließt vollständig durch Russland."
+      ]
     },
     {
       "q": "Aus welchem Land stammt das Fischgericht Ceviche ursprünglich?",
@@ -73,14 +98,24 @@
       "r": 1,
       "cat": "Essen & Kulinarik",
       "type": "mc",
-      "fact": "Beim Ceviche wird roher Fisch in Limettensaft eingelegt, wodurch das Eiweiß ohne Hitze „gart“. Peru hat das Gericht zum nationalen Kulturerbe erklärt; 2023 nahm die UNESCO die Ceviche-Tradition in die Liste des immateriellen Kulturerbes auf."
+      "fact": "Beim Ceviche wird roher Fisch in Limettensaft eingelegt, wodurch das Eiweiß ohne Hitze „gart“. Peru hat das Gericht zum nationalen Kulturerbe erklärt; 2023 nahm die UNESCO die Ceviche-Tradition in die Liste des immateriellen Kulturerbes auf.",
+      "hints": [
+        "Das Land feiert jedes Jahr am 28. Juni einen nationalen Tag dieses Gerichts.",
+        "In diesem Land gibt es Tausende Kartoffelsorten.",
+        "In diesem Land liegt Machu Picchu."
+      ]
     },
     {
       "q": "Welche Stadt war von 1949 bis 1990 Hauptstadt der Bundesrepublik Deutschland?",
       "answer": "Bonn",
       "cat": "Geschichte",
       "type": "open",
-      "fact": "Bonn galt bewusst als „provisorische“ Hauptstadt, um den Anspruch auf ein wiedervereinigtes Deutschland mit Berlin offen zu halten. 1991 beschloss der Bundestag den Umzug nach Berlin; Bonn trägt heute den Titel „Bundesstadt“."
+      "fact": "Bonn galt bewusst als „provisorische“ Hauptstadt, um den Anspruch auf ein wiedervereinigtes Deutschland mit Berlin offen zu halten. 1991 beschloss der Bundestag den Umzug nach Berlin; Bonn trägt heute den Titel „Bundesstadt“.",
+      "hints": [
+        "Das Parlament tagte hier einige Jahre in einem umgebauten Wasserwerk.",
+        "In dieser Stadt wurde Ludwig van Beethoven geboren.",
+        "Die Stadt liegt in Nordrhein-Westfalen, südlich von Köln."
+      ]
     },
     {
       "q": "Wie heißt der Effekt, bei dem Menschen mit wenig Wissen ihre Kompetenz überschätzen?",
@@ -93,7 +128,12 @@
       "r": 2,
       "cat": "Psychologie",
       "type": "mc",
-      "fact": "Die Psychologen David Dunning und Justin Kruger beschrieben den Effekt 1999: Wer in einem Gebiet wenig weiß, kann oft auch die eigenen Fehler schlecht erkennen – und schätzt sich deshalb zu gut ein."
+      "fact": "Die Psychologen David Dunning und Justin Kruger beschrieben den Effekt 1999: Wer in einem Gebiet wenig weiß, kann oft auch die eigenen Fehler schlecht erkennen – und schätzt sich deshalb zu gut ein.",
+      "hints": [
+        "Er wurde 1999 in einer Studie zweier US-Psychologen beschrieben.",
+        "Auslöser war ein Bankräuber, der glaubte, Zitronensaft im Gesicht mache ihn für Kameras unsichtbar.",
+        "Er ist nach den beiden Psychologen David Dunning und Justin Kruger benannt."
+      ]
     },
     {
       "q": "Wofür steht die Abkürzung „HTTP“?",
@@ -106,7 +146,12 @@
       "r": 1,
       "cat": "Technologie & Internet",
       "type": "mc",
-      "fact": "Das Hypertext Transfer Protocol entwickelte Tim Berners-Lee ab 1989 am CERN in Genf zusammen mit HTML und dem ersten Webbrowser. Das „S“ in HTTPS steht für „Secure“ – die verschlüsselte Variante."
+      "fact": "Das Hypertext Transfer Protocol entwickelte Tim Berners-Lee ab 1989 am CERN in Genf zusammen mit HTML und dem ersten Webbrowser. Das „S“ in HTTPS steht für „Secure“ – die verschlüsselte Variante.",
+      "hints": [
+        "Tim Berners-Lee entwickelte es um 1990 am CERN.",
+        "Das „P“ steht wie bei „IP“ für „Protocol“.",
+        "Das „HT“ steht für denselben Begriff wie in „HTML“."
+      ]
     },
     {
       "q": "Wie lang ist ein Marathon in Kilometern?",
@@ -114,7 +159,12 @@
       "cat": "Sport",
       "type": "estimate",
       "fact": "Die krumme Strecke von 42,195 Kilometern geht auf die Olympischen Spiele 1908 in London zurück: Start war vor Schloss Windsor, das Ziel vor der königlichen Loge im Stadion. 1921 wurde diese Länge offiziell festgelegt.",
-      "tol": 0.5
+      "tol": 0.5,
+      "hints": [
+        "Die Distanz geht auf die Legende eines Boten zurück, der von einem Schlachtfeld nach Athen lief.",
+        "Die heute krumme Länge stammt von den Spielen 1908 in London: Das Ziel sollte vor der königlichen Loge liegen.",
+        "Die Strecke ist etwas länger als 42 Kilometer."
+      ]
     },
     {
       "q": "Wie viele Herzen hat ein Oktopus (Krake)?",
@@ -127,7 +177,12 @@
       "r": 2,
       "cat": "Tiere & Natur",
       "type": "mc",
-      "fact": "Zwei Kiemenherzen pumpen das Blut durch die Kiemen, ein drittes Herz versorgt den restlichen Körper. Das Blut ist blau, weil der Sauerstoff an das kupferhaltige Hämocyanin gebunden wird statt an eisenhaltiges Hämoglobin."
+      "fact": "Zwei Kiemenherzen pumpen das Blut durch die Kiemen, ein drittes Herz versorgt den restlichen Körper. Das Blut ist blau, weil der Sauerstoff an das kupferhaltige Hämocyanin gebunden wird statt an eisenhaltiges Hämoglobin.",
+      "hints": [
+        "Sein Blut ist blau, weil es kupferhaltiges Hämocyanin enthält.",
+        "Für die Kiemen hat es eigene Herzen – es sind mehr als zwei.",
+        "Zwei Herzen versorgen die Kiemen, eines den übrigen Körper."
+      ]
     },
     {
       "q": "Wer malte das Bild „Das Mädchen mit dem Perlenohrring“ (Girl with a Pearl Earring)?",
@@ -140,14 +195,24 @@
       "r": 0,
       "cat": "Kultur & Kunst",
       "type": "mc",
-      "fact": "Johannes Vermeer malte das Bild um 1665 in Delft. Es hängt heute im Mauritshuis in Den Haag und wird oft „Mona Lisa des Nordens“ genannt. Wer das Mädchen war, ist bis heute unbekannt."
+      "fact": "Johannes Vermeer malte das Bild um 1665 in Delft. Es hängt heute im Mauritshuis in Den Haag und wird oft „Mona Lisa des Nordens“ genannt. Wer das Mädchen war, ist bis heute unbekannt.",
+      "hints": [
+        "Von ihm sind nur rund 35 Gemälde erhalten.",
+        "Er lebte und arbeitete im 17. Jahrhundert in Delft.",
+        "Von ihm stammt auch „Die Milchmagd“."
+      ]
     },
     {
       "q": "In welchem Jahr wurden die ersten Oscars (Academy Awards) verliehen?",
       "answer": 1929,
       "cat": "Film & Kino",
       "type": "estimate",
-      "fact": "Die erste Verleihung fand am 16. Mai 1929 in einem Hotel in Hollywood statt und dauerte nur rund 15 Minuten. Die Gewinner standen bereits Monate vorher fest – Spannung kam erst später mit den versiegelten Umschlägen auf."
+      "fact": "Die erste Verleihung fand am 16. Mai 1929 in einem Hotel in Hollywood statt und dauerte nur rund 15 Minuten. Die Gewinner standen bereits Monate vorher fest – Spannung kam erst später mit den versiegelten Umschlägen auf.",
+      "hints": [
+        "Bester Film wurde ein Stummfilm über Kampfpiloten im Ersten Weltkrieg.",
+        "Im Herbst desselben Jahres löste der Börsencrash an der Wall Street die Weltwirtschaftskrise aus.",
+        "Es war das letzte Jahr der 1920er-Jahre."
+      ]
     },
     {
       "q": "Welcher Komponist schrieb die „Mondscheinsonate“ (Moonlight Sonata)?",
@@ -157,6 +222,11 @@
       "fact": "Beethoven komponierte die Klaviersonate Nr. 14 im Jahr 1801. Den Beinamen „Mondscheinsonate“ bekam sie erst Jahre später durch den Dichter Ludwig Rellstab, den der erste Satz an Mondlicht über dem Vierwaldstättersee erinnerte.",
       "alt": [
         "Beethoven"
+      ],
+      "hints": [
+        "Den Spitznamen erhielt das Stück erst Jahre nach dem Tod des Komponisten von einem Musikkritiker.",
+        "Der Komponist war in seinen späteren Lebensjahren fast taub.",
+        "Von ihm stammt auch „Für Elise“."
       ]
     },
     {
@@ -170,7 +240,12 @@
       "r": 3,
       "cat": "Wissenschaft",
       "type": "mc",
-      "fact": "Das W steht für Wolfram, im Englischen heißt das Metall „Tungsten“ (schwedisch für „schwerer Stein“). Wolfram hat mit 3.422 °C den höchsten Schmelzpunkt aller Metalle und wurde deshalb früher für Glühfäden in Glühbirnen verwendet."
+      "fact": "Das W steht für Wolfram, im Englischen heißt das Metall „Tungsten“ (schwedisch für „schwerer Stein“). Wolfram hat mit 3.422 °C den höchsten Schmelzpunkt aller Metalle und wurde deshalb früher für Glühfäden in Glühbirnen verwendet.",
+      "hints": [
+        "Es hat den höchsten Schmelzpunkt aller Metalle.",
+        "Früher steckte es als Glühfaden in fast jeder Glühbirne.",
+        "Sein englischer Name lautet Tungsten."
+      ]
     }
   ]
 }

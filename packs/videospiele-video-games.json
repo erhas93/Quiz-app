@@ -13,7 +13,12 @@
       "r": 1,
       "cat": "Gaming Geschichte",
       "type": "mc",
-      "fact": "The Legend of Zelda erschien am 21. Februar 1986 in Japan für das Famicom Disk System – in Europa erst 1987. Shigeru Miyamoto ließ sich von seiner Kindheit inspirieren, als er die Wälder und Höhlen rund um Kyoto erkundete. Link heißt so, weil er die Verbindung (Link) zwischen Spieler und Spielwelt darstellt."
+      "fact": "The Legend of Zelda erschien am 21. Februar 1986 in Japan für das Famicom Disk System – in Europa erst 1987. Shigeru Miyamoto ließ sich von seiner Kindheit inspirieren, als er die Wälder und Höhlen rund um Kyoto erkundete. Link heißt so, weil er die Verbindung (Link) zwischen Spieler und Spielwelt darstellt.",
+      "hints": [
+        "Es erschien zuerst für ein Diskettenlaufwerk-Zubehör des Famicom.",
+        "Es kam ein Jahr nach „Super Mario Bros.“ heraus.",
+        "Im selben Jahr explodierte der Reaktor in Tschernobyl."
+      ]
     },
     {
       "q": "Wie heißt der Antagonist (Main Villain) in der The Witcher (Wiedźmin)-Spielreihe von CD Projekt Red?",
@@ -26,14 +31,24 @@
       "r": 2,
       "cat": "RPG",
       "type": "mc",
-      "fact": "Eredin Bréacc Glas ist der König der Wilden Jagd (Wild Hunt) und Hauptantagonist in The Witcher 3: Wild Hunt (2015). Das Spiel gilt als eines der besten RPGs aller Zeiten und gewann über 800 Auszeichnungen (Game of the Year Awards). CD Projekt Red ist ein polnisches Studio – die Bücher stammen von Andrzej Sapkowski."
+      "fact": "Eredin Bréacc Glas ist der König der Wilden Jagd (Wild Hunt) und Hauptantagonist in The Witcher 3: Wild Hunt (2015). Das Spiel gilt als eines der besten RPGs aller Zeiten und gewann über 800 Auszeichnungen (Game of the Year Awards). CD Projekt Red ist ein polnisches Studio – die Bücher stammen von Andrzej Sapkowski.",
+      "hints": [
+        "Er trägt eine furchteinflößende Rüstung mit geschlossenem Helm.",
+        "Er ist ein Elf aus einer anderen Welt.",
+        "Er führt die Wilde Jagd an."
+      ]
     },
     {
       "q": "In welchem Jahr erschien Grand Theft Auto V (GTA V) ursprünglich?",
       "answer": 2013,
       "cat": "Gaming Geschichte",
       "type": "estimate",
-      "fact": "GTA V erschien am 17. September 2013 für PS3 und Xbox 360 – und wird seitdem kontinuierlich neu veröffentlicht. Es ist eines der meistverkauften Spiele aller Zeiten mit über 195 Millionen verkauften Einheiten. Rockstar Games verdiente in den ersten drei Tagen nach Release eine Milliarde US-Dollar."
+      "fact": "GTA V erschien am 17. September 2013 für PS3 und Xbox 360 – und wird seitdem kontinuierlich neu veröffentlicht. Es ist eines der meistverkauften Spiele aller Zeiten mit über 195 Millionen verkauften Einheiten. Rockstar Games verdiente in den ersten drei Tagen nach Release eine Milliarde US-Dollar.",
+      "hints": [
+        "Im selben Jahr erschienen PlayStation 4 und Xbox One.",
+        "Das Spiel kam zuerst für PS3 und Xbox 360 heraus.",
+        "Im selben Jahr wurde Papst Franziskus gewählt."
+      ]
     },
     {
       "q": "Was ist der Name der Hauptfigur in der Half-Life (Half-Life)-Reihe von Valve?",
@@ -46,7 +61,12 @@
       "r": 1,
       "cat": "FPS",
       "type": "mc",
-      "fact": "Gordon Freeman ist ein Physiker (Quantum Physicist) mit Doktortitel vom MIT – und trotzdem ein Ein-Mann-Heer. Bemerkenswert: In keinem Half-Life-Spiel spricht er ein einziges Wort. Half-Life (1998) revolutionierte den First-Person-Shooter und Half-Life 2 (2004) gilt als eines der einflussreichsten Spiele aller Zeiten."
+      "fact": "Gordon Freeman ist ein Physiker (Quantum Physicist) mit Doktortitel vom MIT – und trotzdem ein Ein-Mann-Heer. Bemerkenswert: In keinem Half-Life-Spiel spricht er ein einziges Wort. Half-Life (1998) revolutionierte den First-Person-Shooter und Half-Life 2 (2004) gilt als eines der einflussreichsten Spiele aller Zeiten.",
+      "hints": [
+        "Er sagt im ganzen Spiel kein einziges Wort.",
+        "Er ist theoretischer Physiker mit Doktortitel.",
+        "Sein Markenzeichen ist eine Brechstange."
+      ]
     },
     {
       "q": "Welche Spieleschmiede (Developer) entwickelte das Spiel Dark Souls (Dark Souls)?",
@@ -59,7 +79,12 @@
       "r": 1,
       "cat": "Gaming",
       "type": "mc",
-      "fact": "FromSoftware, ein japanisches Studio, entwickelte Dark Souls (2011) unter der Leitung von Hidetaka Miyazaki. Das Spiel begründete das Genre der 'Soulslike'-Spiele – bekannt für hohen Schwierigkeitsgrad und tiefes, umweltbasiertes Storytelling. Miyazaki ließ sich von westlichen Fantasy-Büchern inspirieren, die er als Kind nur halb verstand."
+      "fact": "FromSoftware, ein japanisches Studio, entwickelte Dark Souls (2011) unter der Leitung von Hidetaka Miyazaki. Das Spiel begründete das Genre der 'Soulslike'-Spiele – bekannt für hohen Schwierigkeitsgrad und tiefes, umweltbasiertes Storytelling. Miyazaki ließ sich von westlichen Fantasy-Büchern inspirieren, die er als Kind nur halb verstand.",
+      "hints": [
+        "Das Studio entwickelte auch die Mech-Reihe „Armored Core“.",
+        "Sein Präsident Hidetaka Miyazaki gilt als Vater der „Soulslike“-Spiele.",
+        "Es entwickelte auch „Elden Ring“."
+      ]
     },
     {
       "q": "Wie heißt die Währung (In-Game Currency) in The Elder Scrolls V: Skyrim?",
@@ -72,7 +97,12 @@
       "r": 1,
       "cat": "RPG",
       "type": "mc",
-      "fact": "In Skyrim und allen The Elder Scrolls-Spielen heißt die Währung Septim – benannt nach der Kaiserdynastie der Septims. Skyrim (2011) wurde von Bethesda Game Studios entwickelt und bis heute auf über 10 verschiedenen Plattformen veröffentlicht, inklusive Alexa und einem Samsung-Kühlschrank (als Werbegag)."
+      "fact": "In Skyrim und allen The Elder Scrolls-Spielen heißt die Währung Septim – benannt nach der Kaiserdynastie der Septims. Skyrim (2011) wurde von Bethesda Game Studios entwickelt und bis heute auf über 10 verschiedenen Plattformen veröffentlicht, inklusive Alexa und einem Samsung-Kühlschrank (als Werbegag).",
+      "hints": [
+        "Die Münze ist nach einer Kaiserdynastie benannt.",
+        "Der erste Kaiser dieser Dynastie hieß Tiber.",
+        "Der Name klingt nach dem lateinischen Wort für sieben."
+      ]
     },
     {
       "q": "In welcher Stadt spielt der Großteil von Cyberpunk 2077 (Cyberpunk 2077)?",
@@ -85,14 +115,24 @@
       "r": 1,
       "cat": "RPG",
       "type": "mc",
-      "fact": "Cyberpunk 2077 spielt in Night City, einer fiktiven Megacity an der Küste Nordkaliforniens. Das Spiel wurde von CD Projekt Red entwickelt und erschien 2020 nach jahrelanger Entwicklung – mit einem chaotischen Launch voller Bugs. Nach mehreren Updates gilt es heute als eines der besten Open-World-Spiele."
+      "fact": "Cyberpunk 2077 spielt in Night City, einer fiktiven Megacity an der Küste Nordkaliforniens. Das Spiel wurde von CD Projekt Red entwickelt und erschien 2020 nach jahrelanger Entwicklung – mit einem chaotischen Launch voller Bugs. Nach mehreren Updates gilt es heute als eines der besten Open-World-Spiele.",
+      "hints": [
+        "Die Stadt liegt im Spiel an der Küste Nordkaliforniens.",
+        "Keanu Reeves spielt darin Johnny Silverhand.",
+        "Ihr Name bedeutet übersetzt „Nachtstadt“."
+      ]
     },
     {
       "q": "Nenne den Namen des Protagonisten (Protagonist) aus Red Dead Redemption 2.",
       "cat": "Gaming",
       "type": "open",
       "answer": "Arthur Morgan",
-      "fact": "Arthur Morgan ist der Protagonist von Red Dead Redemption 2 (2018) von Rockstar Games. Er ist ein Outlaw der Van der Linde Gang im Jahr 1899. Das Spiel gilt als eines der narrativ reichsten Spiele aller Zeiten – die Entwicklung dauerte 8 Jahre und das Team arbeitete oft 100-Stunden-Wochen."
+      "fact": "Arthur Morgan ist der Protagonist von Red Dead Redemption 2 (2018) von Rockstar Games. Er ist ein Outlaw der Van der Linde Gang im Jahr 1899. Das Spiel gilt als eines der narrativ reichsten Spiele aller Zeiten – die Entwicklung dauerte 8 Jahre und das Team arbeitete oft 100-Stunden-Wochen.",
+      "hints": [
+        "Er erkrankt im Lauf der Geschichte an Tuberkulose.",
+        "Er gehört zur Van-der-Linde-Bande.",
+        "Sein Vorname ist der eines legendären britischen Königs."
+      ]
     },
     {
       "q": "Welches Spiel gewann 2023 den The Game Awards (TGA) als 'Game of the Year'?",
@@ -118,14 +158,24 @@
       "r": 1,
       "cat": "Gaming Aktuell",
       "type": "mc",
-      "fact": "Fortnite Battle Royale erschien im September 2017 als kostenloser Ableger des ursprünglichen Fortnite (Save the World). Epic Games entwickelte den Modus in nur zwei Monaten als Reaktion auf den Erfolg von PUBG. Fortnite hat zeitweise über 350 Millionen registrierte Spieler weltweit."
+      "fact": "Fortnite Battle Royale erschien im September 2017 als kostenloser Ableger des ursprünglichen Fortnite (Save the World). Epic Games entwickelte den Modus in nur zwei Monaten als Reaktion auf den Erfolg von PUBG. Fortnite hat zeitweise über 350 Millionen registrierte Spieler weltweit.",
+      "hints": [
+        "Der Modus erschien 2017 kostenlos, wenige Monate nach dem ursprünglichen Koop-Modus.",
+        "Ein japanischer Film aus dem Jahr 2000 trägt denselben Namen.",
+        "Der Name ist identisch mit dem Namen des Genres."
+      ]
     },
     {
       "q": "In welchem Jahr erschien das originale Minecraft (Minecraft) als Vollversion (Full Release)?",
       "answer": 2011,
       "cat": "Gaming Geschichte",
       "type": "estimate",
-      "fact": "Minecraft erschien am 18. November 2011 als Vollversion – entwickelt von Markus 'Notch' Persson zunächst alleine. Microsoft kaufte Mojang und Minecraft 2014 für 2,5 Milliarden US-Dollar. Minecraft ist mit über 238 Millionen verkauften Einheiten das meistverkaufte Videospiel aller Zeiten."
+      "fact": "Minecraft erschien am 18. November 2011 als Vollversion – entwickelt von Markus 'Notch' Persson zunächst alleine. Microsoft kaufte Mojang und Minecraft 2014 für 2,5 Milliarden US-Dollar. Minecraft ist mit über 238 Millionen verkauften Einheiten das meistverkaufte Videospiel aller Zeiten.",
+      "hints": [
+        "Die Vollversion wurde auf der Fan-Messe MineCon in Las Vegas veröffentlicht.",
+        "Eine erste frühe Version war zwei Jahre vorher erschienen.",
+        "Drei Jahre später kaufte Microsoft das Studio für 2,5 Milliarden Dollar."
+      ]
     },
     {
       "q": "Welches Studio (Developer Studio) steckt hinter der God of War (God of War)-Reihe?",
@@ -138,7 +188,12 @@
       "r": 2,
       "cat": "Gaming",
       "type": "mc",
-      "fact": "Santa Monica Studio, ein First-Party-Studio von Sony, entwickelt die God of War-Reihe seit 2005. Der Neustart 2018 mit Kratos und seinem Sohn Atreus in der nordischen Mythologie wurde vom langjährigen Cory Barlog geleitet. Das Spiel wurde in einer einzigen, unterbrechungsfreien Kameraeinstellung gedreht."
+      "fact": "Santa Monica Studio, ein First-Party-Studio von Sony, entwickelt die God of War-Reihe seit 2005. Der Neustart 2018 mit Kratos und seinem Sohn Atreus in der nordischen Mythologie wurde vom langjährigen Cory Barlog geleitet. Das Spiel wurde in einer einzigen, unterbrechungsfreien Kameraeinstellung gedreht.",
+      "hints": [
+        "Das Studio gehört zu Sony.",
+        "Es sitzt in Kalifornien, im Großraum Los Angeles.",
+        "Es trägt den Namen einer Küstenstadt bei Los Angeles."
+      ]
     },
     {
       "q": "Was ist ein 'Roguelite' (Roguelite) im Kontext von Videospielen?",
@@ -151,14 +206,24 @@
       "r": 1,
       "cat": "Gaming Begriffe",
       "type": "mc",
-      "fact": "Roguelites wie Hades, Dead Cells oder Slay the Spire kombinieren den permanenten Tod (Permadeath) und zufällig generierte Level des Roguelikes mit persistenten Fortschritten zwischen den Runs. Das Original Rogue erschien 1980 – fast niemand hat es je zu Ende gespielt. Hades von Supergiant Games (2020) gilt als bestes Roguelite."
+      "fact": "Roguelites wie Hades, Dead Cells oder Slay the Spire kombinieren den permanenten Tod (Permadeath) und zufällig generierte Level des Roguelikes mit persistenten Fortschritten zwischen den Runs. Das Original Rogue erschien 1980 – fast niemand hat es je zu Ende gespielt. Hades von Supergiant Games (2020) gilt als bestes Roguelite.",
+      "hints": [
+        "Der Begriff geht auf ein Spiel aus dem Jahr 1980 zurück.",
+        "Anders als beim strengen Vorbild bleibt nach dem Tod etwas erhalten.",
+        "Bekannte Beispiele sind „Hades“ und „Dead Cells“."
+      ]
     },
     {
       "q": "Nenne den Namen der Protagonistin (Female Protagonist) aus dem Spiel Horizon Zero Dawn.",
       "cat": "Gaming",
       "type": "open",
       "answer": "Aloy",
-      "fact": "Aloy ist die Protagonistin von Horizon Zero Dawn (2017) und Horizon Forbidden West (2022), entwickelt von Guerrilla Games für PlayStation. Die Welt spielt in einer postapokalyptischen Zukunft, in der Maschinen die Erde bevölkern. Der Name Aloy ist eine Anspielung auf 'Alloy' (Legierung) – da sie in einer Welt aus Mensch und Maschine lebt."
+      "fact": "Aloy ist die Protagonistin von Horizon Zero Dawn (2017) und Horizon Forbidden West (2022), entwickelt von Guerrilla Games für PlayStation. Die Welt spielt in einer postapokalyptischen Zukunft, in der Maschinen die Erde bevölkern. Der Name Aloy ist eine Anspielung auf 'Alloy' (Legierung) – da sie in einer Welt aus Mensch und Maschine lebt.",
+      "hints": [
+        "Sie wächst als Ausgestoßene am Rand eines Stammes auf.",
+        "Sie jagt mit Pfeil und Bogen Roboter-Tiere.",
+        "Ihr Name hat nur vier Buchstaben."
+      ]
     },
     {
       "q": "Welches Spiel gilt als Wegbereiter (Pioneer) des modernen Battle-Royale-Genres?",
@@ -171,7 +236,12 @@
       "r": 1,
       "cat": "Gaming Geschichte",
       "type": "mc",
-      "fact": "PUBG: PlayerUnknown's Battlegrounds (2017) von Brendan 'PlayerUnknown' Greene gilt als Begründer des modernen Battle-Royale-Genres. Greene hatte zuvor einen Battle-Royale-Mod für ARMA entwickelt. PUBG erreichte 2018 über 3 Millionen gleichzeitige Spieler auf Steam – ein Rekord, der lange ungebrochen blieb."
+      "fact": "PUBG: PlayerUnknown's Battlegrounds (2017) von Brendan 'PlayerUnknown' Greene gilt als Begründer des modernen Battle-Royale-Genres. Greene hatte zuvor einen Battle-Royale-Mod für ARMA entwickelt. PUBG erreichte 2018 über 3 Millionen gleichzeitige Spieler auf Steam – ein Rekord, der lange ungebrochen blieb.",
+      "hints": [
+        "Sein Entwickler hatte vorher Battle-Royale-Mods für andere Spiele gebaut.",
+        "Das Spiel wird meist mit vier Buchstaben abgekürzt.",
+        "Es ist nach dem Spielernamen seines Entwicklers Brendan Greene benannt."
+      ]
     }
   ]
 }
