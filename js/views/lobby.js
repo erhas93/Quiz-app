@@ -19,19 +19,35 @@ function favCard(room, uid) {
     <div class="seg3"><button class="${v === true ? "on" : ""}" data-act="fav" data-arg="1">Ja</button><button class="${v === false ? "on" : ""}" data-act="fav" data-arg="0">Nein</button></div></div>`;
 }
 
+// Spielmodus: Auswahl + immer genau eine kurze Beschreibung (feste Höhe), Optionen stehen getrennt darunter
+const MODES = [
+  ["classic", "Klassisch", "Alle beantworten dieselben 15 Fragen gleichzeitig. Jede richtige Antwort bringt 1 Punkt."],
+  ["duel", "Duell", "Zu zweit abwechselnd Felder wählen: 5 Kategorien, 3 Stufen, 1–3 Punkte je Feld."],
+  ["hints", "Hinweise", "Bis zu 3 Hinweise je Frage. Wer früher richtig tippt, bekommt mehr: 4–3–2–1 Punkte."]
+];
 function modeCard(room) {
-  const duel = isDuel(room);
+  const free = isFree(room);
+  const g = isDuel(room) ? "duel" : isHints(room) ? "hints" : "classic";
   const n = activePlayers(room).length;
-  const hints = isHints(room), free = isFree(room);
-  const g = room.settings?.game || "classic";
-  return `<div class="card"><div class="card-h"><span class="label">Spielmodus</span>${duel && n !== 2 ? `<span class="muted small">braucht genau 2 Spieler</span>` : ""}</div>
-    <div class="seg3"><button class="${g === "classic" ? "on" : ""}" data-act="gameMode" data-arg="classic">Klassisch</button><button class="${duel ? "on" : ""}" data-act="gameMode" data-arg="duel">Duell</button><button class="${hints ? "on" : ""}" data-act="gameMode" data-arg="hints" ${free ? "disabled" : ""}>Hinweise</button></div>
-    ${free ? `<div class="muted small" style="margin-top:6px">Der Hinweis-Modus geht nur mit Moderator.</div>` : ""}
-    ${hints ? `<div class="muted small" style="margin-top:6px">Du blendest bis zu 3 Hinweise ein. Wer früher richtig tippt, bekommt mehr: 4 – 3 – 2 – 1 Punkte.</div>` : ""}
-    ${duel ? `<span class="label" style="margin-top:12px">Punkte</span>
-      <div class="seg3"><button class="${duelRule(room) === "picker" ? "on" : ""}" data-act="duelRule" data-arg="picker">Wähler hat Vorrang</button><button class="${duelRule(room) === "all" ? "on" : ""}" data-act="duelRule" data-arg="all">Jeder Richtige</button></div>
-      <div class="muted small" style="margin-top:6px">${duelRule(room) === "all" ? "Jeder, der richtig liegt, bekommt die Punkte des Feldes – die Partie bleibt länger offen." : "Der Wähler bekommt die Punkte, wenn er richtig liegt. Liegt er falsch, kann der Gegner sie klauen."}</div>` : ""}
-    ${duel ? `<button class="toggle-row" data-act="pickTimer" aria-pressed="${!!room.settings?.pickTimer}"><span>Wähl-Timer (${PICK_SEC} s)</span><span class="switch${room.settings?.pickTimer ? " on" : ""}"></span></button>` : ""}</div>`;
+  const warn = g === "duel" && n !== 2 ? "braucht genau 2 Spieler" : free ? "Hinweise nur mit Moderator" : "";
+  return `<div class="card"><div class="card-h"><span class="label">Spielmodus</span>${warn ? `<span class="muted small">${warn}</span>` : ""}</div>
+    <div class="seg3">${MODES.map(([k, l]) => `<button class="${g === k ? "on" : ""}" data-act="gameMode" data-arg="${k}" ${k === "hints" && free ? "disabled" : ""}>${l}</button>`).join("")}</div>
+    <div class="mode-desc">${MODES.find(m => m[0] === g)[2]}</div></div>`;
+}
+
+// Optionen des gewählten Modus – immer an derselben Stelle, im selben Zeilenformat
+function optionsCard(room, free) {
+  const g = isDuel(room) ? "duel" : isHints(room) ? "hints" : "classic";
+  const rows = [];
+  if (g === "duel") {
+    const all = duelRule(room) === "all";
+    rows.push(`<div class="opt"><span class="opt-l">Punkte</span><div class="seg3"><button class="${all ? "" : "on"}" data-act="duelRule" data-arg="picker">Wähler hat Vorrang</button><button class="${all ? "on" : ""}" data-act="duelRule" data-arg="all">Jeder Richtige</button></div>
+      <span class="opt-h">${all ? "Jeder Richtige bekommt die Punkte des Feldes." : "Liegt der Wähler falsch, kann der Gegner die Punkte klauen."}</span></div>`);
+    rows.push(`<div class="opt"><button class="toggle-row" data-act="pickTimer" aria-pressed="${!!room.settings?.pickTimer}"><span class="opt-l">Wähl-Timer (${PICK_SEC} s)</span><span class="switch${room.settings?.pickTimer ? " on" : ""}"></span></button></div>`);
+  }
+  if (g !== "hints") rows.push(timerRow(room, free));
+  else rows.push(`<div class="opt"><span class="opt-h">Keine weiteren Optionen – das Tempo bestimmst du über die Hinweise.</span></div>`);
+  return `<div class="card"><span class="label">Optionen</span>${rows.join("")}</div>`;
 }
 
 export function modLobbyView(s) {
@@ -67,7 +83,7 @@ export function modLobbyView(s) {
       ${modeCard(room)}
       <div class="card"><span class="label">Fragenpaket</span>${pack}</div>
       ${favCard(room, s.uid)}
-      ${isHints(room) ? "" : timerCard(room, free)}
+      ${optionsCard(room, free)}
       <div class="spacer"></div>
     </div>
     <div class="actions">
@@ -118,15 +134,15 @@ export function spectatorLobbyView(s) {
   </div>`;
 }
 
-function timerCard(room, free = false) {
+function timerRow(room, free = false) {
   const mode = room.settings?.timerMode || "none";
   const sec = room.settings?.timerSec || 30;
   // Ohne Moderator gibt es niemanden, der einen manuellen Timer bedient
   const modes = free ? [["none", "Aus"], ["auto", "Auto"]] : [["none", "Aus"], ["auto", "Auto"], ["manual", "Manuell"]];
   const presets = [10, 20, 30, 45, 60];
-  return `<div class="card"><div class="card-h"><span class="label">Timer</span>${mode === "none" ? "" : `<span class="muted small">${mode === "auto" ? "startet je Frage von selbst" : "du startest pro Frage"}</span>`}</div>
+  return `<div class="opt"><span class="opt-l">Antwort-Timer</span>
     <div class="seg3">${modes.map(([m, l]) => `<button class="${m === mode ? "on" : ""}" data-act="timerMode" data-arg="${m}">${l}</button>`).join("")}</div>
     ${mode === "none" ? "" : `<div class="pills">${presets.map(p => `<button class="pill${p === sec ? " on" : ""}" data-act="timerSec" data-arg="${p}">${p} s</button>`).join("")}
-      <input class="pill-inp" id="in-timersec" type="number" min="5" max="300" inputmode="numeric" placeholder="eigene" aria-label="Eigene Sekunden" data-commit="timerSec" value="${presets.includes(sec) ? "" : sec}"></div>`}
-  </div>`;
+      <input class="pill-inp" id="in-timersec" type="number" min="5" max="300" inputmode="numeric" placeholder="eigene" aria-label="Eigene Sekunden" data-commit="timerSec" value="${presets.includes(sec) ? "" : sec}"></div>
+      <span class="opt-h">${mode === "auto" ? "Startet bei jeder Frage von selbst." : "Du startest ihn bei jeder Frage."}</span>`}</div>`;
 }

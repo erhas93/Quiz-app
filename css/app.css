@@ -354,3 +354,10 @@ button{cursor:pointer}
 .hint.late{opacity:.7}
 .hint.new{animation:hintIn .45s cubic-bezier(.2,1.2,.4,1)}
 @keyframes hintIn{from{transform:translateY(-6px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+/* Spielmodus & Optionen: einheitliches Layout */
+.mode-desc{font-size:13.5px;line-height:1.4;color:var(--text2);margin-top:8px;min-height:2.8em}
+.opt{display:flex;flex-direction:column;gap:6px;padding-top:10px}
+.opt+.opt{margin-top:10px;border-top:1px solid var(--line)}
+.opt-l{font-size:13px;font-weight:700;color:var(--text2)}
+.opt-h{font-size:12.5px;color:var(--text3);line-height:1.35}
+.opt .toggle-row{margin-top:0;height:34px;padding:0}
