@@ -26,7 +26,7 @@ export function overviewView(s, now) {
   }).join("") : `<div class="muted small" style="padding:6px 2px">Gerade ist kein Raum offen. Eröffne unten einen neuen Raum.</div>`;
 
   return `<div class="screen">
-    ${topBar("Quiz App", `Raumübersicht · ${VERSION}`, { connected: s.connected })}
+    ${topBar(`<img class="brand-logo" src="img/logo.svg" alt="">15 Fragen`, `Raumübersicht · ${VERSION}`, { connected: s.connected })}
     <div class="body">
       <div class="card"><label class="label" for="in-name">Dein Name</label>
         <input class="inp" id="in-name" data-input="name" maxlength="20" placeholder="Name eingeben" value="${esc(s.local.name)}"></div>

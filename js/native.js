@@ -39,8 +39,8 @@ document.addEventListener("visibilitychange", () => {
 
 // Teilen-Menü (App) bzw. Web Share / Zwischenablage (Browser)
 export async function share(text, url) {
-  if (cap()) return call("Share", "share", { title: "Quiz App", text, url, dialogTitle: "Einladen" }).catch(() => {});
-  if (navigator.share) return navigator.share({ title: "Quiz App", text, url }).catch(() => {});
+  if (cap()) return call("Share", "share", { title: "15 Fragen", text, url, dialogTitle: "Einladen" }).catch(() => {});
+  if (navigator.share) return navigator.share({ title: "15 Fragen", text, url }).catch(() => {});
   try { await navigator.clipboard.writeText(`${text} ${url}`); return "kopiert"; } catch {}
 }
 

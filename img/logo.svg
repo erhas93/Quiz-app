@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="15 Fragen">
+  <rect width="128" height="128" rx="30" fill="#18323d"/>
+  <!-- Sprechblase -->
+  <path d="M24 30c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v44c0 6.6-5.4 12-12 12H60l-20 18v-18h-4c-6.6 0-12-5.4-12-12z" fill="#e9c46a"/>
+  <!-- „15“ -->
+  <text x="64" y="68" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="46" font-weight="900" fill="#132028" letter-spacing="-2">15</text>
+  <!-- Fragezeichen-Plakette -->
+  <circle cx="100" cy="96" r="18" fill="#2a9d8f" stroke="#18323d" stroke-width="5"/>
+  <text x="100" y="106" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="26" font-weight="900" fill="#fff">?</text>
+</svg>

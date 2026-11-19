@@ -51,6 +51,18 @@ function pickView(s) {
 }
 
 let lastView = "", lastHtml = "";
+// Startbildschirm mit Logo: mindestens kurz zeigen, ausblenden sobald die erste echte Ansicht steht
+const splashStart = performance.now();
+let splashGone = false;
+function hideSplash() {
+  if (splashGone) return;
+  splashGone = true;
+  const el = document.getElementById("splash");
+  if (!el) return;
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 400); }, Math.max(0, 900 - (performance.now() - splashStart)));
+}
+setTimeout(hideSplash, 6000);
+
 function render(s) {
   // Fokus und Cursor eines Eingabefelds über das Neuzeichnen retten
   const ae = document.activeElement;
@@ -114,6 +126,7 @@ function doOnce(key, fn, delay = 0) {
   delay ? setTimeout(fn, delay) : fn();
 }
 function afterRender(s, key) {
+  if (key !== "loading") hideSplash();
   // eigene App-Version im Raum vermerken
   { const meP = s.room?.players?.[s.uid]; if (ROOM_ID && meP && meP.v !== VERSION) doOnce(`ver:${s.room?.meta?.createdAt}:${meP.joinedAt || 0}`, () => A.setVersion(VERSION)); }
   syncPresence(s);
@@ -421,7 +434,7 @@ const handlers = {
   },
   invite: async () => {
     const url = `https://erhas93.github.io/Quiz-app/?room=${ROOM_ID}`;
-    const r = await share(`Komm in meinen Quiz-Raum ${ROOM_ID}${store.local.name ? ` (${store.local.name})` : ""}`, url);
+    const r = await share(`Komm in meinen Raum bei „15 Fragen“: ${ROOM_ID}${store.local.name ? ` (${store.local.name})` : ""}`, url);
     if (r === "kopiert") setLocal({ error: "Link kopiert – einfach verschicken." });
   }
 };
