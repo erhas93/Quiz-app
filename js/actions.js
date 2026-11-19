@@ -252,7 +252,7 @@ export function createActions(ctx) {
   // questionStats/{packId}/{key}: n, right, ms, msN, noAns, fav/favRight, nofav/nofavRight, fb{...}
   function statRef(room, qi) {
     const q = room?.questions?.[qi], pack = room?.settings?.packId;
-    return q && pack ? ctx.ref(`questionStats/${pack}/${questionKey(q)}`) : null;
+    return q && pack ? ctx.ref(`questionStats/${pack}/${questionKey(q, room?.settings?.packMode === "hints")}`) : null;
   }
   async function recordStats(room, qi) {
     if (room?.meta?.test) return;   // Testräume verfälschen die Statistik nicht

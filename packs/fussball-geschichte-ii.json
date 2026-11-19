@@ -16,7 +16,7 @@
       "fact": "Harry Kane erzielte 6 Tore und gewann den Goldenen Schuh vor Antoine Griezmann und Romelu Lukaku (je 3). England schied im Halbfinale gegen Kroatien aus. Kane traf davon dreimal per Elfmeter – was heftig diskutiert wurde."
     },
     {
-      "q": "Welcher Verein gewann als erster die UEFA Champions League mit einer ungeschlagenen Gruppenphase und K.O.-Runde?",
+      "q": "Welcher Verein gewann als erster die UEFA Champions League, indem er jedes Spiel der Saison gewann?",
       "a": [
         "AC Milan (1994)",
         "Ajax Amsterdam (1995)",
@@ -26,7 +26,7 @@
       "r": 3,
       "cat": "Europapokal",
       "type": "mc",
-      "fact": "Bayern München gewann die Champions League 2020 im Finalturnier in Lissabon mit 11 Siegen aus 11 Spielen – als erstes Team ohne ein einziges Unentschieden oder eine Niederlage. Trainer war Hansi Flick, der erst im November 2019 übernommen hatte."
+      "fact": "Bayern München gewann die Champions League 2020 im Finalturnier in Lissabon mit 11 Siegen aus 11 Spielen – als erstes Team ohne Unentschieden oder Niederlage. Milan 1994 und Ajax 1995 blieben zwar ungeschlagen, spielten aber auch Unentschieden. Trainer war Hansi Flick."
     },
     {
       "q": "In welchem Jahr fand die erste UEFA Europameisterschaft (European Championship) statt?",
@@ -49,17 +49,17 @@
       "fact": "Cristiano Ronaldo traf in der Saison 2013/14 sage und schreibe 17 Mal in der Champions League – ein Rekord der bis heute steht. Real Madrid gewann das Turnier in jenem Jahr durch einen 4:1-Sieg gegen Atletico Madrid im Finale."
     },
     {
-      "q": "Was war das höchste Ergebnis in der Geschichte der FIFA Weltmeisterschaften?",
+      "q": "Bei welchem WM-Spiel erzielte eine Mannschaft die meisten Tore?",
       "a": [
         "Deutschland 8:0 Saudi-Arabien (2002)",
         "Ungarn 10:1 El Salvador (1982)",
         "Jugoslawien 9:0 Zaire (1974)",
-        "Ungarn 10:1 El Salvador und Deutschland 8:0 Saudi-Arabien"
+        "Deutschland 7:1 Brasilien (2014)"
       ],
       "r": 1,
       "cat": "Rekorde",
       "type": "mc",
-      "fact": "Ungarn besiegte El Salvador bei der WM 1982 in Spanien mit 10:1 – das höchste Ergebnis der WM-Geschichte. Sandor Kocsis erzielte dabei vier Tore. El Salvador kassierte in der gesamten Gruppenphase 13 Gegentore."
+      "fact": "Ungarn besiegte El Salvador bei der WM 1982 in Spanien mit 10:1 – zehn Tore einer Mannschaft in einem Spiel sind bis heute WM-Rekord. László Kiss traf dabei als Einwechselspieler innerhalb von sieben Minuten dreimal."
     },
     {
       "q": "Welcher Nationaltrainer führte Griechenland zum überraschenden EM-Titel 2004 in Portugal?",
@@ -108,7 +108,7 @@
       "fact": "Real Madrid hat 15 Champions-League-Titel – mehr als doppelt so viele wie der Zweitplatzierte AC Milan (7). Allein zwischen 2016 und 2018 gewann Real dreimal in Folge. Carlo Ancelotti ist der einzige Trainer mit vier Champions-League-Titeln."
     },
     {
-      "q": "Wie nennt man die Taktik, bei der eine Mannschaft den Ball absichtlich in den eigenen Reihen hält ohne zu attackieren?",
+      "q": "Wie heißt der Spielstil mit vielen kurzen Pässen und hohem Ballbesitz, mit dem Spanien und der FC Barcelona um 2010 Titel sammelten?",
       "a": [
         "Pressing",
         "Tiki-Taka",
@@ -147,17 +147,17 @@
       "fact": "Spanien besiegte die Niederlande 1:0 durch ein Tor von Andrés Iniesta in der Verlängerung. Es war Spaniens erster WM-Titel. Das Finale in Johannesburg gilt als eines der brutalsten – Schiedsrichter Howard Webb zeigte 14 Gelbe und eine Rote Karte."
     },
     {
-      "q": "Welcher Verein gewann als erster das Triple (Meisterschaft, Pokal, Champions League) in einer Saison?",
+      "q": "Welcher dieser Vereine gewann als erster das Triple (Meisterschaft, Pokal, Europapokal der Landesmeister) in einer Saison?",
       "a": [
         "Ajax Amsterdam (1971/72)",
         "FC Barcelona (2008/09)",
         "Manchester United (1998/99)",
         "Juventus Turin (1984/85)"
       ],
-      "r": 2,
+      "r": 0,
       "cat": "Rekorde",
       "type": "mc",
-      "fact": "Manchester United gewann 1999 unter Sir Alex Ferguson Meisterschaft, FA Cup und Champions League. Das CL-Finale gegen Bayern München gewannen sie durch zwei Tore in der Nachspielzeit – Sheringham (90.+1) und Solskjær (90.+3). Bayern hatte 89 Minuten lang geführt."
+      "fact": "Ajax Amsterdam gewann 1971/72 Meisterschaft, Pokal und Europapokal der Landesmeister – angeführt von Johan Cruyff. Als allererster Verein überhaupt hatte Celtic Glasgow das Triple schon 1967 geschafft. Manchester United gelang es 1999 als erstem englischen Klub."
     },
     {
       "q": "In welcher Stadt wurde der Weltfußballverband FIFA (Fédération Internationale de Football Association) 1904 gegründet?",

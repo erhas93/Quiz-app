@@ -142,10 +142,15 @@
         "The Legend of Zelda: Tears of the Kingdom",
         "Alan Wake 2"
       ],
-      "r": 2,
+      "r": 1,
       "cat": "Gaming Aktuell",
       "type": "mc",
-      "fact": "The Legend of Zelda: Tears of the Kingdom gewann 2023 den GOTY-Award bei den The Game Awards. Das Spiel von Nintendo erschien im Mai 2023 und verkaufte sich in den ersten drei Tagen über 10 Millionen Mal. Es ist der Nachfolger von Breath of the Wild und gilt als eines der ambitioniertesten Spiele der Geschichte."
+      "fact": "Baldur's Gate 3 vom belgischen Studio Larian gewann 2023 den Hauptpreis bei den Game Awards. Das Rollenspiel basiert auf den Regeln von Dungeons & Dragons und setzte sich unter anderem gegen Zelda: Tears of the Kingdom und Alan Wake 2 durch.",
+      "hints": [
+        "Das Spiel setzt die Regeln eines bekannten Pen-and-Paper-Rollenspiels um.",
+        "Entwickelt wurde es vom belgischen Studio Larian.",
+        "Es ist der dritte Teil einer Reihe, deren erste Teile von BioWare stammten."
+      ]
     },
     {
       "q": "Was ist der Name des Battle-Royale-Modus (Battle Royale Mode) in Fortnite?",

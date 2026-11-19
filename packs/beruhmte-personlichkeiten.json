@@ -107,7 +107,7 @@
     {
       "q": "In welchem Land wurde Nikola Tesla geboren?",
       "a": [
-        "Österreich-Ungarn (heutiges Serbien)",
+        "Kaisertum Österreich (heutiges Kroatien)",
         "Russland",
         "Deutschland",
         "USA"
@@ -115,7 +115,7 @@
       "r": 0,
       "cat": "Wissenschaft",
       "type": "mc",
-      "fact": "Nikola Tesla wurde 1856 in Smiljan, damals Teil des Österreichisch-Ungarischen Kaiserreichs (heute Serbien), geboren. Er wanderte später in die USA aus und arbeitete zunächst für Thomas Edison – bevor sie zu erbitterten Konkurrenten im 'Stromkrieg' (War of Currents) wurden.",
+      "fact": "Nikola Tesla wurde 1856 in Smiljan geboren, das damals zum Kaisertum Österreich gehörte und heute in Kroatien liegt. Seine Familie war serbischer Herkunft. Er wanderte später in die USA aus und arbeitete zunächst für Thomas Edison – bevor beide im „Stromkrieg“ (War of Currents) zu Konkurrenten wurden.",
       "hints": [
         "Er wurde 1856 in einem Dorf an der damaligen Militärgrenze geboren.",
         "Sein Vater war serbisch-orthodoxer Priester.",

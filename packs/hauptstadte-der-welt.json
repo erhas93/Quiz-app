@@ -153,9 +153,9 @@
       ]
     },
     {
-      "q": "Welche Stadt ist die Hauptstadt von Indonesien (Indonesia) – seit dem Umzug 2024?",
+      "q": "Welche neue Stadt soll Jakarta als Hauptstadt Indonesiens (Indonesia) ablösen?",
       "a": [
-        "Jakarta",
+        "Balikpapan",
         "Surabaya",
         "Nusantara",
         "Bandung"
@@ -163,7 +163,7 @@
       "r": 2,
       "cat": "Geographie",
       "type": "mc",
-      "fact": "Indonesien verlegte seine Hauptstadt von Jakarta auf der Insel Java zur neuen Stadt Nusantara auf Borneo (Kalimantan). Jakarta war durch Überschwemmungen, Überbevölkerung und Bodensenkung bedroht. Nusantara wurde als vollständig neue Stadt geplant.",
+      "fact": "Indonesien baut auf Borneo (Kalimantan) die neue Hauptstadt Nusantara. Jakarta ist durch Überschwemmungen, Überbevölkerung und absinkenden Boden bedroht. Offiziell ist Jakarta aber noch Hauptstadt, bis der Präsident den Umzug per Erlass vollzieht.",
       "hints": [
         "Sie wird auf der Insel Borneo neu gebaut.",
         "Der Umzug soll die überlastete, langsam absinkende alte Hauptstadt entlasten.",

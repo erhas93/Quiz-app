@@ -382,10 +382,11 @@ export function isFavFor(room, qi, uid) {
 
 // ── Statistik ──────────────────────────────────────────────────────────────
 // Feste Kennung je Frage aus dem Fragetext (FNV-1a), damit Werte auch bei geänderter Reihenfolge passen
-export function questionKey(q) {
+export function questionKey(q, hintPack = false) {
   let h = 0x811c9dc5;
   // Hinweis-Fragen teilen sich oft den Fragetext („Gesucht ist eine Jahreszahl.“) → 1. Hinweis gehört dazu
-  const s = String((q?.q || "") + (Array.isArray(q?.hints) ? " " + q.hints[0] : "")).toLowerCase().replace(/\s+/g, " ").trim();
+  // (nur in reinen Hinweis-Packs – bei klassischen Packs mit Hinweisen bleibt die Kennung wie bisher)
+  const s = String((q?.q || "") + (hintPack && Array.isArray(q?.hints) ? " " + q.hints[0] : "")).toLowerCase().replace(/\s+/g, " ").trim();
   for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   return "q" + h.toString(36);
 }
