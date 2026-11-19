@@ -4,7 +4,7 @@ import { db, ref, roomRef, roomPath, ROOM_ID, set, update, remove, runTransactio
 import { store, rerender } from "./store.js";
 import { DBG } from "./debug.js";
 import { loadPack } from "./packs.js";
-import { isHints, MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf } from "./model.js";
+import { autoJudge, jokerOf, isHints, MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf } from "./model.js";
 
 // Alle Aktionen hängen an einem Kontext (Identität, Datenbank, Raum). Die App nutzt den Hauptkontext,
 // die Test-Bots je einen eigenen mit eigener Anmeldung – so laufen sie über exakt dieselben Wege.
@@ -198,6 +198,7 @@ export function createActions(ctx) {
         : { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now), ...(hints ? { hint: 0, hintAt: now } : {}) };
       const reset = {};
       for (const p of activePlayers(room)) Object.assign(reset, { [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: null, [`players/${p.uid}/pick`]: null });
+    for (const u of Object.keys(room.players || {})) reset[`players/${u}/unclear`] = null;
       await update(ctx.roomRef(), {
         ...reset,
         questions,
@@ -254,6 +255,12 @@ export function createActions(ctx) {
     const q = room?.questions?.[qi], pack = room?.settings?.packId;
     return q && pack ? ctx.ref(`questionStats/${pack}/${questionKey(q, room?.settings?.packMode === "hints")}`) : null;
   }
+  // Erfasst je Frage nur Zähler (wenige hundert Byte pro Frage, wächst nicht mit der Zahl der Partien – außer
+  // den gekappten Listen falscher Freitext-Antworten). Keine Antwortzeiten.
+  //   n/right/noAns, fav/favRight, nofav/nofavRight, h<k>/h<k>r (Hinweisstand), joker,
+  //   pick.a0–a3 (gewählte Antwort bei MC), wrong{Text: Anzahl} (Freitext, max. 25 verschiedene),
+  //   modFix (Moderator weicht von der Automatik ab), altCand{Text} (vom Moderator als richtig gewertet),
+  //   err.m3…p3 (Schätzfehler-Bereiche), picked/turnSum (Duell: wann das Feld gewählt wurde)
   async function recordStats(room, qi) {
     if (room?.meta?.test) return;   // Testräume verfälschen die Statistik nicht
     const r = statRef(room, qi);
@@ -261,26 +268,61 @@ export function createActions(ctx) {
     const q = room.questions[qi];
     const rows = activePlayers(room).map(p => {
       const a = answerOf(room, qi, p.uid);
-      return { a, ok: statCorrect(room, qi, p.uid), fav: isFavFor(room, qi, p.uid) };
+      const j = room.judgments?.[qi]?.[p.uid]?.v;
+      return { a, ok: statCorrect(room, qi, p.uid), fav: isFavFor(room, qi, p.uid), j: j == null ? null : j === "correct", joker: jokerOf(room, p.uid)?.q === qi };
     });
+    const pick = pickOf(room, qi);
+    const key = t => String(t).toLowerCase().trim().replace(/[.#$/\[\]]/g, "_").replace(/\s+/g, " ").slice(0, 40) || "_";
+    const bucket = (v, t) => {
+      if (!t) return null;
+      const e = (v - t) / Math.abs(t);
+      return e < -0.5 ? "m3" : e < -0.2 ? "m2" : e < -0.05 ? "m1" : e <= 0.05 ? "z" : e <= 0.2 ? "p1" : e <= 0.5 ? "p2" : "p3";
+    };
+    const inc = (o, k) => { o[k] = (o[k] || 0) + 1; };
     try {
       await runTransaction(r, cur => {
-        const c = cur || { q: String(q.q).slice(0, 90), type: q.type || "mc", cat: q.cat || null, diff: q.diff || null };
+        const c = cur || {};
+        Object.assign(c, { q: String(q.q).slice(0, 90), type: q.type || "mc", cat: q.cat || null, diff: q.diff || null });
         for (const x of rows) {
-          c.n = (c.n || 0) + 1;
-          if (x.ok) c.right = (c.right || 0) + 1;
-          if (!x.a) c.noAns = (c.noAns || 0) + 1;
-          if (x.a && typeof x.a.ms === "number") { c.ms = (c.ms || 0) + x.a.ms; c.msN = (c.msN || 0) + 1; }
-          if (x.fav === true) { c.fav = (c.fav || 0) + 1; if (x.ok) c.favRight = (c.favRight || 0) + 1; }
-          if (x.fav === false) { c.nofav = (c.nofav || 0) + 1; if (x.ok) c.nofavRight = (c.nofavRight || 0) + 1; }
-        if (x.a && typeof x.a.h === "number") { const k = "h" + x.a.h; c[k] = (c[k] || 0) + 1; if (x.ok) c[k + "r"] = (c[k + "r"] || 0) + 1; }
+          inc(c, "n");
+          if (x.ok) inc(c, "right");
+          if (!x.a) inc(c, "noAns");
+          if (x.fav === true) { inc(c, "fav"); if (x.ok) inc(c, "favRight"); }
+          if (x.fav === false) { inc(c, "nofav"); if (x.ok) inc(c, "nofavRight"); }
+          if (x.a && typeof x.a.h === "number") { inc(c, "h" + x.a.h); if (x.ok) inc(c, "h" + x.a.h + "r"); }
+          if (x.joker) inc(c, "joker");
+          if (!x.a) continue;
+          if (!q.type || q.type === "mc") inc(c.pick = c.pick || {}, "a" + x.a.value);
+          if (q.type === "estimate") { const b = bucket(Number(x.a.value), Number(q.answer)); if (b) inc(c.err = c.err || {}, b); }
+          if (q.type === "open") {
+            const auto = autoJudge(q, x.a.value);
+            if (x.j != null && x.j !== auto) { inc(c, "modFix"); if (x.j) inc(c.altCand = c.altCand || {}, key(x.a.value)); }
+            if (!x.ok) {
+              c.wrong = c.wrong || {};
+              const k = key(x.a.value);
+              if (c.wrong[k] || Object.keys(c.wrong).length < 25) inc(c.wrong, k);
+            }
+          }
         }
+        if (pick) { inc(c, "picked"); c.turnSum = (c.turnSum || 0) + (pick.turn || 0); }
         c.mode = room.settings?.game || "classic";
         c.last = serverNow();
         return c;
       });
       DBG.log("Statistik", { qi, n: rows.length });
     } catch (e) { DBG.log("Statistik-Fehler", e.message); }
+  }
+
+  // „Unverständlich“: Spieler oder Moderator markieren die laufende Frage (umschaltbar), sofort gezählt
+  async function toggleUnclear(qi) {
+    const room = ctx.room();
+    const on = !!room?.players?.[uid()]?.unclear?.["q" + qi];
+    try {
+      await set(ctx.roomRef(`players/${uid()}/unclear/q${qi}`), on ? null : true);
+      const r = room?.meta?.test ? null : statRef(room, qi);
+      if (r) await runTransaction(r, cur => { const c = cur || { q: String(room.questions[qi]?.q || "").slice(0, 90) }; c.unclear = Math.max(0, (c.unclear || 0) + (on ? -1 : 1)); return c; });
+      DBG.log("Unverständlich", { qi, on: !on });
+    } catch (e) { fail("Markierung nicht gespeichert", e); }
   }
 
   // Feedback des Moderators: zu leicht / passt / zu schwer / fehlerhaft (umentscheiden möglich)
@@ -359,6 +401,7 @@ export function createActions(ctx) {
       [`players/${p.uid}/ready`]: p.uid === ctx.room()?.meta?.hostUid && ctx.room()?.meta?.mode === "players",
       [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: null, [`players/${p.uid}/pick`]: null
     });
+    for (const u of Object.keys(ctx.room()?.players || {})) patch[`players/${u}/unclear`] = null;
     try { await update(ctx.roomRef(), patch); DBG.log("newRound"); } catch (e) { fail("Neue Runde fehlgeschlagen", e); }
   }
 
@@ -589,7 +632,7 @@ export function createActions(ctx) {
     }
   }
 
-  return { nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
+  return { toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
 }
 
 const main = createActions({
@@ -609,4 +652,4 @@ const main = createActions({
     store.local.name = name;
   }
 });
-export const { nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;
+export const { toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;

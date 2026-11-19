@@ -422,6 +422,7 @@ const handlers = {
   unconfirmFavs: () => A.confirmFavs(false),
   duelDraw: (el) => { el.disabled = true; A.duelDraw(); },
   feedback: (el) => A.giveFeedback(el.dataset.arg),
+  unclear: () => A.toggleUnclear(store.room.game.qIndex),
   nextHint: (el) => { el.disabled = true; A.nextHint(store.room.game.qIndex); },
   releaseQ: (el) => { el.disabled = true; A.duelPickedDone(); },
   pickCell: (el) => {

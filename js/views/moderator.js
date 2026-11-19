@@ -1,6 +1,6 @@
 // Moderatoransicht während der Partie
 import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, verdictOf, estimateByDistance, isDuel, playOrder, isHints, hintLevel, hintPoints, HINT_MAX } from "../model.js";
-import { hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON, resultBanner } from "./common.js";
+import { unclearBtn, hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON, resultBanner } from "./common.js";
 import { duelStakeLine, duelOutcome } from "./duel.js";
 
 // Feedback zur Schwierigkeit (nur Moderator, nach dem Auflösen) – fließt in die Statistik
@@ -31,6 +31,7 @@ export function modGameView(s, me) {
   if (duel && revealed) { const o = duelOutcome(room, qi, null); if (o) body += resultBanner(o.kind === "neutral" ? "neutral" : o.kind, o.big, o.sub); }
   body += questionCard(q);
   body += hintsBlock(room, q, { all: true });
+  body += unclearBtn(room, qi, s.uid);
 
   if (!isOpenType(q)) {
     // Markierungen zeigen live, wer was gewählt hat

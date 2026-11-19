@@ -1,7 +1,7 @@
 // Spieler- und Zuschaueransicht während der Partie
 import { esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount, isDuel, playOrder, isHints, hintPoints } from "../model.js";
 import { duelStakeLine, duelOutcome } from "./duel.js";
-import { hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
+import { unclearBtn, hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, resultBanner, standing, ICON } from "./common.js";
 
 export function playerGameView(s, me) {
   const room = s.room;
@@ -54,6 +54,7 @@ export function playerGameView(s, me) {
 
   body += questionCard(q, revealed);
   body += hintsBlock(room, q);
+  if (!spectator) body += unclearBtn(room, qi, s.uid);
 
   if (!isOpenType(q)) {
     // ── Multiple Choice ──

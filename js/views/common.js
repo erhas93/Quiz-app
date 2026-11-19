@@ -157,6 +157,15 @@ export function questionCard(q, compact = false) {
   return `<div class="q-card${compact ? " compact" : ""}">${cat}<div class="q-text">${esc(q.q)}</div></div>`;
 }
 
+// „Unverständlich“-Knopf unter der Frage (Spieler und Moderator), zeigt auch, wie viele markiert haben
+export function unclearBtn(room, qi, uid) {
+  if (qi == null || qi < 0 || !room.questions?.[qi]) return "";
+  const mine = !!room.players?.[uid]?.unclear?.["q" + qi];
+  const n = Object.values(room.players || {}).filter(p => p?.unclear?.["q" + qi]).length;
+  const others = n - (mine ? 1 : 0);
+  return `<div class="unclear-row"><button class="unclear-btn${mine ? " on" : ""}" data-act="unclear">${mine ? "✓ als unverständlich markiert" : "Frage unverständlich?"}</button>${others ? `<span class="muted small">${others}× markiert</span>` : ""}</div>`;
+}
+
 // Hinweis-Modus: eingeblendete Hinweise (Moderator sieht alle vorab, abgedunkelt) und aktuelle Punktzahl
 export function hintsBlock(room, q, { all = false } = {}) {
   if (!isHints(room) || !Array.isArray(q?.hints)) return "";
