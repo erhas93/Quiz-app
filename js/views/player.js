@@ -118,8 +118,7 @@ export function playerGameView(s, me) {
   else if (phase === "answering" && !mine) {
     const others = players.filter(p => p.uid !== s.uid && answers[p.uid]).map(p => esc(p.name));
     if (isHints(room)) {
-      const t = players.filter(p => p.uid !== s.uid && answers[p.uid]).map(p => `${esc(p.name)} hat bei ${hintPoints(answers[p.uid].h)} ${hintPoints(answers[p.uid].h) === 1 ? "Punkt" : "Punkten"} getippt`);
-      note = t.length ? t.join(" · ") : "Noch niemand hat getippt";
+      note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} getippt` : "Noch niemand hat getippt";
     } else
     note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} eingeloggt` : (total > 1 ? "Noch niemand eingeloggt" : "");
   } else if (phase === "locked" && !mine) note = "Zeit abgelaufen – keine Antwort";

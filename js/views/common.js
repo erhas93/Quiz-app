@@ -104,7 +104,26 @@ export function gameHeader(s, mode) {
   const top = `<div class="top">
     <div class="top-main"><div class="top-title sm">${isDuel(room) ? (isStartQ(room, qi) ? "Startfrage" : `Zug ${pickOf(room, qi)?.turn || "?"} / ${DUEL_TURNS}`) : `Frage ${qi + 1} / ${qCount(room)}`}${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div>${segBar(room, uid, mode === "player")}</div>
     ${timerChip(room)}${role}${menuBtn(s.connected)}</div>`;
-  return top + timerBar(room) + (mode === "mod" ? modChips(room) : playerChips(room, uid));
+  return top + timerBar(room) + (mode === "mod" ? modChips(room) : playerChips(room, uid)) + (isHints(room) ? hintRace(room) : "");
+}
+
+// Hinweis-Modus: Füllstand je Spieler, gemessen an der Höchstpunktzahl (4 je Frage). Zählt nur aufgelöste Fragen.
+export function hintRace(room) {
+  const ps = activePlayers(room);
+  if (ps.length < 2) return "";
+  const per = HINT_MAX + 1, n = qCount(room);
+  const total = n * per;
+  const done = Array.from({ length: n }, (_, qi) => resultFor(room, qi)).filter(Boolean).length;
+  const left = (n - done) * per;
+  const sc = ps.map(p => ({ p, v: scoreOf(room, p.uid) }));
+  const sorted = [...sc].sort((a, b) => b.v - a.v);
+  const lead = sorted[0].v - sorted[1].v;
+  const leader = lead > 0 ? sorted[0].p : null;
+  let txt = `Noch ${left} von ${total} Punkten zu holen${leader ? ` · ${esc(leader.name)} führt mit ${lead}` : ""}`;
+  if (leader && lead > left) txt = `<b>${esc(leader.name)}</b> ist nicht mehr einzuholen`;
+  else if (!left) txt = leader ? `${esc(leader.name)} gewinnt` : "Gleichstand";
+  const row = ({ p, v }, i) => `<div class="race-row hr${i}"><span class="race-name">${esc(p.name)}</span><span class="race-track"><i style="width:${Math.min(100, v / total * 100)}%"></i></span></div>`;
+  return `<div class="race hint-race">${sc.map(row).join("")}<div class="race-txt">${txt}</div></div>`;
 }
 
 function playerChips(room, uid) {
@@ -115,7 +134,8 @@ function playerChips(room, uid) {
   const lead = isHints(room) ? null : speedLead(room)?.leader?.uid;
   return `<div class="chips">${activePlayers(room).map((p, pi) => {
     let st = "";
-    if (open) st = answers[p.uid] ? `<span class="chip-st ok" aria-label="eingeloggt">${isHints(room) ? `${hintPoints(answers[p.uid].h)} P ` : ""}${ICON.check(16)}</span>` : `<span class="chip-st">…</span>`;
+    // Hinweis-Modus: nur „getippt“ – bei wie vielen Punkten, sehen die Mitspieler nicht
+    if (open) st = answers[p.uid] ? (isHints(room) ? `<span class="chip-st tip">getippt</span>` : `<span class="chip-st ok" aria-label="eingeloggt">${ICON.check(16)}</span>`) : `<span class="chip-st">…</span>`;
     if (open && jokerOf(room, p.uid)?.q === qi) st = `<span class="chip-st gold">50:50</span>` + st;
     const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
     return `<div class="chip ${side}${p.uid === uid ? " me" : ""}">
@@ -137,8 +157,8 @@ function modChips(room) {
     const a = answers[p.uid];
     const j = jokerOf(room, p.uid);
     const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
-    let sub = a ? (isHints(room) ? `bei ${hintPoints(a.h)} P ✓` : `${fmtMs(a.ms)} ✓`) : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
-    if (a && res?.fastestUid === p.uid) sub = `${fmtMs(a.ms)} ⚡`;
+    let sub = a ? (isHints(room) ? `getippt · ${hintPoints(a.h)} P` : `${fmtMs(a.ms)} ✓`) : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
+    if (a && !isHints(room) && res?.fastestUid === p.uid) sub = `${fmtMs(a.ms)} ⚡`;
     let jk = "";
     if (j && j.q === qi) jk = `<span class="chip-st gold">50:50 aktiv</span>`;
     else if (mcOpen && !j) jk = `<button class="mini-btn" data-act="joker" data-arg="${p.uid}" ${a ? "disabled" : ""} aria-label="50:50-Joker für ${esc(p.name)}">50:50</button>`;
