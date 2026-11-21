@@ -139,7 +139,10 @@ export function playerGameView(s, me) {
     const last = duel ? playOrder(room).length >= qCount(room) : qi + 1 >= qCount(room);
     const label = last ? "Zum Ergebnis" : duel ? "Zurück zum Brett" : "Nächste Frage";
     if (hostUid(room) === s.uid) actions = `<button class="btn btn-primary" data-act="next">${label}</button>`;
-    else note = `${esc(room.players?.[hostUid(room)]?.name || "Der Host")} schaltet weiter`;
+    else {
+      const hn = esc(room.players?.[hostUid(room)]?.name || "Der Host");
+      note = room.presence?.[hostUid(room)]?.online === false ? `${hn} ist gerade offline – die Steuerung geht gleich an den Nächsten` : `${hn} schaltet weiter`;
+    }
   }
   else if (revealed) note = duel ? "Gleich geht es zurück zum Brett …" : "Warte auf die nächste Frage …";
 

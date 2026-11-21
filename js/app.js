@@ -5,7 +5,7 @@ import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS, HOST_AWAY_MS } from "./model.js";
 import { duelBoardView, drawFrame } from "./views/duel.js";
 import { testSetupView } from "./views/overview.js";
 import { statsView } from "./views/stats.js";
@@ -174,6 +174,12 @@ function afterRender(s, key) {
   if (free && me?.role === "player" && (room.meta?.status === "lobby" || room.meta?.status === "running")) {
     const succ = hostSuccessor(room, now);
     if (succ === s.uid) doOnce(`claim:${hostUid(room)}:${room.meta?.updatedAt}`, () => A.claimHost(hostUid(room)));
+    // Host gerade offline gegangen: genau dann erneut prüfen, wenn die Wartezeit abläuft (nicht erst beim 15-s-Takt)
+    const hp = room.presence?.[hostUid(room)];
+    if (!succ && hp && !hp.online && hp.lastSeen) {
+      const wait = HOST_AWAY_MS - (now - hp.lastSeen) + 500;
+      if (wait > 0) doOnce(`hostwait:${hostUid(room)}:${hp.lastSeen}`, () => rerender(), wait);
+    }
   }
 
   // Automatisch sperren, sobald alle eingeloggt haben (Moderator bzw. Host)
