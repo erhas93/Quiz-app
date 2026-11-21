@@ -1,5 +1,6 @@
 // Gemeinsame Bausteine der Ansichten (Design A · Kompakt)
 import { serverNow } from "../firebase.js";
+import { an, animKey } from "./anim.js";
 import { isHints, hintLevel, hintPoints, HINT_MAX, esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking, isDuel, playOrder, isStartQ, pickOf, DUEL_TURNS, DIFF_LABEL, pointsOf } from "../model.js";
 
 export const L = i => String.fromCharCode(65 + i);
@@ -122,7 +123,7 @@ export function hintRace(room) {
   let txt = `Noch ${left} von ${total} Punkten zu holen${leader ? ` · ${esc(leader.name)} führt mit ${lead}` : ""}`;
   if (leader && lead > left) txt = `<b>${esc(leader.name)}</b> ist nicht mehr einzuholen`;
   else if (!left) txt = leader ? `${esc(leader.name)} gewinnt` : "Gleichstand";
-  const row = ({ p, v }, i) => `<div class="race-row hr${i}"><span class="race-name">${esc(p.name)}</span><span class="race-track"><i style="width:${Math.min(100, v / total * 100)}%"></i></span></div>`;
+  const row = ({ p, v }, i) => `<div class="race-row hr${i}"><span class="race-name">${esc(p.name)}</span><span class="race-track"><i data-bar="hr.${p.uid}" style="width:${Math.min(100, v / total * 100)}%"></i></span></div>`;
   return `<div class="race hint-race">${sc.map(row).join("")}<div class="race-txt">${txt}</div></div>`;
 }
 
@@ -132,16 +133,17 @@ function playerChips(room, uid) {
   const answers = answersFor(room, qi);
   const open = g.phase === "answering" || g.phase === "locked";
   const lead = isHints(room) ? null : speedLead(room)?.leader?.uid;
+  const K = animKey(room);
   return `<div class="chips">${activePlayers(room).map((p, pi) => {
     let st = "";
     // Hinweis-Modus: nur „getippt“ – bei wie vielen Punkten, sehen die Mitspieler nicht
-    if (open) st = answers[p.uid] ? (isHints(room) ? `<span class="chip-st tip">getippt</span>` : `<span class="chip-st ok" aria-label="eingeloggt">${ICON.check(16)}</span>`) : `<span class="chip-st">…</span>`;
+    if (open) st = answers[p.uid] ? (isHints(room) ? `<span class="chip-st tip an-chk"${an(K + ":chk:" + p.uid)}>getippt</span>` : `<span class="chip-st ok an-chk" aria-label="eingeloggt"${an(K + ":chk:" + p.uid)}>${ICON.check(16)}</span>`) : `<span class="chip-st">…</span>`;
     if (open && jokerOf(room, p.uid)?.q === qi) st = `<span class="chip-st gold">50:50</span>` + st;
     const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
     return `<div class="chip ${side}${p.uid === uid ? " me" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span>
       <span class="chip-name">${esc(p.name)}${lead === p.uid ? " ⚡" : ""}</span>${st}
-      <span class="chip-pts">${scoreOf(room, p.uid)}</span></div>`;
+      ${ptsHtml(room, p.uid)}</div>`;
   }).join("")}</div>`;
 }
 
@@ -164,17 +166,31 @@ function modChips(room) {
     else if (mcOpen && !j) jk = `<button class="mini-btn" data-act="joker" data-arg="${p.uid}" ${a ? "disabled" : ""} aria-label="50:50-Joker für ${esc(p.name)}">50:50</button>`;
     else if (mcOpen && j) jk = `<span class="chip-st">Joker weg</span>`;
     return `<div class="chip2 ${side}">
-      <div class="chip2-r"><span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span><span class="chip-pts">${scoreOf(room, p.uid)}</span></div>
-      <div class="chip2-r"><span class="chip2-sub">${sub}</span>${jk}</div></div>`;
+      <div class="chip2-r"><span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span>${ptsHtml(room, p.uid)}</div>
+      <div class="chip2-r"><span class="chip2-sub${a ? " an-chk" : ""}"${a ? an(animKey(room) + ":chk:" + p.uid) : ""}>${sub}</span>${jk}</div></div>`;
   }).join("")}</div>`;
 }
 
+// Punktzahl in der Spielerkarte: zählt nach dem Auflösen hoch, darüber steigt kurz „+N“ auf
+function ptsHtml(room, uid) {
+  const g = room.game || {}, qi = g.qIndex ?? 0;
+  const K = animKey(room);
+  const got = g.phase === "revealed" ? resultFor(room, qi)?.points?.[uid] || 0 : 0;
+  const fl = got ? `<span class="pts-float an-float"${an(K + ":fl:" + uid, 250)}>+${got}</span>` : "";
+  return `<span class="chip-pts${got ? " an-pts" : ""}"${got ? an(K + ":pp:" + uid, 250) : ""} data-cnt="${room.meta?.createdAt || 0}.${room.game?.startedAt || 0}.${uid}">${scoreOf(room, uid)}</span>${fl}`;
+}
+
 // ── Frage, Hintergrund, Ergebnis ──
-export function questionCard(q, compact = false) {
+// Die Karte hat oben rechts von Anfang an den Fakten-Knopf (blass, solange es noch nichts zu lesen gibt),
+// damit beim Auflösen nichts verrutscht. factState: "off" | "on" | null (kein Fakt vorhanden)
+export function questionCard(q, { room = null, factOn = false } = {}) {
   let type = q.type === "estimate" ? `<span class="q-type">Schätzfrage</span>` : q.type === "open" ? `<span class="q-type">Freitext</span>` : "";
   if (q.diff) type += `<span class="q-type diff d${q.diff}">${DIFF_LABEL[q.diff] || ""} · ${pointsOf(q)} P</span>`;
-  const cat = q.cat || type ? `<div class="q-cat">${q.cat ? esc(q.cat) : ""}${type}</div>` : "";
-  return `<div class="q-card${compact ? " compact" : ""}">${cat}<div class="q-text">${esc(q.q)}</div></div>`;
+  const hasFact = !!(q.fact || q.erklaerung);
+  const K = room ? animKey(room) : "x";
+  const fb = hasFact ? `<button class="q-fact${factOn ? " on an-bulb" : ""}"${factOn ? an(K + ":bulb", 500) + ` data-act="toggleFact" aria-label="Fakten zur Frage anzeigen"` : ` disabled aria-label="Fakten erst nach dem Auflösen"`}>${ICON.bulb(16)}<span>Fakten</span></button>` : "";
+  const cat = q.cat || type || fb ? `<div class="q-cat"><span class="q-cat-l">${q.cat ? esc(q.cat) : ""}${type}</span>${fb}</div>` : "";
+  return `<div class="q-card an-qin"${an(K + ":q")}>${cat}<div class="q-text">${esc(q.q)}</div></div>`;
 }
 
 // „Unverständlich“-Knopf unter der Frage (Spieler und Moderator), zeigt auch, wie viele markiert haben
@@ -198,27 +214,33 @@ export function hintsBlock(room, q, { all = false } = {}) {
     return `<div class="hint hidden"><span class="hint-n">${i + 1}</span><span class="hint-t">Hinweis ${i + 1} · noch verdeckt</span></div>`;
   }).join("");
   const pts = hintPoints(n);
-  const head = phase === "answering" ? `<div class="hint-pts">Wer jetzt richtig tippt: <b>${pts} ${pts === 1 ? "Punkt" : "Punkte"}</b></div>` : "";
+  // Kopfzeile bleibt immer stehen, nur der Text wechselt
+  const head = `<div class="hint-pts">${phase === "answering" ? `Wer jetzt richtig tippt: <b>${pts} ${pts === 1 ? "Punkt" : "Punkte"}</b>` : "Alle Hinweise aufgedeckt"}</div>`;
   return `<div class="hints">${head}${items}</div>`;
 }
 
-// Hintergrund: kleiner Reiter am rechten Rand; ein Tipp schiebt eine eigene Seite mit den Fakten herein,
-// ein zweiter Tipp (oder die Zurück-Taste) schiebt sie wieder weg
+// Hintergrund: Blatt von unten über dem Spielbildschirm. Öffnen über den Fakten-Knopf in der Fragekarte,
+// schließen über „Schließen“, einen Tipp daneben oder die Zurück-Taste
 export function factPanel(q, open, { title = "Hintergrund", animate = false } = {}) {
   const fact = q?.fact || q?.erklaerung;
-  if (!fact) return "";
+  if (!fact || !open) return "";
   const sol = q.type === "estimate" || q.type === "open" ? formatValue(q, q.answer) : esc(q.a?.[q.r] ?? "");
-  const tab = `<button class="fact-tab${open ? " open" : ""}" data-act="toggleFact" aria-expanded="${open}" aria-label="${open ? "Hintergrund schließen" : "Hintergrund anzeigen"}">
-      <span class="fact-tab-ico">${open ? ICON.chev(18) : ICON.bulb(18)}</span><span class="fact-tab-txt">${open ? "Zurück" : "Fakten"}</span></button>`;
-  if (!open) return tab;
-  return `<div class="fact-page${animate ? " in" : ""}" id="fact-page" role="dialog" aria-label="${esc(title)}">
-      <div class="fact-page-inner">
-        <div class="fact-h">${esc(title)}</div>
+  return `<div class="fact-bg${animate ? " in" : ""}" id="fact-page" data-act="factBg"><div class="fact-sheet" role="dialog" aria-label="${esc(title)}">
+      <div class="sheet-grip"></div>
+      <div class="fact-head"><div class="fact-h">${ICON.bulb(16)} ${esc(title)}</div><button class="btn btn-ghost btn-sm" data-act="toggleFact">Schließen</button></div>
+      <div class="fact-scroll">
         <div class="fact-q">${esc(q.q)}</div>
         ${sol ? `<div class="fact-sol"><b>Richtig:</b> ${sol}</div>` : ""}
         <div class="fact-text">${esc(fact)}</div>
       </div>
-    </div>${tab}`;
+    </div></div>`;
+}
+
+// Ergebnis im festen Fußbereich: eine Zeile so hoch wie ein Knopf, optional mit Knopf rechts (Host)
+export function resultSlot(kind, big, sub, key, btn = "") {
+  const ico = kind === "ok" ? ICON.check(18) : kind === "no" ? ICON.x(18) : "–";
+  return `<div class="result slim ${kind} an-res"${an(key)}><span class="result-ico">${ico}</span>
+    <div class="result-tx"><div class="result-big">${big}</div>${sub ? `<div class="result-sub">${sub}</div>` : ""}</div>${btn}</div>`;
 }
 
 // Zwischenstand in einem Satz

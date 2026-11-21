@@ -1,6 +1,7 @@
 // Moderatoransicht während der Partie
 import { esc, activePlayers, answersFor, answeredCount, isOpenType, judgmentOf, unjudgedCount, qCount, fmtMs, verdictOf, estimateByDistance, isDuel, playOrder, isHints, hintLevel, hintPoints, HINT_MAX } from "../model.js";
-import { unclearBtn, hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON, resultBanner } from "./common.js";
+import { unclearBtn, hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, standing, ICON } from "./common.js";
+import { an, animKey, hk } from "./anim.js";
 import { duelStakeLine, duelOutcome } from "./duel.js";
 
 // Feedback zur Schwierigkeit (nur Moderator, nach dem Auflösen) – fließt in die Statistik
@@ -26,10 +27,11 @@ export function modGameView(s, me) {
   const factOpen = s.local.factOpen === qi;
 
   const duel = isDuel(room);
+  const K = animKey(room);
   let body = "";
-  if (duel && !revealed) body += duelStakeLine(room, qi, null);
-  if (duel && revealed) { const o = duelOutcome(room, qi, null); if (o) body += resultBanner(o.kind === "neutral" ? "neutral" : o.kind, o.big, o.sub); }
-  body += questionCard(q);
+  // Feste Reihenfolge wie beim Spieler; das Duell-Ergebnis steht unten in der Hinweiszeile
+  if (duel) body += duelStakeLine(room, qi, null);
+  body += questionCard(q, { room, factOn: phase === "shown" || revealed });
   body += hintsBlock(room, q, { all: true });
   body += unclearBtn(room, qi, s.uid);
 
@@ -37,9 +39,9 @@ export function modGameView(s, me) {
     // Markierungen zeigen live, wer was gewählt hat
     body += `<div class="answers">${q.a.map((txt, i) => {
       const who = players.filter(p => answers[p.uid]?.value === i);
-      const cls = ["ans", i === q.r ? "correct" : who.length ? "wrong" : ""];
-      const mk = who.length ? `<span class="mkrs">${who.map(p => `<span class="mkr">${shortName(p.name)}</span>`).join("")}</span>` : "";
-      return `<button class="${cls.join(" ")}" disabled><span class="ans-l">${i === q.r ? ICON.check(18) : L(i)}</span><span class="ans-txt">${esc(txt)}</span>${mk}</button>`;
+      const cls = ["ans", i === q.r ? "correct" : who.length ? "wrong" : "", "an-ain"];
+      const mk = who.length ? `<span class="mkrs">${who.map(p => `<span class="mkr an-chk"${an(K + ":mk:" + p.uid)}>${shortName(p.name)}</span>`).join("")}</span>` : "";
+      return `<button class="${cls.join(" ")}"${an(K + ":a" + i, 120 + i * 60)} disabled><span class="ans-l">${i === q.r ? ICON.check(18) : L(i)}</span><span class="ans-txt">${esc(txt)}</span>${mk}</button>`;
     }).join("")}</div>`;
   } else {
     // Lösung, bei Schätzfragen mit Abständen
@@ -50,15 +52,15 @@ export function modGameView(s, me) {
         .filter(x => x.d != null).sort((a, b) => a.d - b.d);
       if (diffs.length > 1) sol += `<div class="small">Am nächsten: <b>${diffs.filter(x => x.d === diffs[0].d).map(x => esc(x.p.name)).join(" & ")}</b> (Abstand ${diffs[0].d.toLocaleString("de-DE")})</div>`;
     }
-    body += `<div class="solution">${sol}</div>`;
-    body += players.map(p => {
+    body += `<div class="solution an-ain"${an(K + ":sol", 120)}>${sol}</div>`;
+    body += players.map((p, pi) => {
       const a = answers[p.uid];
       const byDist = estimateByDistance(room, q);   // ab 2 Spielern gewinnt bei Schätzfragen der Nächste – nichts zu bewerten
       const j = byDist ? (phase === "shown" || revealed ? verdictOf(room, qi, p.uid) : null) : judgmentOf(room, qi, p.uid);
       const canJudge = a && phase === "shown" && !byDist;
       let meta = a ? fmtMs(a.ms) : "";
       if (q.type === "estimate" && a && typeof a.value === "number" && q.answer != null) meta = `Δ ${Math.abs(a.value - parseFloat(q.answer)).toLocaleString("de-DE")}`;
-      return `<div class="prow ${j || ""}"><span class="prow-name">${esc(p.name)}</span>
+      return `<div class="prow ${j || ""} an-ain"${an(K + ":row:" + p.uid, 180 + pi * 60)}><span class="prow-name">${esc(p.name)}</span>
         ${a ? `<span class="prow-val">${phase === "answering" ? "eingeloggt ✓" : formatValue(q, a.value)}</span>` : `<span class="prow-val none">${phase === "answering" ? "denkt nach …" : "keine Antwort"}</span>`}
         ${canJudge ? `<button class="judge c${j === "correct" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="1" aria-label="${esc(p.name)} richtig">${ICON.check(20)}</button>
           <button class="judge w${j === "wrong" ? " on" : ""}" data-act="judge" data-arg="${p.uid}" data-val="0" aria-label="${esc(p.name)} falsch">${ICON.x(20)}</button>` : `<span class="prow-meta">${phase === "answering" ? "" : meta}</span>`}</div>`;
@@ -83,7 +85,8 @@ export function modGameView(s, me) {
     note = open ? `${open} noch nicht bewertet – zählt sonst als falsch` : "";
     action = `<button class="btn btn-gold" data-act="reveal">Auflösen</button>`;
   } else if (revealed) {
-    note = standing(room, null);
+    const o = duel ? duelOutcome(room, qi, null) : null;
+    note = o ? [o.big, o.sub].filter(Boolean).join(" · ") : standing(room, null);
     const last = duel ? playOrder(room).length >= qCount(room) : qi + 1 >= qCount(room);
     action = `<button class="btn btn-primary" data-act="next">${last ? "Zum Ergebnis" : duel ? "Zurück zum Brett" : "Nächste Frage"}</button>`;
   }
@@ -95,10 +98,12 @@ export function modGameView(s, me) {
         + (t.pauseLeft != null ? `<button class="btn-sq" data-act="timerReset" aria-label="Timer zurücksetzen">${ICON.reset()}</button>` : "");
   }
 
+  // Feedback-Zeile unten im Inhalt (nicht im Fußbereich, der hat eine feste Höhe)
+  if (revealed && !room.meta?.test) body += `<div class="an-up"${an(K + ":fb", 400)}>${feedbackRow(room, qi)}</div>`;
   return `<div class="screen">
     ${gameHeader(s, "mod")}
     <div class="body">${body}<div class="spacer"></div></div>
-    <div class="actions">${revealed && !room.meta?.test ? feedbackRow(room, qi) : ""}<div class="foot-note">${note}</div><div class="actions-row">${timerBtns}${action}</div></div>
+    <div class="actions fixed"><div class="foot-note an-note"${an(K + ":n:" + hk(note))}>${note}</div><div class="fslot"><div class="actions-row an-up"${an(K + ":slot:" + phase)}>${timerBtns}${action}</div></div></div>
     ${fact}
   </div>`;
 }

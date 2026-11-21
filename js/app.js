@@ -1,4 +1,5 @@
 // Einstieg: Identität, Abo auf den Raum, Rendern, Ereignisse
+import { runAnims } from "./views/anim.js";
 import { db, ref, get, initIdentity, ROOM_ID, CREATE_MODE, serverNow, goRoom, goOverview, newRoomCode, normCode, clearCreateParam } from "./firebase.js";
 import { store, subscribe, onRender, rerender, setLocal, subscribePackData } from "./store.js";
 import { syncPresence, watchVisibility } from "./presence.js";
@@ -126,6 +127,7 @@ function doOnce(key, fn, delay = 0) {
   delay ? setTimeout(fn, delay) : fn();
 }
 function afterRender(s, key) {
+  runAnims($("app"));
   if (key !== "loading") hideSplash();
   // eigene App-Version im Raum vermerken
   { const meP = s.room?.players?.[s.uid]; if (ROOM_ID && meP && meP.v !== VERSION) doOnce(`ver:${s.room?.meta?.createdAt}:${meP.joinedAt || 0}`, () => A.setVersion(VERSION)); }
@@ -355,7 +357,7 @@ const handlers = {
   timerReset: () => A.timerReset(),
   joker: (el) => A.grantJoker(el.dataset.arg),
   bonus: (el) => A.setBonus(el.dataset.arg || null),
-  pick: (el) => { const qi = store.room?.game?.qIndex; setLocal({ pending: { qi, value: Number(el.dataset.arg) } }); vibrate(15); },
+  pick: (el) => { const qi = store.room?.game?.qIndex; setLocal({ pending: { qi, value: Number(el.dataset.arg), t: Date.now() } }); vibrate(15); },
   commitPick: async (el) => {
     const p = store.local.pending; if (!p) return;
     el.disabled = true;
@@ -384,6 +386,7 @@ const handlers = {
   menu: () => setLocal({ menu: true }),
   closeMenu: (el, e) => { if (e.target === el) setLocal({ menu: false }); },
   toggleFact: () => toggleFact(),
+  factBg: (el, e) => { if (e.target === el) toggleFact(); },
   gameMode: (el) => C().setGameMode(el.dataset.arg),
   pickTimer: () => C().setPickTimer(!store.room?.settings?.pickTimer),
   duelRule: (el) => C().setDuelRule(el.dataset.arg),

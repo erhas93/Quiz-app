@@ -81,7 +81,7 @@ export function raceBar(room) {
   let txt = `Noch ${left} von ${total} Punkten auf dem Brett${leader ? ` · ${esc(leader.name)} führt mit ${lead}` : ""}`;
   if (leader && lead > left) txt = `<b>${esc(leader.name)}</b> ist nicht mehr einzuholen`;
   else if (!left) txt = leader ? `${esc(leader.name)} gewinnt` : "Unentschieden";
-  const bar = (p, i) => `<div class="race-row ${sideOf(room, p.uid)}"><span class="race-track"><i style="width:${Math.min(100, sc[i] / total * 100)}%"></i></span></div>`;
+  const bar = (p, i) => `<div class="race-row ${sideOf(room, p.uid)}"><span class="race-track"><i data-bar="dr.${p.uid}" style="width:${Math.min(100, sc[i] / total * 100)}%"></i></span></div>`;
   return `<div class="race">${ps.map(bar).join("")}<div class="race-txt">${txt}</div></div>`;
 }
 const scoreOfDuel = (room, uid) => Object.values(room.results || {}).reduce((a, r) => a + (r?.points?.[uid] || 0), 0);
