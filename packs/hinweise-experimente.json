@@ -1,0 +1,175 @@
+{
+  "name": "Hinweise: Spannende Experimente",
+  "emoji": "🧪",
+  "mode": "hints",
+  "questions": [
+    {
+      "q": "Welches Experiment ist gesucht?",
+      "a": ["Asch-Konformitätsexperiment", "Rosenhan-Experiment", "Milgram-Experiment", "Little-Albert-Experiment"],
+      "r": 2,
+      "hints": [
+        "Die Versuchspersonen glaubten, an einer Studie über Lernen und Gedächtnis teilzunehmen.",
+        "Zögerten sie, hörten sie vorgegebene Sätze wie „Das Experiment erfordert, dass Sie weitermachen.“",
+        "Ein Versuchsleiter forderte sie auf, einem Schüler angeblich immer stärkere Stromstöße zu verabreichen."
+      ],
+      "fact": "Im Milgram-Experiment (Milgram Experiment) von 1961 an der Yale University gingen 26 von 40 Teilnehmern bis zur höchsten Stufe von 450 Volt – der „Schüler“ war ein Schauspieler. Stanley Milgram wollte verstehen, warum Menschen unter Anweisung grausam handeln; der Eichmann-Prozess lief zur selben Zeit. Die Täuschung und der enorme Stress der Teilnehmer trugen dazu bei, dass heute Ethikkommissionen psychologische Versuche prüfen."
+    },
+    {
+      "q": "Welches Experiment ist gesucht?",
+      "a": ["Doppelspaltexperiment", "Michelson-Morley-Experiment", "Millikan-Öltröpfchenversuch", "Stern-Gerlach-Versuch"],
+      "r": 0,
+      "hints": [
+        "Richard Feynman meinte, es enthalte das einzige echte Geheimnis seines Fachgebiets.",
+        "Schickt man die Teilchen einzeln los, entsteht trotzdem nach und nach ein Muster aus hellen und dunklen Streifen.",
+        "Licht oder Elektronen fallen durch zwei schmale, eng nebeneinanderliegende Öffnungen auf einen Schirm."
+      ],
+      "fact": "Thomas Young zeigte damit um 1802 die Wellennatur des Lichts, 1961 gelang es Claus Jönsson mit Elektronen. Prüft man, durch welchen Spalt ein Teilchen fliegt, verschwindet das Streifenmuster – seitdem wird darüber gestritten, was eine Messung eigentlich ist. Leser der Zeitschrift Physics World wählten das Doppelspaltexperiment (Double-Slit Experiment) mit einzelnen Elektronen 2002 zum schönsten Experiment der Physik."
+    },
+    {
+      "q": "Wie hieß das gesuchte Tier?",
+      "type": "open",
+      "answer": "Dolly",
+      "alt": ["Dolly das Schaf", "Schaf Dolly", "Dolly the Sheep"],
+      "hints": [
+        "Ihr Name geht auf eine bekannte Country-Sängerin zurück.",
+        "Sie kam 1996 in Schottland zur Welt und hatte drei Mütter, aber keinen Vater.",
+        "Das Schaf war das erste Säugetier, das aus einer Zelle eines erwachsenen Tieres geklont wurde."
+      ],
+      "fact": "Dolly entstand am Roslin Institute aus einer Euterzelle – daher der Name nach Dolly Parton. Ihre drei „Mütter“ lieferten Eizelle, Erbgut und Gebärmutter. Nach ihrer Geburt verboten viele Länder das Klonen von Menschen ausdrücklich; die Frage, ob ein Klon ein eigenständiges Leben führen kann oder nur eine Kopie ist, beschäftigt die Ethik bis heute."
+    },
+    {
+      "q": "Welches Gedankenexperiment ist gesucht?",
+      "a": ["Gefangenendilemma", "Chinesisches Zimmer", "Schleier des Nichtwissens", "Trolley-Problem"],
+      "r": 3,
+      "hints": [
+        "Es stammt in seiner Urform von der britischen Philosophin Philippa Foot aus dem Jahr 1967.",
+        "In einer bekannten Variante müsste man einen Menschen von einer Brücke stoßen, um andere zu retten.",
+        "Eine Weiche entscheidet, ob ein außer Kontrolle geratener Wagen einen oder fünf Menschen erfasst."
+      ],
+      "fact": "Die meisten Menschen würden die Weiche umstellen, aber niemanden von der Brücke stoßen – obwohl das Ergebnis gleich wäre. Das Trolley-Problem (Trolley Problem) ist durch selbstfahrende Autos aktuell geworden: Im Online-Experiment Moral Machine trafen Menschen aus über 200 Ländern rund 40 Millionen solcher Entscheidungen. Die deutsche Ethik-Kommission legte 2017 fest, dass Menschenleben nicht nach Alter oder Geschlecht gegeneinander aufgewogen werden dürfen."
+    },
+    {
+      "q": "Welcher Forscher ist gesucht?",
+      "a": ["Konrad Lorenz", "Harry Harlow", "Iwan Pawlow", "B. F. Skinner"],
+      "r": 1,
+      "hints": [
+        "Seine Tierversuche gelten heute als Paradebeispiel für Forschung, die ethisch kaum zu rechtfertigen ist.",
+        "Er zeigte, dass Nähe und Trost für die Bindung wichtiger sind als Nahrung.",
+        "Junge Rhesusaffen wählten zwischen einer Drahtattrappe mit Milchflasche und einer weichen Stoffattrappe – und klammerten sich an die Stoffmutter."
+      ],
+      "fact": "Harry Harlows Versuche an der University of Wisconsin in den 1950er-Jahren veränderten den Umgang mit Kindern: Heime und Kliniken setzten danach stärker auf Körperkontakt. Spätere Isolationsversuche, bei denen Affen monatelang allein gehalten wurden, gaben der Tierschutzbewegung großen Auftrieb. Bis heute dienen sie als Beispiel für die Frage, wie viel Leid für Erkenntnis in Kauf genommen werden darf."
+    },
+    {
+      "q": "Gesucht ist eine Zahl.",
+      "type": "estimate",
+      "answer": 6,
+      "tol": 1,
+      "hints": [
+        "So viele Tage dauerte ein berühmtes Experiment von 1971, bevor es vorzeitig abgebrochen wurde.",
+        "Studenten spielten im Keller einer Universität Wärter und Gefangene.",
+        "Geplant waren zwei Wochen – das Stanford-Prison-Experiment endete nach weniger als der Hälfte."
+      ],
+      "fact": "Abgebrochen wurde das Stanford-Prison-Experiment (Stanford Prison Experiment), nachdem die Psychologin Christina Maslach die Zustände gesehen und protestiert hatte. Lange galt es als Beweis, dass Situationen Menschen zu Tätern machen. Inzwischen ist bekannt, dass die Wärter teils zu hartem Verhalten ermuntert wurden – die Aussagekraft ist daher stark umstritten."
+    },
+    {
+      "q": "Welches Unternehmen ist gesucht?",
+      "a": ["Google", "Amazon", "Twitter", "Facebook"],
+      "r": 3,
+      "hints": [
+        "Fast 700.000 Menschen nahmen 2012 an einem Experiment teil, ohne davon zu wissen.",
+        "Eine Woche lang bekamen manche weniger fröhliche, andere weniger traurige Beiträge ihrer Freunde zu sehen.",
+        "Ausgewertet wurde, ob sich die Stimmung im Newsfeed auf die eigenen Posts der Nutzer überträgt."
+      ],
+      "fact": "Die Studie erschien 2014 in der Fachzeitschrift PNAS und zeigte einen kleinen, aber messbaren Effekt: Gefühle stecken auch online an. Als Einwilligung galten nur die Nutzungsbedingungen von Facebook (heute Meta). Die Zeitschrift ergänzte einen ausdrücklichen Hinweis auf ethische Bedenken – der Fall gilt seitdem als Lehrbeispiel für Forschung an Nutzern ohne deren Wissen."
+    },
+    {
+      "q": "Welches Experiment ist gesucht?",
+      "a": ["Libet-Experiment", "Split-Brain-Versuche", "Gummihand-Illusion", "Ganzfeld-Experiment"],
+      "r": 0,
+      "hints": [
+        "Auf seine Ergebnisse berufen sich bis heute Philosophen, Hirnforscher und sogar Juristen.",
+        "Die Versuchspersonen sollten sich merken, wo ein Lichtpunkt auf einer Art Uhr stand, als sie sich entschieden.",
+        "Messungen zeigten, dass das Gehirn eine Handbewegung schon vorbereitet, bevor die Person sich bewusst dafür entscheidet."
+      ],
+      "fact": "Benjamin Libet maß 1983, dass das sogenannte Bereitschaftspotenzial (Readiness Potential) etwa eine Drittelsekunde vor dem bewussten Entschluss einsetzt. Libet selbst sah noch Raum für ein bewusstes „Veto“. Neuere Studien deuten darauf hin, dass das Signal eher zufälliges Hintergrundrauschen ist – die Frage nach dem freien Willen ist damit nicht entschieden."
+    },
+    {
+      "q": "Gesucht ist ein Arzt.",
+      "type": "open",
+      "answer": "Edward Jenner",
+      "alt": ["Jenner", "Dr. Jenner"],
+      "hints": [
+        "Für seinen entscheidenden Versuch nutzte er den achtjährigen Sohn seines Gärtners – nach heutigen Maßstäben undenkbar.",
+        "Das Material stammte aus den Pusteln einer Melkerin, die sich bei einer Kuh angesteckt hatte.",
+        "Der englische Landarzt gilt als Begründer der Pockenimpfung."
+      ],
+      "fact": "1796 übertrug Jenner Kuhpocken auf den Jungen James Phipps und setzte ihn danach echten Pocken aus – er blieb gesund. Das Wort „Vakzin“ kommt vom lateinischen vacca (Kuh). 1980 erklärte die Weltgesundheitsorganisation (WHO) die Pocken für ausgerottet."
+    },
+    {
+      "q": "Nach welchem Merkmal teilte die Lehrerin Jane Elliott 1968 ihre Schulklasse ein?",
+      "a": ["Haarfarbe", "Augenfarbe", "Geburtsmonat", "Körpergröße"],
+      "r": 1,
+      "hints": [
+        "Sie wollte ihren Drittklässlern nach der Ermordung von Martin Luther King zeigen, wie sich Diskriminierung anfühlt.",
+        "Die benachteiligte Gruppe musste Stoffkragen tragen, damit man sie schon von Weitem erkannte.",
+        "Am ersten Tag galten die Kinder mit blauen Augen als überlegen, am nächsten Tag wurde getauscht."
+      ],
+      "fact": "Schon nach wenigen Stunden verhielten sich die „überlegenen“ Kinder herablassend, und die Leistungen der benachteiligten Gruppe sanken. Die Übung „Blue Eyes – Brown Eyes“ machte Elliott in den USA berühmt. Kritiker fragen bis heute, ob man Kinder einer solchen Erfahrung aussetzen darf – Elliott selbst hielt sie für eine Impfung gegen Vorurteile."
+    },
+    {
+      "q": "Welches Experiment ist gesucht?",
+      "a": ["Meselson-Stahl-Experiment", "Griffith-Experiment", "Miller-Urey-Experiment", "Pasteurs Schwanenhalsversuch"],
+      "r": 2,
+      "hints": [
+        "Der Doktorand, der es durchführte, war bei der Veröffentlichung erst 23 Jahre alt.",
+        "Es sollte eine Welt nachbilden, die es seit Milliarden Jahren nicht mehr gibt – elektrische Funken ersetzten Blitze.",
+        "Aus Wasser, Methan, Ammoniak und Wasserstoff entstanden in einem Glaskolben Aminosäuren."
+      ],
+      "fact": "Stanley Miller und Harold Urey zeigten 1952/53 in Chicago, dass Bausteine des Lebens ohne Leben entstehen können. 2008 fanden Forscher in aufbewahrten Proben sogar über 20 verschiedene Aminosäuren. Wie aus solchen Bausteinen tatsächlich Leben wurde, ist bis heute eine offene Frage – auch eine philosophische."
+    },
+    {
+      "q": "Gesucht ist eine Jahreszahl.",
+      "type": "estimate",
+      "answer": 1919,
+      "hints": [
+        "In diesem Jahr bestätigte eine Messung eine Vorhersage, die das Weltbild der Physik veränderte.",
+        "Britische Forscher reisten dafür nach Brasilien und auf die Insel Príncipe vor Westafrika.",
+        "Bei einer totalen Sonnenfinsternis wurde die von Einstein vorhergesagte Ablenkung des Sternenlichts gemessen – im ersten Jahr nach dem Ersten Weltkrieg."
+      ],
+      "fact": "Der britische Astronom Arthur Eddington, ein überzeugter Pazifist, bestätigte die Theorie eines Deutschen kurz nach Kriegsende – für viele ein Zeichen, dass Wissenschaft Grenzen überwindet. Einstein wurde dadurch über Nacht weltberühmt. Später wurde kritisiert, Eddington habe unpassende Messdaten aussortiert; spätere Auswertungen gaben ihm aber recht."
+    },
+    {
+      "q": "Was schluckte der Arzt Barry Marshall 1984 in einem Selbstversuch?",
+      "a": ["Eine Bakterienkultur", "Eine Virenlösung", "Eier eines Bandwurms", "Eine Pilzkultur"],
+      "r": 0,
+      "hints": [
+        "Kaum ein Fachkollege glaubte damals an seine These.",
+        "Wenige Tage später litt er an einer Entzündung der Magenschleimhaut, seiner Frau fiel sein Mundgeruch auf.",
+        "Damit belegte er, dass die meisten Magengeschwüre nicht durch Stress, sondern durch einen Erreger entstehen."
+      ],
+      "fact": "Marshall trank eine Brühe mit Helicobacter pylori – ohne Ethikkommission oder seine Frau zu fragen. Er argumentierte, nur er selbst könne das Risiko wirklich informiert eingehen. 2005 erhielt er zusammen mit Robin Warren den Nobelpreis für Medizin; Magengeschwüre werden seitdem meist mit Antibiotika behandelt."
+    },
+    {
+      "q": "Welches Experiment ist gesucht?",
+      "a": ["Rat Park", "Skinner-Box", "Morris-Wasserlabyrinth", "Universe 25"],
+      "r": 3,
+      "hints": [
+        "Den Versuchstieren fehlte es an nichts – außer an einem Ausweg.",
+        "Nach starkem Wachstum brach das Sozialverhalten zusammen, und die Gruppe starb schließlich aus.",
+        "Der Forscher John B. Calhoun baute dafür ein Paradies für Mäuse mit unbegrenzt Futter und Wasser."
+      ],
+      "fact": "Ab 1968 wuchs die Kolonie aus acht Mäusen auf etwa 2.200 Tiere an, obwohl Platz für deutlich mehr gewesen wäre. Danach wurden kaum noch Junge großgezogen, und die Population erlosch. Universe 25 wurde oft als Warnung vor überfüllten Städten gelesen; ob sich das auf Menschen übertragen lässt, ist heute sehr umstritten."
+    },
+    {
+      "q": "Welches Phänomen wurde untersucht?",
+      "a": ["Halo-Effekt", "Zuschauereffekt", "Placebo-Effekt", "Dunning-Kruger-Effekt"],
+      "r": 1,
+      "hints": [
+        "Den Anstoß gab ein Verbrechen in New York im Jahr 1964.",
+        "In einem Versuch füllte sich ein Raum langsam mit Rauch, während die Versuchspersonen Fragebögen ausfüllten.",
+        "Je mehr Menschen anwesend sind, desto seltener greift der Einzelne ein."
+      ],
+      "fact": "John Darley und Bibb Latané untersuchten den Zuschauereffekt (Bystander Effect) nach dem Mord an Kitty Genovese, bei dem angeblich 38 Nachbarn tatenlos zusahen – eine Zahl, die stark übertrieben war. Eine Auswertung von Überwachungsvideos aus drei Ländern zeigte 2019: In 9 von 10 Konflikten greift mindestens eine Person ein. Ethisch bleibt die Frage, wie viel Verantwortung der Einzelne in der Menge trägt."
+    }
+  ]
+}

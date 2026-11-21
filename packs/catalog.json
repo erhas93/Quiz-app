@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-19T19:23:01.344Z",
+  "generated": "2026-11-21T21:12:59.795Z",
   "packs": [
     {
       "id": "allgemeinwissen-vi",
@@ -65,7 +65,7 @@
         "open": 2
       },
       "hash": "48f13126c2",
-      "updated": "2026-11-17T07:09:23+01:00",
+      "updated": "2026-11-17T12:08:05+01:00",
       "warnings": 0
     },
     {
@@ -87,7 +87,7 @@
         "open": 2
       },
       "hash": "127fc349f0",
-      "updated": "2026-11-17T07:09:23+01:00",
+      "updated": "2026-11-17T12:08:05+01:00",
       "warnings": 0
     },
     {
@@ -151,6 +151,22 @@
       "warnings": 0
     },
     {
+      "id": "hinweise-experimente",
+      "name": "Hinweise: Spannende Experimente",
+      "emoji": "🧪",
+      "count": 15,
+      "mode": "hints",
+      "cats": null,
+      "types": {
+        "mc": 11,
+        "estimate": 2,
+        "open": 2
+      },
+      "hash": "08af1cc62b",
+      "updated": null,
+      "warnings": 0
+    },
+    {
       "id": "technischer-test-demo",
       "name": "Technischer Test (Demo)",
       "emoji": "🔧",
@@ -161,7 +177,7 @@
         "open": 1
       },
       "hash": "126b72a394",
-      "updated": "2026-07-14T13:03:08+02:00",
+      "updated": "2026-11-17T12:08:05+01:00",
       "warnings": 0
     },
     {
