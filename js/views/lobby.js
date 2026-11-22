@@ -42,7 +42,7 @@ function modeCard(room) {
   return `<div class="card"><div class="card-h"><span class="label">Spielmodus</span>${warn ? `<span class="muted small">${warn}</span>` : ""}</div>
     <div class="seg3">${MODES.map(([k, l]) => `<button class="${g === k ? "on" : ""}" data-act="gameMode" data-arg="${k}">${l}</button>`).join("")}</div>
     <div class="mode-desc">${MODES.find(m => m[0] === g)[2]}</div>
-    <button class="btn-text small howto-link" data-act="howto">So läuft's – Kurzanleitung ansehen</button></div>`;
+    <button class="howto-link" data-act="howto"><span class="howto-q">?</span>So läuft's – Kurzanleitung</button></div>`;
 }
 
 // Optionen des gewählten Modus – immer an derselben Stelle, im selben Zeilenformat
@@ -116,7 +116,7 @@ export function playerLobbyView(s, me) {
       <div class="card"><span class="label">${isHints(room) ? "Hinweis-Modus · 4 – 3 – 2 – 1 Punkte" : isDuel(room) ? "Kategorie-Duell · Wähler hat Vorrang" : "Fragenpaket"}</span>
         <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
       ${favCard(room, s.uid)}
-      <button class="btn-text small howto-link" data-act="howto">So läuft's – Kurzanleitung ansehen</button>
+      <button class="howto-link" data-act="howto"><span class="howto-q">?</span>So läuft's – Kurzanleitung</button>
       <div class="spacer"></div>
     </div>
     <div class="actions">
