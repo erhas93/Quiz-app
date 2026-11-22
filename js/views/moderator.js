@@ -52,7 +52,7 @@ export function modGameView(s, me) {
   // Feste Reihenfolge wie beim Spieler; das Duell-Ergebnis steht unten in der Hinweiszeile
   if (duel) body += duelStakeLine(room, qi, null);
   body += questionCard(q, { room, factOn: phase === "shown" || revealed });
-  body += hintsBlock(room, q, { all: true });
+  body += hintsBlock(room, q, { all: true, local: s.local });
   body += unclearBtn(room, qi, s.uid);
 
   const entry = isSingle(room) && (phase === "answering" || phase === "locked");

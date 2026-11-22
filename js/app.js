@@ -410,6 +410,7 @@ const handlers = {
       if (ok) { const d = { ...(store.local.modDraft || {}) }; delete d[k]; store.local.modDraft = d; rerender(); }
     });
   },
+  hintTab: (el) => { const g = store.room.game; setLocal({ hintTab: { qi: g.qIndex, lvl: g.hint || 0, over: g.phase === "shown" || g.phase === "revealed", i: Number(el.dataset.arg) } }); },
   bet: () => { const qi = store.room.game.qIndex; setLocal({ bet: store.local.bet?.qi === qi ? null : { qi } }); vibrate(15); },
   bets: () => C().setBets(!store.room.settings?.bets),
   reveal: () => A.reveal(store.room.game.qIndex),

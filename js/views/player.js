@@ -47,7 +47,7 @@ export function playerGameView(s, me) {
   // Feste Reihenfolge, nichts kommt beim Auflösen oberhalb dazu: (Einsatz) · Frage · (Hinweise) · Antworten
   if (duel) body += duelStakeLine(room, qi, spectator ? null : s.uid);
   body += questionCard(q, { room, factOn: revealed });
-  body += hintsBlock(room, q);
+  body += hintsBlock(room, q, { local: s.local });
   if (!spectator) body += unclearBtn(room, qi, s.uid);
 
   // Ergebnis der Frage: im Fußbereich statt über der Frage

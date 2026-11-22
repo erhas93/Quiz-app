@@ -209,20 +209,32 @@ export function unclearBtn(room, qi, uid) {
 }
 
 // Hinweis-Modus: eingeblendete Hinweise (Moderator sieht alle vorab, abgedunkelt) und aktuelle Punktzahl
-export function hintsBlock(room, q, { all = false } = {}) {
+export function hintsBlock(room, q, { all = false, local = {} } = {}) {
   if (!isHints(room) || !Array.isArray(q?.hints)) return "";
-  const n = hintLevel(room), phase = room.game?.phase;
+  // Ein Hinweisfeld fester Höhe statt einer Liste: zeigt den neuesten Hinweis, ältere über die Reiter 1–3.
+  // So rutschen die Antworten nicht weiter nach unten, wenn Hinweise dazukommen.
+  const n = hintLevel(room), phase = room.game?.phase, qi = room.game?.qIndex ?? 0;
   const over = phase === "shown" || phase === "revealed";
-  const fresh = serverNow() - (room.game?.hintAt || 0) < 1500;   // nur kurz nach dem Einblenden animieren
-  const items = q.hints.slice(0, HINT_MAX).map((h, i) => {
-    if (i < n || over) return `<div class="hint${i === n - 1 && !over && fresh ? " new" : ""}${i >= n ? " late" : ""}"><span class="hint-n">${i + 1}</span><span class="hint-t">${esc(h)}</span></div>`;
-    if (all) return `<div class="hint ahead"><span class="hint-n">${i + 1}</span><span class="hint-t">${esc(h)}</span></div>`;
-    return `<div class="hint hidden"><span class="hint-n">${i + 1}</span><span class="hint-t">Hinweis ${i + 1} · noch verdeckt</span></div>`;
+  const shown = over ? HINT_MAX : n;                       // so viele sind für Spieler sichtbar
+  const t = local.hintTab;
+  const def = all && !over && n < HINT_MAX ? n : shown - 1; // Moderator: nächster Hinweis als Vorschau
+  let cur = t && t.qi === qi && t.lvl === n && t.over === over ? t.i : def;
+  if (cur >= HINT_MAX) cur = HINT_MAX - 1;
+  const K = animKey(room);
+  const tabs = q.hints.slice(0, HINT_MAX).map((_, i) => {
+    const vis = i < shown;
+    const cls = [vis ? "vis" : all ? "ahead" : "hid", i === cur ? "on" : ""].join(" ");
+    return `<button class="hb-tab ${cls}" ${vis || all ? `data-act="hintTab" data-arg="${i}"` : "disabled"} aria-label="Hinweis ${i + 1}${vis ? "" : " (noch verdeckt)"}">${i + 1}</button>`;
   }).join("");
+  let text;
+  if (cur < 0) text = `<span class="hb-empty">Noch kein Hinweis – wer jetzt richtig tippt, bekommt die volle Punktzahl.</span>`;
+  else if (cur < shown) text = esc(q.hints[cur]);
+  else text = `<span class="hb-ahead">Als Nächstes · nur du siehst ihn:</span> ${esc(q.hints[cur])}`;
   const pts = hintPoints(n);
-  // Kopfzeile bleibt immer stehen, nur der Text wechselt
-  const head = `<div class="hint-pts">${phase === "answering" ? `Wer jetzt richtig tippt: <b>${pts} ${pts === 1 ? "Punkt" : "Punkte"}</b>` : "Alle Hinweise aufgedeckt"}</div>`;
-  return `<div class="hints">${head}${items}</div>`;
+  const head = phase === "answering" ? `Wer jetzt richtig tippt: <b>${pts} ${pts === 1 ? "Punkt" : "Punkte"}</b>` : "Alle Hinweise aufgedeckt";
+  const isNew = cur === n - 1 && !over;
+  return `<div class="hintbox"><div class="hb-top"><span class="hb-pts">${head}</span><span class="hb-tabs">${tabs}</span></div>
+    <div class="hb-text${cur >= shown ? " ahead" : ""}${isNew ? " an-hint" : ""}"${isNew ? an(K + ":h" + n) : ""}>${cur >= 0 && cur < shown ? `<span class="hint-n">${cur + 1}</span>` : ""}<span>${text}</span></div></div>`;
 }
 
 // Hintergrund: Blatt von unten über dem Spielbildschirm. Öffnen über den Fakten-Knopf in der Fragekarte,
