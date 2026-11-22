@@ -39,6 +39,10 @@ export function playerGameView(s, me) {
   const hintBtn = hintFree ? `<button class="btn-sq hreq${reqOn ? " on" : ""}" data-act="requestHint" aria-pressed="${reqOn}" aria-label="Nächsten Hinweis anfordern"><span class="bet-ico">💡</span><span class="bet-n">${reqOn ? "angefragt" : "Hinweis"}</span></button>` : "";
   const betBtn = left ? `<button class="btn-sq bet${betOn ? " on" : ""}" data-act="bet" aria-pressed="${betOn}" aria-label="Sicher-Einsatz setzen, noch ${left}"><span class="bet-ico">🎯</span><span class="bet-n">${betOn ? "gesetzt" : `${left}×`}</span></button>` : "";
   const hostName = esc(room.players?.[hostUid(room)]?.name || "Der Host");
+  // „warte auf Chris“ statt Zähler, wenn nur noch einer fehlt
+  const missing = players.filter(p => !answers[p.uid]);
+  const urge = phase === "answering" && !mine && !spectator && total > 1 && done === total - 1;
+  const waitTxt = missing.length === 1 ? `warte auf ${esc(missing[0].name)}` : `warte auf die anderen (${done}/${total})`;
   // Im Einzelspiel bewertet die App selbst – keine Bewerten-Knöpfe
   const canJudge = targetUid => free && !solo && !spectator && phase === "shown" && !!answers[targetUid] && !estimateByDistance(room, q)
     && (judgeOf(room, targetUid) === s.uid || (iAmHost && !online(judgeOf(room, targetUid))));
@@ -99,7 +103,7 @@ export function playerGameView(s, me) {
     }).join("")}</div>`;
     if (canPick) {
       const jokerBtn = free && !isHints(room) && !jokerOf(room, s.uid) ? `<button class="btn-sq" data-act="useJoker" aria-label="50:50-Joker einsetzen" style="font-size:13px;font-weight:800;color:var(--c3)">50:50</button>` : "";
-      actions = `<div class="actions-row">${jokerBtn}${hintBtn}${betBtn}<button class="btn btn-blue" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen</button></div>`;
+      actions = `<div class="actions-row">${jokerBtn}${hintBtn}${betBtn}<button class="btn btn-blue${urge ? " urge" : ""}" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen</button></div>`;
     }
   } else {
     // ── Schätzen / Freitext ──
@@ -109,7 +113,7 @@ export function playerGameView(s, me) {
       const draft = s.local.draft?.qi === qi ? s.local.draft.value : "";
       body += `<input class="ans-input an-ain"${an(K + ":in", 120)} id="in-answer" data-input="draft" ${q.type === "estimate" ? 'inputmode="decimal"' : ""} aria-label="Deine Antwort"
         placeholder="${q.type === "estimate" ? "Deine Schätzung" : "Deine Antwort"}" value="${esc(draft)}" autocomplete="off">`;
-      actions = `<div class="actions-row">${hintBtn}${betBtn}<button class="btn btn-blue" data-act="commitDraft" ${draft.trim() ? "" : "disabled"}>Einloggen</button></div>`;
+      actions = `<div class="actions-row">${hintBtn}${betBtn}<button class="btn btn-blue${urge ? " urge" : ""}" data-act="commitDraft" ${draft.trim() ? "" : "disabled"}>Einloggen</button></div>`;
     } else if (solVisible) {
       body += `<div class="solution box an-flip"${an(K + ":sol")}><span><b>Richtig:</b> ${formatValue(q, q.answer)}</span></div>`;
     } else if (mine) {
@@ -142,6 +146,10 @@ export function playerGameView(s, me) {
   // Hinweiszeile über dem Knopf
   if (note) { /* 50:50-Hinweis hat Vorrang */ }
   else if (spectator) note = phase === "answering" || phase === "locked" ? `${done} von ${total} eingeloggt` : phase === "shown" ? "Antworten werden gezeigt" : "";
+  else if (phase === "answering" && !mine && !spectator && total > 1 && done === total - 1) {
+    // Letzter ohne Antwort: deutlicher Hinweis (Hinweiszeile + pulsierender Knopf)
+    note = "⏳ Alle anderen sind fertig – alle warten auf dich!"; noteCls = "urgent";
+  }
   else if (phase === "answering" && !mine) {
     const others = players.filter(p => p.uid !== s.uid && answers[p.uid]).map(p => esc(p.name));
     if (isHints(room)) {
@@ -150,17 +158,15 @@ export function playerGameView(s, me) {
     note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} eingeloggt` : (total > 1 ? "Noch niemand eingeloggt" : "");
   } else if (phase === "locked" && !mine) note = "Zeit abgelaufen – keine Antwort";
   else if ((phase === "answering" || phase === "locked") && isHints(room)) {
-    note = `Getippt bei ${hintPoints(mine?.h)} ${hintPoints(mine?.h) === 1 ? "Punkt" : "Punkten"} ✓ · ${done < total ? `warte auf die anderen (${done}/${total})` : steerFree ? "alle haben getippt" : free ? `${hostName} zeigt gleich die Antworten` : "der Moderator löst auf"}`; noteCls = "ok";
-    if (steerFree && done >= total) actions = `<button class="btn btn-primary" data-act="showAnswers">Antworten zeigen</button>`;
+    note = `Getippt bei ${hintPoints(mine?.h)} ${hintPoints(mine?.h) === 1 ? "Punkt" : "Punkten"} ✓ · ${done < total ? waitTxt : free ? "die Antworten erscheinen" : "der Moderator löst auf"}`; noteCls = "ok";
   }
   else if ((phase === "answering" || phase === "locked") && steerFree) {
-    // Host: zeigt die Antworten per Knopf (auch vorzeitig, wenn jemand nicht antwortet)
-    note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Alle haben eingeloggt"; noteCls = "ok";
-    // im Hinweis-Modus erst, wenn alle getippt haben
-    actions = done < total ? (isHints(room) ? "" : `<button class="btn btn-ghost" data-act="showAnswers">Antworten jetzt zeigen (${done}/${total})</button>`) : `<button class="btn btn-primary" data-act="showAnswers">Antworten zeigen</button>`;
+    // Host: Sobald alle eingeloggt haben, erscheinen die Antworten von selbst; vorher kann er sie vorzeitig zeigen
+    note = done < total ? `Eingeloggt ✓ · ${waitTxt}` : "Alle haben eingeloggt – die Antworten erscheinen"; noteCls = "ok";
+    actions = done < total && !isHints(room) ? `<button class="btn btn-ghost" data-act="showAnswers">Antworten jetzt zeigen (${done}/${total})</button>` : "";
   }
-  else if ((phase === "answering" || phase === "locked") && mine?.b && !steerFree) { note = `Eingeloggt mit 🎯 Einsatz · ${done < total ? `warte auf die anderen (${done}/${total})` : free && !solo ? `${hostName} zeigt gleich die Antworten` : "gleich wird aufgelöst"}`; noteCls = "ok"; }
-  else if (phase === "answering" || phase === "locked") { note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : free && !solo ? `Eingeloggt ✓ · ${hostName} zeigt gleich die Antworten` : "Eingeloggt ✓ · gleich wird aufgelöst"; noteCls = "ok"; }
+  else if ((phase === "answering" || phase === "locked") && mine?.b && !steerFree) { note = `Eingeloggt mit 🎯 Einsatz · ${done < total ? waitTxt : free && !solo ? "die Antworten erscheinen" : "gleich wird aufgelöst"}`; noteCls = "ok"; }
+  else if (phase === "answering" || phase === "locked") { note = done < total ? `Eingeloggt ✓ · ${waitTxt}` : free && !solo ? "Eingeloggt ✓ · die Antworten erscheinen" : "Eingeloggt ✓ · gleich wird aufgelöst"; noteCls = "ok"; }
   else if (phase === "shown" && solo && isOpenType(q)) note = "Wird automatisch bewertet …";
   else if (phase === "shown" && free && estimateByDistance(room, q)) {
     note = duel ? "Wer näher dran ist, liegt richtig …" : "Wer am nächsten dran ist, bekommt den Punkt …";
@@ -194,7 +200,7 @@ export function playerGameView(s, me) {
       + `<button class="btn btn-text" data-act="leave">Zuschauen beenden</button>`;
   }
 
-  if (hintFree) {
+  if (hintFree && !urge) {
     const w = hintWaiting(room), rq = w.filter(p => hintReqOf(room, p.uid)).length;
     note = rq ? `${rq} von ${w.length} wollen den nächsten Hinweis` : "Tippen oder 💡 nächsten Hinweis anfordern"; noteCls = rq ? "gold" : "";
   }

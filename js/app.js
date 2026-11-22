@@ -209,7 +209,17 @@ function afterRender(s, key) {
     const wait = hintWaiting(room);
     if (wait.length && wait.every(p => hintReqOf(room, p.uid))) doOnce(`hint:${roundKey(room)}:${g.qIndex}:${g.hint || 0}`, () => A.nextHint(g.qIndex), 300);
   }
-  // Ohne Moderator zeigt und löst der Host per Knopf auf – nur im Einzelspiel läuft das automatisch
+  // Ohne Moderator: Haben alle eingeloggt, erscheinen die Antworten von selbst – aufgelöst wird per Host-Knopf
+  if (isHost && room.meta?.status === "running" && g && isFree(room) && !isSoloFree(room) && ["answering", "locked"].includes(g.phase)) {
+    const qi = g.qIndex, all = activePlayers(room).every(p => answerOf(room, qi, p.uid));
+    if (g.phase === "locked" || (g.phase === "answering" && all && !g.intro)) doOnce(`show:${roundKey(room)}:${qi}`, () => A.showAnswers(qi), 600);
+  }
+  // Letzter ohne Antwort: kurz vibrieren
+  if (g?.phase === "answering" && !g.intro && room.players?.[s.uid]?.role === "player" && !answerOf(room, g.qIndex, s.uid)) {
+    const ps = activePlayers(room);
+    if (ps.length > 1 && ps.filter(p => answerOf(room, g.qIndex, p.uid)).length === ps.length - 1) doOnce(`urge:${roundKey(room)}:${g.qIndex}`, () => vibrate([70, 60, 70]), 0);
+  }
+  // Einzelspiel: der Host-Ablauf läuft automatisch
   if (isHost && room.meta?.status === "running" && g && isSoloFree(room)) {
     const qi = g.qIndex, base = `${roundKey(room)}:${qi}`;
     const q = room.questions?.[qi];
