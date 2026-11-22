@@ -4,7 +4,7 @@ import { db, ref, roomRef, roomPath, ROOM_ID, set, update, remove, runTransactio
 import { store, rerender } from "./store.js";
 import { DBG } from "./debug.js";
 import { loadPack } from "./packs.js";
-import { autoJudge, jokerOf, isHints, MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf, betsOn, betsLeft, isYearQ } from "./model.js";
+import { autoJudge, jokerOf, isHints, MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, nextPicker, DUEL_MAX, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf, betsOn, betsLeft, isYearQ } from "./model.js";
 
 // Alle Aktionen hängen an einem Kontext (Identität, Datenbank, Raum). Die App nutzt den Hauptkontext,
 // die Test-Bots je einen eigenen mit eigener Anmeldung – so laufen sie über exakt dieselben Wege.
@@ -221,11 +221,10 @@ export function createActions(ctx) {
     if (!packId) return fail("Bitte zuerst ein Fragenpaket wählen");
     if (!activePlayers(room).length) return fail("Es ist noch kein Spieler beigetreten");
     const duel = isDuel(room);
-    if (duel && activePlayers(room).length !== 2) return fail("Das Kategorie-Duell braucht genau 2 Spieler");
+    if (duel && (activePlayers(room).length < 2 || activePlayers(room).length > DUEL_MAX)) return fail(`Das Kategorie-Duell braucht 2 bis ${DUEL_MAX} Spieler`);
     let pack;
     try { pack = await loadPack(packId); } catch (e) { return fail("Pack konnte nicht geladen werden", e); }
     const hints = isHints(room);
-    if (hints && room.meta?.mode !== "moderated") return fail("Der Hinweis-Modus geht nur mit Moderator");
     const want = duel ? "duel" : hints ? "hints" : null;
     const hintsOk = hints && !pack.mode && pack.questions.every(q => Array.isArray(q.hints) && q.hints.length === 3);
     if ((pack.mode || null) !== want && !hintsOk) return fail(duel ? "Bitte ein Duell-Pack wählen" : hints ? "Bitte ein Hinweis-Pack wählen" : "Dieses Pack gehört zu einem anderen Spielmodus");
@@ -236,6 +235,9 @@ export function createActions(ctx) {
       const game = duel
         ? { qIndex: -1, phase: "board", phaseAt: now, duel: { turn: 0 } }   // erst das Brett zeigen, Kategorien vorstellen
         : { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now), ...(hints ? { hint: 0, hintAt: now } : {}) };
+      game.startedAt = now;
+      // Kurzanleitung: erst wenn alle „Verstanden“ gedrückt haben (oder Moderator/Host überspringt), läuft die erste Frage
+      if (!room.meta?.test) game.intro = true;
       const reset = {};
       for (const p of activePlayers(room)) Object.assign(reset, { [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: p.local ? true : null, [`players/${p.uid}/pick`]: null });
     for (const u of Object.keys(room.players || {})) reset[`players/${u}/unclear`] = null;
@@ -399,7 +401,7 @@ export function createActions(ctx) {
     if (isDuel(room)) {
       if (playOrder(room).length >= total) return finishGame(qi);
       const r = room.results?.[qi];
-      const picker = isStartQ(room, qi) ? r?.startWinner : opponentOf(room, pickOf(room, qi)?.by);
+      const picker = isStartQ(room, qi) ? r?.startWinner : nextPicker(room, pickOf(room, qi)?.by);
       if (!picker) return fail("Unklar, wer als Nächstes wählt");
       try {
         const res = await runTransaction(ctx.roomRef("game"), g => {
@@ -514,6 +516,33 @@ export function createActions(ctx) {
       DBG.log("Hinweis eingeblendet", { committed: res.committed, qi });
       return res.committed;
     } catch (e) { return fail("Hinweis nicht eingeblendet", e); }
+  }
+  async function ackIntro() {
+    const g = ctx.room()?.game;
+    if (!g?.intro) return;
+    try { await set(ctx.roomRef(`players/${uid()}/introOk`), g.startedAt || 0); DBG.log("ackIntro"); } catch (e) { fail("Nicht gespeichert", e); }
+  }
+  async function endIntro() {
+    const room = ctx.room();
+    try {
+      const res = await runTransaction(ctx.roomRef("game"), g => {
+        if (!g || !g.intro) return;
+        const now = serverNow();
+        const n = { ...g, intro: null };
+        // Die erste Frage beginnt erst jetzt (Timer und Antwortzeiten zählen ab hier)
+        if (g.phase === "answering") Object.assign(n, { phaseAt: now, questionStartAt: now, timer: freshTimer(room, now), ...(g.hint != null ? { hintAt: now } : {}) });
+        return n;
+      });
+      DBG.log("Kurzanleitung beendet", { committed: res.committed });
+    } catch (e) { fail("Start fehlgeschlagen", e); }
+  }
+  async function requestHint() {
+    const g = ctx.room()?.game;
+    if (!g || g.phase !== "answering") return;
+    const mine = ctx.room()?.players?.[uid()]?.hintReq;
+    const same = mine && mine.qi === g.qIndex && mine.lvl === (g.hint || 0) && mine.s === (g.startedAt || 0);
+    try { await set(ctx.roomRef(`players/${uid()}/hintReq`), same ? null : { qi: g.qIndex, lvl: g.hint || 0, s: g.startedAt || 0 }); DBG.log("requestHint", !same); }
+    catch (e) { fail("Anfrage nicht gespeichert", e); }
   }
   async function duelPickedDone() {
     const room = ctx.room();
@@ -682,7 +711,7 @@ export function createActions(ctx) {
     }
   }
 
-  return { addLocalPlayer, removeLocalPlayer, modAnswer, setBets, toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
+  return { ackIntro, endIntro, requestHint, addLocalPlayer, removeLocalPlayer, modAnswer, setBets, toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
 }
 
 const main = createActions({
@@ -702,4 +731,4 @@ const main = createActions({
     store.local.name = name;
   }
 });
-export const { addLocalPlayer, removeLocalPlayer, modAnswer, setBets, toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;
+export const { ackIntro, endIntro, requestHint, addLocalPlayer, removeLocalPlayer, modAnswer, setBets, toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;

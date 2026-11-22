@@ -1,11 +1,13 @@
 // Kategorie-Duell: Spielbrett (Vorstellen, Lieblingskategorien, Auslosen, Wählen) und Bausteine fürs Duell
 import { esc, activePlayers, duelBoard, duelOf, pickOf, isStartQ, resultFor, favCatsOf, favDone, isFree, hostUid, moderatorOf,
   DUEL_TURNS, PICK_SEC, DRAW_MS, DIFF_LABEL, pointsOf, playOrder, spectatorsOf, duelRule } from "../model.js";
-import { menuBtn, ICON } from "./common.js";
+import { menuBtn, helpBtn, ICON } from "./common.js";
 import { ROOM_ID } from "../firebase.js";
 
 // Spieler A/B bekommen feste Farben (Sitzreihenfolge)
-export const sideOf = (room, uid) => { const i = activePlayers(room).findIndex(p => p.uid === uid); return i === 0 ? "pa" : i === 1 ? "pb" : ""; };
+export const sideOf = (room, uid) => { const i = activePlayers(room).findIndex(p => p.uid === uid); return ["pa", "pb", "pc", "pd"][i] || ""; };
+// Namen als Aufzählung: „Anna“, „Anna & Ben“, „Anna, Ben & Eric“
+const joinNames = (room, uids) => { const n = uids.map(u => esc(nameOf(room, u))); return n.length > 1 ? n.slice(0, -1).join(", ") + " & " + n[n.length - 1] : n[0] || ""; };
 const nameOf = (room, uid) => room?.players?.[uid]?.name || "?";
 const short = n => esc(String(n || "").slice(0, 5));
 
@@ -24,7 +26,8 @@ function cellHtml(room, qi, { clickable, hl }) {
     else {
       cls += winners.length > 1 ? " both" : " " + sideOf(room, winners[0]);
       const tag = isStartQ(room, qi) ? "Start" : r.stolen ? "klaut" : "✓";
-      const who = winners.length > 1 ? "beide" : short(nameOf(room, winners[0]));
+      const nP = activePlayers(room).length;
+      const who = winners.length === 1 ? short(nameOf(room, winners[0])) : winners.length === nP ? (nP === 2 ? "beide" : "alle") : `${winners.length} Sp.`;
       inner = `<span class="cell-who">${who}</span><span class="cell-tag">${tag}</span>`;
     }
   } else if (played) { cls += " cur"; inner = `<span class="cell-pts">${pts}</span><span class="cell-tag">läuft</span>`; }
@@ -62,8 +65,8 @@ export function duelTop(s, roleLabel = "") {
   const sub = d.startQ == null ? "Kategorien vorstellen" : room.game?.phase === "drawing" ? "Startfrage wird ausgelost" : `Zug ${Math.min(room.game?.phase === "picked" ? turn : turn + 1, DUEL_TURNS)} von ${DUEL_TURNS}`;
   const specN = spectatorsOf(room).length;
   return `<div class="top"><div class="top-main"><div class="top-title sm">Kategorie-Duell${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div><div class="top-sub">Raum ${esc(ROOM_ID)} · ${sub}</div></div>
-    ${roleLabel}${menuBtn(s.connected)}</div>
-    <div class="chips">${activePlayers(room).map(p => `<div class="chip ${sideOf(room, p.uid)}${p.uid === s.uid ? " me" : ""}${d.picker === p.uid && room.game?.phase === "board" && d.startQ != null ? " turn" : ""}">
+    ${roleLabel}${helpBtn()}${menuBtn(s.connected)}</div>
+    <div class="chips${activePlayers(room).length >= 3 ? ` n${activePlayers(room).length}` : ""}">${activePlayers(room).map(p => `<div class="chip ${sideOf(room, p.uid)}${p.uid === s.uid ? " me" : ""}${d.picker === p.uid && room.game?.phase === "board" && d.startQ != null ? " turn" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span><span class="chip-name">${esc(p.name)}</span><span class="chip-pts">${scoreOfDuel(room, p.uid)}</span></div>`).join("")}</div>
     ${raceBar(room)}`;
 }
@@ -71,18 +74,20 @@ export function duelTop(s, roleLabel = "") {
 // Füllstand: Punkte jedes Spielers von 30 und was noch auf dem Brett liegt. Eine feste Siegmarke gibt es nicht,
 // weil bei der Startfrage beide punkten können – entschieden ist es, sobald der Vorsprung größer ist als der Rest.
 export function raceBar(room) {
-  const ps = activePlayers(room).slice(0, 2);
-  if (ps.length !== 2) return "";
+  const ps = activePlayers(room);
+  if (ps.length < 2) return "";
   const total = (room.questions || []).reduce((a, q) => a + (q ? pointsOf(q) : 0), 0) || 30;
   const left = (room.questions || []).reduce((a, q, qi) => a + (q && !resultFor(room, qi) ? pointsOf(q) : 0), 0);
   const sc = ps.map(p => scoreOfDuel(room, p.uid));
-  const lead = Math.abs(sc[0] - sc[1]);
-  const leader = sc[0] > sc[1] ? ps[0] : sc[1] > sc[0] ? ps[1] : null;
+  const order = sc.map((v, i) => i).sort((a, b) => sc[b] - sc[a]);
+  const lead = sc[order[0]] - sc[order[1]];
+  const leader = lead > 0 ? ps[order[0]] : null;
   let txt = `Noch ${left} von ${total} Punkten auf dem Brett${leader ? ` · ${esc(leader.name)} führt mit ${lead}` : ""}`;
   if (leader && lead > left) txt = `<b>${esc(leader.name)}</b> ist nicht mehr einzuholen`;
   else if (!left) txt = leader ? `${esc(leader.name)} gewinnt` : "Unentschieden";
-  const bar = (p, i) => `<div class="race-row ${sideOf(room, p.uid)}"><span class="race-track"><i data-bar="dr.${p.uid}" style="width:${Math.min(100, sc[i] / total * 100)}%"></i></span></div>`;
-  return `<div class="race">${ps.map(bar).join("")}<div class="race-txt">${txt}</div></div>`;
+  const names = ps.length > 2;
+  const bar = (p, i) => `<div class="race-row ${sideOf(room, p.uid)}">${names ? `<span class="race-name">${esc(p.name)}</span>` : ""}<span class="race-track"><i data-bar="dr.${p.uid}" style="width:${Math.min(100, sc[i] / total * 100)}%"></i></span></div>`;
+  return `<div class="race${names ? " hint-race" : ""}">${ps.map(bar).join("")}<div class="race-txt">${txt}</div></div>`;
 }
 const scoreOfDuel = (room, uid) => Object.values(room.results || {}).reduce((a, r) => a + (r?.points?.[uid] || 0), 0);
 
@@ -162,9 +167,10 @@ export function duelStakeLine(room, qi, uid) {
   if (isStartQ(room, qi)) return `<div class="stake">Startfrage · jeder Richtige bekommt ${pts} ${pts === 1 ? "Punkt" : "Punkte"} · wer gewinnt, wählt zuerst</div>`;
   const by = pickOf(room, qi)?.by;
   if (duelRule(room) === "all") return `<div class="stake ${sideOf(room, by)}">${by === uid ? "Deine Wahl" : `${esc(nameOf(room, by))}s Wahl`} · jeder Richtige bekommt ${pts} ${pts === 1 ? "Punkt" : "Punkte"}</div>`;
-  const opp = activePlayers(room).find(p => p.uid !== by);
+  const others = activePlayers(room).filter(p => p.uid !== by).map(p => p.uid);
   const who = by === uid ? "Du spielst" : `${esc(nameOf(room, by))} spielt`;
-  const steal = opp ? (opp.uid === uid ? "bei Fehler kannst du klauen" : `bei Fehler klaut ${esc(opp.name)}`) : "";
+  const steal = !others.length ? "" : others.includes(uid) ? (others.length > 1 ? "bei Fehler können alle Richtigen klauen" : "bei Fehler kannst du klauen")
+    : `bei Fehler ${others.length > 1 ? "klauen" : "klaut"} ${joinNames(room, others)}`;
   return `<div class="stake ${sideOf(room, by)}">${who} um ${pts} ${pts === 1 ? "Punkt" : "Punkte"}${steal ? ` · ${steal}` : ""}</div>`;
 }
 
@@ -180,21 +186,18 @@ export function duelOutcome(room, qi, uid) {
     const sub = w ? (w === uid ? "Du wählst zuerst" : `${esc(nameOf(room, w))} wählt zuerst`) : "";
     const anyRight = Object.values(r.points || {}).some(v => v > 0);
     if (uid && room.players?.[uid]?.role === "player") return mine ? { kind: "ok", big: `Richtig! +${pts}`, sub } : { kind: "no", big: "Leider falsch", sub: sub + (anyRight ? "" : " (ausgelost)") };
-    return { kind: "neutral", big: anyRight ? "Startfrage aufgelöst" : "Beide falsch – ausgelost", sub };
+    return { kind: "neutral", big: anyRight ? "Startfrage aufgelöst" : `${activePlayers(room).length > 2 ? "Alle" : "Beide"} falsch – ausgelost`, sub };
   }
-  const by = r.by, opp = activePlayers(room).find(p => p.uid !== by)?.uid;
-  const byName = esc(nameOf(room, by)), oppName = esc(nameOf(room, opp));
-  if (r.rule === "all") {
-    const won = activePlayers(room).filter(p => r.points?.[p.uid]).map(p => p.uid);
-    const others = won.filter(u => u !== uid).map(u => esc(nameOf(room, u)));
-    const sub = others.length ? `${others.join(" & ")} ${others.length > 1 ? "punkten" : "punktet"} auch` : "";
-    if (uid && room.players?.[uid]?.role === "player") return mine ? { kind: "ok", big: `Richtig! +${pts}`, sub } : { kind: "no", big: "Leider falsch", sub: others.length ? `${others.join(" & ")} holt ${pts}` : "" };
-    return { kind: "neutral", big: won.length ? `${won.map(u => esc(nameOf(room, u))).join(" & ")} ${won.length > 1 ? "holen" : "holt"} ${pts}` : "Niemand punktet", sub: "" };
+  const by = r.by, byName = esc(nameOf(room, by));
+  const thieves = r.stolen ? activePlayers(room).filter(p => p.uid !== by && r.points?.[p.uid] > 0).map(p => p.uid) : [];
+  const tNames = joinNames(room, thieves), tVerb = thieves.length > 1 ? "klauen" : "klaut";
+  if (uid === by) return mine ? { kind: "ok", big: `Richtig! +${pts}`, sub: "" } : { kind: "no", big: r.stolen ? `Falsch – ${tNames} ${tVerb} ${pts}` : "Leider falsch", sub: "" };
+  if (uid && room.players?.[uid]?.role === "player") {
+    if (mine) { const co = thieves.filter(u => u !== uid); return { kind: "ok", big: `Geklaut! +${pts}`, sub: `${byName} lag falsch${co.length ? ` · ${joinNames(room, co)} ${co.length > 1 ? "klauen" : "klaut"} mit` : ""}` }; }
+    return { kind: r.points?.[by] || r.stolen ? "no" : "neutral", big: r.points?.[by] ? `${byName} holt ${pts}` : r.stolen ? `${tNames} ${tVerb} ${pts}` : "Niemand punktet", sub: "" };
   }
-  if (uid === by) return mine ? { kind: "ok", big: `Richtig! +${pts}`, sub: "" } : { kind: "no", big: r.stolen ? `Falsch – ${oppName} klaut ${pts}` : "Leider falsch", sub: "" };
-  if (uid === opp) return mine ? { kind: "ok", big: `Geklaut! +${pts}`, sub: `${byName} lag falsch` } : { kind: r.points?.[by] ? "no" : "neutral", big: r.points?.[by] ? `${byName} holt ${pts}` : "Beide falsch", sub: "" };
   if (r.points?.[by]) return { kind: "neutral", big: `${byName} holt ${pts}`, sub: "" };
-  if (r.stolen) return { kind: "neutral", big: `${oppName} klaut ${pts}`, sub: "" };
+  if (r.stolen) return { kind: "neutral", big: `${tNames} ${tVerb} ${pts}`, sub: "" };
   return { kind: "neutral", big: "Niemand punktet", sub: "" };
 }
 

@@ -34,6 +34,7 @@ export function topBar(title, sub = "", { back = null, connected = true } = {}) 
     <div class="top-main"><div class="top-title">${title}</div>${sub ? `<div class="top-sub">${sub}</div>` : ""}</div>
     ${menuBtn(connected)}</div>`;
 }
+export const helpBtn = () => `<button class="icon-btn help-btn" data-act="howto" aria-label="So läuft's – Kurzanleitung">?</button>`;
 export const menuBtn = (connected = true) =>
   `<button class="icon-btn" data-act="menu" aria-label="Menü">${ICON.dots()}${connected ? "" : '<span class="badge"></span>'}</button>`;
 
@@ -104,7 +105,7 @@ export function gameHeader(s, mode) {
     : mode === "spec" ? `<span class="role spec">Zuschauer</span>` : "";
   const top = `<div class="top">
     <div class="top-main"><div class="top-title sm">${isDuel(room) ? (isStartQ(room, qi) ? "Startfrage" : `Zug ${pickOf(room, qi)?.turn || "?"} / ${DUEL_TURNS}`) : `Frage ${qi + 1} / ${qCount(room)}`}${specN ? ` <span class="muted small" style="font-weight:500">· ${ICON.eye(14)} ${specN}</span>` : ""}</div>${segBar(room, uid, mode === "player")}</div>
-    ${timerChip(room)}${role}${menuBtn(s.connected)}</div>`;
+    ${timerChip(room)}${role}${helpBtn()}${menuBtn(s.connected)}</div>`;
   return top + timerBar(room) + (mode === "mod" ? modChips(room) : playerChips(room, uid)) + (isHints(room) ? hintRace(room) : "");
 }
 
@@ -134,12 +135,13 @@ function playerChips(room, uid) {
   const open = g.phase === "answering" || g.phase === "locked";
   const lead = isHints(room) ? null : speedLead(room)?.leader?.uid;
   const K = animKey(room);
-  return `<div class="chips">${activePlayers(room).map((p, pi) => {
+  const nP = activePlayers(room).length;
+  return `<div class="chips${nP >= 3 ? ` n${nP}` : ""}">${activePlayers(room).map((p, pi) => {
     let st = "";
     // Hinweis-Modus: nur „getippt“ – bei wie vielen Punkten, sehen die Mitspieler nicht
     if (open) st = answers[p.uid] ? (isHints(room) ? `<span class="chip-st tip an-chk"${an(K + ":chk:" + p.uid)}>getippt</span>` : `<span class="chip-st ok an-chk" aria-label="eingeloggt"${an(K + ":chk:" + p.uid)}>${ICON.check(16)}</span>`) : `<span class="chip-st">…</span>`;
     if (open && jokerOf(room, p.uid)?.q === qi) st = `<span class="chip-st gold">50:50</span>` + st;
-    const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
+    const side = isDuel(room) ? ["pa", "pb", "pc", "pd"][pi] || "" : "";
     return `<div class="chip ${side}${p.uid === uid ? " me" : ""}">
       <span class="dot ${p.online ? "on" : "off"}"></span>
       <span class="chip-name">${esc(p.name)}${lead === p.uid ? " ⚡" : ""}</span>${st}
@@ -158,7 +160,7 @@ function modChips(room) {
   return `<div class="chips">${activePlayers(room).map((p, pi) => {
     const a = answers[p.uid];
     const j = jokerOf(room, p.uid);
-    const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
+    const side = isDuel(room) ? ["pa", "pb", "pc", "pd"][pi] || "" : "";
     let sub = a ? (isHints(room) ? `getippt · ${hintPoints(a.h)} P` : (typeof a.ms === "number" ? `${fmtMs(a.ms)} ✓` : "eingetragen ✓")) : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
     if (a && !isHints(room) && res?.fastestUid === p.uid) sub = `${fmtMs(a.ms)} ⚡`;
     let jk = "";

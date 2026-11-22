@@ -1,5 +1,5 @@
 // Lobby für Moderator, Spieler und Zuschauer – alles auf einem Bildschirm
-import { isSingle, BET_MAX, BET_WIN, esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC, duelRule, isHints } from "../model.js";
+import { DUEL_MAX, isSingle, BET_MAX, BET_WIN, esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC, duelRule, isHints } from "../model.js";
 import { ROOM_ID } from "../firebase.js";
 import { topBar, slots, spectatorLine, ICON } from "./common.js";
 import { playStats, packLine } from "./packs.js";
@@ -31,17 +31,18 @@ function favCard(room, uid) {
 // Spielmodus: Auswahl + immer genau eine kurze Beschreibung (feste Höhe), Optionen stehen getrennt darunter
 const MODES = [
   ["classic", "Klassisch", "Alle beantworten dieselben 15 Fragen gleichzeitig. Jede richtige Antwort bringt 1 Punkt."],
-  ["duel", "Duell", "Zu zweit abwechselnd Felder wählen: 5 Kategorien, 3 Stufen, 1–3 Punkte je Feld. Liegt der Wähler falsch, kann der Gegner klauen."],
+  ["duel", "Duell", "2–4 Spieler wählen reihum Felder: 5 Kategorien, 3 Stufen, 1–3 Punkte je Feld. Liegt der Wähler falsch, bekommen alle anderen Richtigen die Punkte."],
   ["hints", "Hinweise", "Bis zu 3 Hinweise je Frage. Wer früher richtig tippt, bekommt mehr: 4–3–2–1 Punkte."]
 ];
 function modeCard(room) {
   const free = isFree(room);
   const g = isDuel(room) ? "duel" : isHints(room) ? "hints" : "classic";
   const n = activePlayers(room).length;
-  const warn = g === "duel" && n !== 2 ? "braucht genau 2 Spieler" : free ? "Hinweise nur mit Moderator" : "";
+  const warn = g === "duel" && (n < 2 || n > DUEL_MAX) ? `braucht 2–${DUEL_MAX} Spieler` : g === "hints" && free ? "Hinweise per Anfordern" : "";
   return `<div class="card"><div class="card-h"><span class="label">Spielmodus</span>${warn ? `<span class="muted small">${warn}</span>` : ""}</div>
-    <div class="seg3">${MODES.map(([k, l]) => `<button class="${g === k ? "on" : ""}" data-act="gameMode" data-arg="${k}" ${k === "hints" && free ? "disabled" : ""}>${l}</button>`).join("")}</div>
-    <div class="mode-desc">${MODES.find(m => m[0] === g)[2]}</div></div>`;
+    <div class="seg3">${MODES.map(([k, l]) => `<button class="${g === k ? "on" : ""}" data-act="gameMode" data-arg="${k}">${l}</button>`).join("")}</div>
+    <div class="mode-desc">${MODES.find(m => m[0] === g)[2]}</div>
+    <button class="btn-text small howto-link" data-act="howto">So läuft's – Kurzanleitung ansehen</button></div>`;
 }
 
 // Optionen des gewählten Modus – immer an derselben Stelle, im selben Zeilenformat
@@ -54,7 +55,7 @@ function optionsCard(room, free) {
   if (g === "classic") rows.push(`<div class="opt"><button class="toggle-row" data-act="bets" aria-pressed="${!!room.settings?.bets}"><span class="opt-l">🎯 Sicher-Einsatz (${BET_MAX}× pro Partie)</span><span class="switch${room.settings?.bets ? " on" : ""}"></span></button>
       <span class="opt-h">Wer sich sicher ist, setzt vor dem Einloggen: richtig +${BET_WIN}, falsch −${BET_WIN} statt der normalen Punkte. Bei Schätzfragen gibt es +${BET_WIN} nur für einen Volltreffer.</span></div>`);
   if (g !== "hints") rows.push(timerRow(room, free));
-  else rows.push(`<div class="opt"><span class="opt-h">Keine weiteren Optionen – das Tempo bestimmst du über die Hinweise.</span></div>`);
+  else rows.push(`<div class="opt"><span class="opt-h">${free ? "Ohne Moderator: Ein neuer Hinweis kommt, sobald alle, die noch nicht getippt haben, ihn anfordern." : "Keine weiteren Optionen – das Tempo bestimmst du über die Hinweise."}</span></div>`);
   return `<div class="card"><span class="label">Optionen</span>${rows.join("")}</div>`;
 }
 
@@ -78,8 +79,8 @@ export function modLobbyView(s) {
   let startLabel, startDisabled = false;
   if (!players.length) { startLabel = "Warte auf Spieler …"; startDisabled = true; }
   else if (!sel) { startLabel = "Erst Fragenpaket wählen"; startDisabled = true; }
-  else if (duel && players.length !== 2) { startLabel = players.length < 2 ? "Duell: warte auf 2. Spieler" : "Duell geht nur zu zweit"; startDisabled = true; }
-  else if (duel) startLabel = ready === players.length || free ? "Duell starten" : `Duell trotzdem starten (${ready}/2 bereit)`;
+  else if (duel && (players.length < 2 || players.length > DUEL_MAX)) { startLabel = players.length < 2 ? "Duell: warte auf 2. Spieler" : `Duell geht mit höchstens ${DUEL_MAX} Spielern`; startDisabled = true; }
+  else if (duel) startLabel = ready === players.length || free ? "Duell starten" : `Duell trotzdem starten (${ready}/${players.length} bereit)`;
   else if (players.length === 1) startLabel = ready || free ? "Einzelspiel starten" : "Einzelspiel trotzdem starten";
   else startLabel = ready === players.length ? "Quiz starten" : `Trotzdem starten (${ready}/${players.length} bereit)`;
 
@@ -115,6 +116,7 @@ export function playerLobbyView(s, me) {
       <div class="card"><span class="label">${isHints(room) ? "Hinweis-Modus · 4 – 3 – 2 – 1 Punkte" : isDuel(room) ? "Kategorie-Duell · Wähler hat Vorrang" : "Fragenpaket"}</span>
         <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
       ${favCard(room, s.uid)}
+      <button class="btn-text small howto-link" data-act="howto">So läuft's – Kurzanleitung ansehen</button>
       <div class="spacer"></div>
     </div>
     <div class="actions">

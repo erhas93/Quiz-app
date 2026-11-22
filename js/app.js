@@ -6,8 +6,9 @@ import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS, HOST_AWAY_MS, isYearQ } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS, HOST_AWAY_MS, isYearQ, isHints, HINT_MAX, hintWaiting, hintReqOf } from "./model.js";
 import { duelBoardView, drawFrame } from "./views/duel.js";
+import { introView, howtoSheet, markCombo } from "./views/howto.js";
 import { testSetupView } from "./views/overview.js";
 import { statsView } from "./views/stats.js";
 import { tick as botTick, startBotClock, createTestRoom, botModActions, ownerSteersBotMod, testOf } from "./bots.js";
@@ -44,6 +45,7 @@ function pickView(s) {
     if (me.role === "spectator") return { key: "specLobby", html: spectatorLobbyView(s, me) };
     return { key: "plLobby", html: playerLobbyView(s, me) };
   }
+  if (status === "running" && room.game?.intro) return { key: "intro", html: introView(s, me) };
   if (status === "running" && isDuel(room) && ["board", "drawing", "picked"].includes(room.game?.phase))
     return { key: me.role === "moderator" ? "modGame" : "plGame", html: duelBoardView(s, me) };
   if (status === "running") return me.role === "moderator" ? { key: "modGame", html: modGameView(s, me) } : { key: "plGame", html: playerGameView(s, me) };
@@ -72,7 +74,7 @@ function render(s) {
   const scrollTop = scroller?.scrollTop || 0;
 
   const v = pickView(s);
-  const html = banners(s) + v.html + (s.local.menu ? menuSheet(s) : "");
+  const html = banners(s) + v.html + (s.local.menu ? menuSheet(s) : "") + (s.local.howto && s.room ? howtoSheet(s) : "");
   // Unverändertes HTML nicht neu setzen: sonst gehen Taps verloren, die genau während eines Updates passieren
   if (html === lastHtml) { afterRender(s, v.key); return; }
   lastHtml = html;
@@ -196,6 +198,16 @@ function afterRender(s, key) {
     const d = duelOf(room);
     const req = d.picker && room.players?.[d.picker]?.pick;
     if (req && req.turn === (d.turn || 0)) doOnce(`pick:${roundKey(room)}:${d.turn || 0}`, () => A.pickCell(req.cell, d.picker));
+  }
+  // Kurzanleitung: wenn alle Spieler mit eigenem Gerät „Verstanden“ gedrückt haben, startet die Steuerung die Partie
+  if (steers && room.meta?.status === "running" && g?.intro) {
+    const ps = activePlayers(room).filter(p => !p.local);
+    if (ps.every(p => room.players?.[p.uid]?.introOk === (g.startedAt || 0))) doOnce(`intro:${roundKey(room)}`, () => A.endIntro(), 700);
+  }
+  // Hinweis-Modus ohne Moderator: neuer Hinweis, sobald alle Wartenden ihn angefordert haben
+  if (isHost && room.meta?.status === "running" && g?.phase === "answering" && isHints(room) && isFree(room) && (g.hint || 0) < HINT_MAX) {
+    const wait = hintWaiting(room);
+    if (wait.length && wait.every(p => hintReqOf(room, p.uid))) doOnce(`hint:${roundKey(room)}:${g.qIndex}:${g.hint || 0}`, () => A.nextHint(g.qIndex), 300);
   }
   // Ohne Moderator zeigt und löst der Host per Knopf auf – nur im Einzelspiel läuft das automatisch
   if (isHost && room.meta?.status === "running" && g && isSoloFree(room)) {
@@ -388,6 +400,12 @@ const handlers = {
     await A.submitAnswer(d.qi, q?.type === "estimate" ? parseEstimate(d.value) : String(d.value).trim(), store.local.bet?.qi === d.qi);
   },
   showAnswers: () => A.showAnswers(store.room.game.qIndex),
+  requestHint: () => { A.requestHint(); vibrate(15); },
+  ackIntro: () => { markCombo(store.room); A.ackIntro(); vibrate(15); },
+  endIntro: () => { markCombo(store.room); C().endIntro(); },
+  howtoFull: () => setLocal({ howtoFull: true }),
+  howto: () => setLocal({ howto: !store.local.howto, menu: false }),
+  howtoBg: (el, e) => { if (e.target === el) setLocal({ howto: false }); },
   // Nur ein Gerät
   addLocal: () => { const n = store.local.localName; A.addLocalPlayer(n).then(ok => { if (ok) { store.local.localName = ""; const el = $("in-local"); if (el) el.value = ""; rerender(); } }); },
   removeLocal: (el) => A.removeLocalPlayer(el.dataset.arg),
@@ -563,6 +581,7 @@ document.addEventListener("keydown", e => {
   initNative({
     onBack: () => {
       if (store.local.menu) { setLocal({ menu: false }); return true; }
+      if (store.local.howto) { setLocal({ howto: false }); return true; }
       if (store.local.picker) { setLocal({ picker: null }); return true; }
       if (store.local.stats) { setLocal({ stats: null }); return true; }
       if (!ROOM_ID && store.local.testSetup) { setLocal({ testSetup: null }); return true; }

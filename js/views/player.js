@@ -1,5 +1,5 @@
 // Spieler- und Zuschaueransicht während der Partie
-import { betsOn, betsLeft, unjudgedCount, esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount, isDuel, playOrder, isHints, hintPoints } from "../model.js";
+import { hintLevel, HINT_MAX, hintReqOf, hintWaiting, betsOn, betsLeft, unjudgedCount, esc, activePlayers, answersFor, answerOf, answeredCount, isOpenType, judgmentOf, resultFor, moderatorOf, moderatorAway, hiddenFor, verdictOf, estimateByDistance, isFree, hostUid, judgeOf, jokerOf, nextOf, waitingForNext, qCount, isDuel, playOrder, isHints, hintPoints } from "../model.js";
 import { duelStakeLine, duelOutcome } from "./duel.js";
 import { unclearBtn, hintsBlock, gameHeader, questionCard, factPanel, L, shortName, formatValue, resultSlot, standing, ICON } from "./common.js";
 import { an, animKey, hk } from "./anim.js";
@@ -33,6 +33,10 @@ export function playerGameView(s, me) {
   // Sicher-Einsatz: Knopf neben „Einloggen“, zeigt die verbleibenden Einsätze
   const betOn = !spectator && betsOn(room) && s.local.bet?.qi === qi;
   const left = betsOn(room) && !spectator ? betsLeft(room, s.uid) : 0;
+  // Hinweis-Modus ohne Moderator: Hinweis anfordern (kommt, wenn alle Wartenden angefordert haben)
+  const hintFree = isHints(room) && free && phase === "answering" && !mine && !spectator && hintLevel(room) < HINT_MAX;
+  const reqOn = hintFree && hintReqOf(room, s.uid);
+  const hintBtn = hintFree ? `<button class="btn-sq hreq${reqOn ? " on" : ""}" data-act="requestHint" aria-pressed="${reqOn}" aria-label="Nächsten Hinweis anfordern"><span class="bet-ico">💡</span><span class="bet-n">${reqOn ? "angefragt" : "Hinweis"}</span></button>` : "";
   const betBtn = left ? `<button class="btn-sq bet${betOn ? " on" : ""}" data-act="bet" aria-pressed="${betOn}" aria-label="Sicher-Einsatz setzen, noch ${left}"><span class="bet-ico">🎯</span><span class="bet-n">${betOn ? "gesetzt" : `${left}×`}</span></button>` : "";
   const hostName = esc(room.players?.[hostUid(room)]?.name || "Der Host");
   // Im Einzelspiel bewertet die App selbst – keine Bewerten-Knöpfe
@@ -94,8 +98,8 @@ export function playerGameView(s, me) {
         <span class="ans-l">${letter}</span><span class="ans-txt">${esc(txt)}</span>${mk}</button>`;
     }).join("")}</div>`;
     if (canPick) {
-      const jokerBtn = free && !jokerOf(room, s.uid) ? `<button class="btn-sq" data-act="useJoker" aria-label="50:50-Joker einsetzen" style="font-size:13px;font-weight:800;color:var(--c3)">50:50</button>` : "";
-      actions = `<div class="actions-row">${jokerBtn}${betBtn}<button class="btn btn-blue" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen</button></div>`;
+      const jokerBtn = free && !isHints(room) && !jokerOf(room, s.uid) ? `<button class="btn-sq" data-act="useJoker" aria-label="50:50-Joker einsetzen" style="font-size:13px;font-weight:800;color:var(--c3)">50:50</button>` : "";
+      actions = `<div class="actions-row">${jokerBtn}${hintBtn}${betBtn}<button class="btn btn-blue" data-act="commitPick" ${pending === null ? "disabled" : ""}>Einloggen</button></div>`;
     }
   } else {
     // ── Schätzen / Freitext ──
@@ -105,7 +109,7 @@ export function playerGameView(s, me) {
       const draft = s.local.draft?.qi === qi ? s.local.draft.value : "";
       body += `<input class="ans-input an-ain"${an(K + ":in", 120)} id="in-answer" data-input="draft" ${q.type === "estimate" ? 'inputmode="decimal"' : ""} aria-label="Deine Antwort"
         placeholder="${q.type === "estimate" ? "Deine Schätzung" : "Deine Antwort"}" value="${esc(draft)}" autocomplete="off">`;
-      actions = `<div class="actions-row">${betBtn}<button class="btn btn-blue" data-act="commitDraft" ${draft.trim() ? "" : "disabled"}>Einloggen</button></div>`;
+      actions = `<div class="actions-row">${hintBtn}${betBtn}<button class="btn btn-blue" data-act="commitDraft" ${draft.trim() ? "" : "disabled"}>Einloggen</button></div>`;
     } else if (solVisible) {
       body += `<div class="solution box an-flip"${an(K + ":sol")}><span><b>Richtig:</b> ${formatValue(q, q.answer)}</span></div>`;
     } else if (mine) {
@@ -145,11 +149,15 @@ export function playerGameView(s, me) {
     } else
     note = others.length ? `${others.join(", ")} ${others.length === 1 ? "hat" : "haben"} eingeloggt` : (total > 1 ? "Noch niemand eingeloggt" : "");
   } else if (phase === "locked" && !mine) note = "Zeit abgelaufen – keine Antwort";
-  else if ((phase === "answering" || phase === "locked") && isHints(room)) { note = `Getippt bei ${hintPoints(mine?.h)} ${hintPoints(mine?.h) === 1 ? "Punkt" : "Punkten"} ✓ · ${done < total ? `warte auf die anderen (${done}/${total})` : "der Moderator löst auf"}`; noteCls = "ok"; }
+  else if ((phase === "answering" || phase === "locked") && isHints(room)) {
+    note = `Getippt bei ${hintPoints(mine?.h)} ${hintPoints(mine?.h) === 1 ? "Punkt" : "Punkten"} ✓ · ${done < total ? `warte auf die anderen (${done}/${total})` : steerFree ? "alle haben getippt" : free ? `${hostName} zeigt gleich die Antworten` : "der Moderator löst auf"}`; noteCls = "ok";
+    if (steerFree && done >= total) actions = `<button class="btn btn-primary" data-act="showAnswers">Antworten zeigen</button>`;
+  }
   else if ((phase === "answering" || phase === "locked") && steerFree) {
     // Host: zeigt die Antworten per Knopf (auch vorzeitig, wenn jemand nicht antwortet)
     note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : "Alle haben eingeloggt"; noteCls = "ok";
-    actions = done < total ? `<button class="btn btn-ghost" data-act="showAnswers">Antworten jetzt zeigen (${done}/${total})</button>` : `<button class="btn btn-primary" data-act="showAnswers">Antworten zeigen</button>`;
+    // im Hinweis-Modus erst, wenn alle getippt haben
+    actions = done < total ? (isHints(room) ? "" : `<button class="btn btn-ghost" data-act="showAnswers">Antworten jetzt zeigen (${done}/${total})</button>`) : `<button class="btn btn-primary" data-act="showAnswers">Antworten zeigen</button>`;
   }
   else if ((phase === "answering" || phase === "locked") && mine?.b && !steerFree) { note = `Eingeloggt mit 🎯 Einsatz · ${done < total ? `warte auf die anderen (${done}/${total})` : free && !solo ? `${hostName} zeigt gleich die Antworten` : "gleich wird aufgelöst"}`; noteCls = "ok"; }
   else if (phase === "answering" || phase === "locked") { note = done < total ? `Eingeloggt ✓ · warte auf die anderen (${done}/${total})` : free && !solo ? `Eingeloggt ✓ · ${hostName} zeigt gleich die Antworten` : "Eingeloggt ✓ · gleich wird aufgelöst"; noteCls = "ok"; }
@@ -186,6 +194,10 @@ export function playerGameView(s, me) {
       + `<button class="btn btn-text" data-act="leave">Zuschauen beenden</button>`;
   }
 
+  if (hintFree) {
+    const w = hintWaiting(room), rq = w.filter(p => hintReqOf(room, p.uid)).length;
+    note = rq ? `${rq} von ${w.length} wollen den nächsten Hinweis` : "Tippen oder 💡 nächsten Hinweis anfordern"; noteCls = rq ? "gold" : "";
+  }
   if (spectator && revealed) note = duel ? (duelOutcome(room, qi, null)?.big || "Aufgelöst") : `Aufgelöst · ${standing(room, null)}`;
   // Moderator weg: Hinweis unten statt oben (sonst rutscht alles nach unten)
   if (mod && !mod.online) { note = `Moderator ${esc(mod.name)} ist offline – warte …`; noteCls = "warn"; }

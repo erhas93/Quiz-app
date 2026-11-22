@@ -498,3 +498,32 @@ button{cursor:pointer}
 .hb-ahead{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--text3)}
 .hb-empty{color:var(--text3);font-size:14px}
 .an-hint{animation:hintIn .45s cubic-bezier(.2,1.2,.4,1) both}
+/* Duell mit 3–4 Spielern: weitere Farben */
+.chip.pc,.chip2.pc,.stake.pc{border-left:4px solid var(--c2)}.chip.pd,.chip2.pd,.stake.pd{border-left:4px solid #c77dff}
+.cell.pc{background:rgba(42,157,143,.28);border-color:var(--c2)}.cell.pd{background:rgba(199,125,255,.24);border-color:#c77dff}
+.bfav.pc{color:var(--c2)}.bfav.pd{color:#c77dff}.ctable th.pc{color:var(--c2)}.ctable th.pd{color:#c77dff}
+.race-row.pc i{background:var(--c2)}.race-row.pd i{background:#c77dff}
+.btn-sq.hreq{flex-direction:column;gap:0;width:calc(var(--btn-h) + 14px);font-size:11px;font-weight:800;color:var(--text2)}
+.btn-sq.hreq .bet-ico{font-size:19px;line-height:1.1}
+.btn-sq.hreq.on{border-color:var(--c3);background:var(--gold-bg);color:var(--c3)}
+/* Kurzanleitung */
+.help-btn{font-size:19px;font-weight:900;color:var(--c3)}
+.intro .body{justify-content:flex-start}
+.intro-head{text-align:center;padding:14px 4px 2px;display:flex;flex-direction:column;gap:4px}
+.intro-kicker{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--c3)}
+.intro-h{font-size:24px;font-weight:900;margin:0}
+.howto-list{margin:0;padding:0 0 0 2px;list-style:none;display:flex;flex-direction:column;gap:11px}
+.howto-list li{position:relative;padding-left:22px;font-size:15px;line-height:1.4;color:var(--text2)}
+.howto-list li::before{content:"";position:absolute;left:4px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--c3)}
+.howto-list li b{color:var(--text)}
+.howto-link{align-self:center;margin-top:6px;color:var(--text3)}
+.card.howto{gap:12px}
+/* 3–4 Spieler: alle Spielerkarten in einer Reihe, etwas kompakter */
+.chips.n3,.chips.n4{display:grid;gap:6px}
+.chips.n3{grid-template-columns:repeat(3,1fr)}.chips.n4{grid-template-columns:repeat(4,1fr)}
+.chips.n3 .chip,.chips.n4 .chip{padding:0 8px;gap:5px}
+.chips.n3 .chip-name,.chips.n4 .chip-name{font-size:13.5px}
+.chips.n3 .chip-pts,.chips.n4 .chip-pts{font-size:17px}
+.chips.n3 .chip-st.tip,.chips.n4 .chip-st.tip{font-size:10.5px}
+.chips.n4 .dot{display:none}
+.chips.n3 .pts-float,.chips.n4 .pts-float{right:22px}

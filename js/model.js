@@ -145,10 +145,10 @@ export function computeResult(room, qi) {
     for (const u of uids) if (ok[u]) points[u] = pts;
     return { points, ok, fastestUid, by: by || null, stolen: false, rule: "all" };
   }
-  const opp = uids.find(u => u !== by);
+  // Wähler hat Vorrang; liegt er falsch, bekommen alle anderen Richtigen die Punkte (2–4 Spieler)
   let stolen = false;
   if (by && ok[by]) points[by] = pts;
-  else if (opp && ok[opp]) { points[opp] = pts; stolen = true; }
+  else for (const u of uids) if (u !== by && ok[u]) { points[u] = pts; stolen = true; }
   return { points, ok, fastestUid, by: by || null, stolen };
 }
 
@@ -333,6 +333,15 @@ export const isDuel = room => room?.settings?.game === "duel";
 export const isHints = room => room?.settings?.game === "hints";
 export const HINT_MAX = 3;
 export const hintLevel = room => Math.min(HINT_MAX, room?.game?.hint || 0);
+// Ohne Moderator: ein Hinweis kommt, wenn alle, die noch nicht getippt haben, ihn angefordert haben
+export const hintReqOf = (room, uid) => {
+  const r = room?.players?.[uid]?.hintReq, g = room?.game;
+  return !!(r && g && r.qi === g.qIndex && r.lvl === (g.hint || 0) && r.s === (g.startedAt || 0));
+};
+export function hintWaiting(room) {
+  const g = room?.game, ans = room?.answers?.[g?.qIndex] || {};
+  return activePlayers(room).filter(p => !ans[p.uid]);
+}
 export const hintPoints = h => Math.max(1, HINT_MAX + 1 - (h || 0));   // 4 – 3 – 2 – 1
 // Punkte-Regel im Duell: "picker" = Wähler hat Vorrang (Gegner klaut nur bei Fehler), "all" = jeder Richtige punktet
 // „Jeder Richtige“ wurde gestrichen (machte die Kategoriewahl sinnlos) – alte Räume fallen auf „Wähler hat Vorrang“ zurück
@@ -367,6 +376,13 @@ export function playOrder(room) {
 }
 export const freeCells = room => (room?.questions || []).map((_, qi) => qi).filter(qi => !isPlayed(room, qi));
 export const opponentOf = (room, uid) => activePlayers(room).find(p => p.uid !== uid)?.uid || null;
+// Nächster Wähler: reihum in Sitzreihenfolge (bei 2 Spielern = abwechselnd)
+export function nextPicker(room, uid) {
+  const ps = activePlayers(room);
+  const i = ps.findIndex(p => p.uid === uid);
+  return ps.length ? ps[(i + 1) % ps.length].uid : null;
+}
+export const DUEL_MAX = 4;
 // Lieblingskategorien eines Spielers (Indizes ins Brett)
 export const favCatsOf = (room, uid) => Object.entries(room?.players?.[uid]?.favCats || {}).filter(([, v]) => v).map(([k]) => Number(k.slice(1)));
 export const favDone = (room, uid) => !!room?.players?.[uid]?.favDone;
