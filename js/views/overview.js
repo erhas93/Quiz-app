@@ -39,6 +39,7 @@ export function overviewView(s, now) {
     <div class="actions">
       <button class="btn btn-primary" data-act="newRoom" data-arg="players">Neuer Raum ohne Moderator</button>
       <button class="btn btn-gold" data-act="newRoom" data-arg="moderated">Neuer Raum mit Moderator</button>
+      <button class="btn btn-ghost" data-act="newRoom" data-arg="single">Nur ein Gerät – du tippst für alle ein</button>
       <button class="btn btn-text" data-act="testSetup">${ICON.bug(16)} Testraum mit Bots</button>
     </div>
   </div>`;

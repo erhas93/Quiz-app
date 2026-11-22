@@ -1,7 +1,7 @@
 // Gemeinsame Bausteine der Ansichten (Design A · Kompakt)
 import { serverNow } from "../firebase.js";
 import { an, animKey } from "./anim.js";
-import { isHints, hintLevel, hintPoints, HINT_MAX, esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking, isDuel, playOrder, isStartQ, pickOf, DUEL_TURNS, DIFF_LABEL, pointsOf } from "../model.js";
+import { isHints, hintLevel, hintPoints, HINT_MAX, esc, activePlayers, spectatorsOf, scoreOf, answersFor, qCount, isOpenType, timerLeft, speedLead, fmtMs, jokerOf, resultFor, ranking, isDuel, playOrder, isStartQ, pickOf, DUEL_TURNS, DIFF_LABEL, pointsOf, fmtNum, isYearQ } from "../model.js";
 
 export const L = i => String.fromCharCode(65 + i);
 
@@ -159,7 +159,7 @@ function modChips(room) {
     const a = answers[p.uid];
     const j = jokerOf(room, p.uid);
     const side = isDuel(room) ? ["pa", "pb"][pi] || "" : "";
-    let sub = a ? (isHints(room) ? `getippt · ${hintPoints(a.h)} P` : `${fmtMs(a.ms)} ✓`) : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
+    let sub = a ? (isHints(room) ? `getippt · ${hintPoints(a.h)} P` : (typeof a.ms === "number" ? `${fmtMs(a.ms)} ✓` : "eingetragen ✓")) : (g.phase === "answering" ? "denkt nach …" : "keine Antwort");
     if (a && !isHints(room) && res?.fastestUid === p.uid) sub = `${fmtMs(a.ms)} ⚡`;
     let jk = "";
     if (j && j.q === qi) jk = `<span class="chip-st gold">50:50 aktiv</span>`;
@@ -176,8 +176,8 @@ function ptsHtml(room, uid) {
   const g = room.game || {}, qi = g.qIndex ?? 0;
   const K = animKey(room);
   const got = g.phase === "revealed" ? resultFor(room, qi)?.points?.[uid] || 0 : 0;
-  const fl = got ? `<span class="pts-float an-float"${an(K + ":fl:" + uid, 250)}>+${got}</span>` : "";
-  return `<span class="chip-pts${got ? " an-pts" : ""}"${got ? an(K + ":pp:" + uid, 250) : ""} data-cnt="${room.meta?.createdAt || 0}.${room.game?.startedAt || 0}.${uid}">${scoreOf(room, uid)}</span>${fl}`;
+  const fl = got ? `<span class="pts-float an-float${got < 0 ? " neg" : ""}"${an(K + ":fl:" + uid, 250)}>${got > 0 ? "+" : "−"}${Math.abs(got)}</span>` : "";
+  return `<span class="chip-pts${got > 0 ? " an-pts" : got < 0 ? " an-pts neg" : ""}"${got ? an(K + ":pp:" + uid, 250) : ""} data-cnt="${room.meta?.createdAt || 0}.${room.game?.startedAt || 0}.${uid}">${scoreOf(room, uid)}</span>${fl}`;
 }
 
 // ── Frage, Hintergrund, Ergebnis ──
@@ -194,12 +194,18 @@ export function questionCard(q, { room = null, factOn = false } = {}) {
 }
 
 // „Unverständlich“-Knopf unter der Frage (Spieler und Moderator), zeigt auch, wie viele markiert haben
+// Bewertung der Frage direkt unter der Karte – für Spieler und Moderator, jederzeit:
+// zu leicht · passt · zu schwer · Fehler (eine Wahl, umentscheidbar) und „unverständlich“ (eigener Schalter)
+export const FB = [["easy", "zu leicht"], ["ok", "passt"], ["hard", "zu schwer"], ["bad", "Fehler"]];
 export function unclearBtn(room, qi, uid) {
   if (qi == null || qi < 0 || !room.questions?.[qi]) return "";
-  const mine = !!room.players?.[uid]?.unclear?.["q" + qi];
+  const me = room.players?.[uid];
+  const isMod = me?.role === "moderator";
+  const cur = isMod ? room.feedback?.[qi] || null : me?.fb?.["q" + qi] || null;
+  const mine = !!me?.unclear?.["q" + qi];
   const n = Object.values(room.players || {}).filter(p => p?.unclear?.["q" + qi]).length;
   const others = n - (mine ? 1 : 0);
-  return `<div class="unclear-row"><button class="unclear-btn${mine ? " on" : ""}" data-act="unclear">${mine ? "✓ als unverständlich markiert" : "Frage unverständlich?"}</button>${others ? `<span class="muted small">${others}× markiert</span>` : ""}</div>`;
+  return `<div class="qfb">${FB.map(([k, l]) => `<button class="fb${cur === k ? " on" : ""}${k === "bad" ? " bad" : ""}" data-act="feedback" data-arg="${k}" aria-pressed="${cur === k}">${l}</button>`).join("")}<button class="fb unc${mine ? " on" : ""}" data-act="unclear" aria-pressed="${mine}">${mine ? "✓ " : ""}unverständlich${others ? ` · ${others}` : ""}</button></div>`;
 }
 
 // Hinweis-Modus: eingeblendete Hinweise (Moderator sieht alle vorab, abgedunkelt) und aktuelle Punktzahl
@@ -283,6 +289,6 @@ export const shortName = n => esc(String(n || "").slice(0, 6));
 export function formatValue(q, v) {
   if (v == null) return "";
   if (!isOpenType(q)) return esc(q.a?.[v] ?? v);
-  if (q.type === "estimate" && typeof v === "number") return v.toLocaleString("de-DE");
+  if (q.type === "estimate" && typeof v === "number") return fmtNum(q, v);
   return esc(v);
 }

@@ -25,6 +25,8 @@ function detail(e) {
   const parts = [];
   if (e.pick) parts.push("Gewählt: " + ["a0", "a1", "a2", "a3"].map((k, i) => `${"ABCD"[i]} ${e.pick[k] || 0}`).join(" · "));
   if (e.wrong) parts.push("Falsch: " + Object.entries(e.wrong).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k, v]) => `„${esc(k)}“${v > 1 ? ` ${v}×` : ""}`).join(", "));
+  if (e.yerr) { const y = e.yerr, n = k => y[k] || 0; parts.push(`Jahreszahlen: ${n("z")}× genau · ${n("m1") + n("p1")}× ±2 J. · ${n("m2") + n("p2")}× ±10 J. · ${n("m3") + n("p3")}× weiter daneben`); }
+  if (e.bet) parts.push(`🎯 Einsatz: ${e.bet}× gesetzt, ${e.betRight || 0}× richtig`);
   if (e.err) { const lo = (e.err.m3 || 0) + (e.err.m2 || 0) + (e.err.m1 || 0), hi = (e.err.p1 || 0) + (e.err.p2 || 0) + (e.err.p3 || 0); parts.push(`Schätzungen: ${lo}× zu niedrig · ${e.err.z || 0}× fast genau · ${hi}× zu hoch`); }
   return parts.length ? `<div class="sq-x">${parts.join("<br>")}</div>` : "";
 }
@@ -60,7 +62,8 @@ export function statsView(s) {
     const isOpen = open === id;
     const rows = isOpen ? list.slice().sort((a, b) => (a.diff || 0) - (b.diff || 0) || (pct(a.right, a.n) ?? 0) - (pct(b.right, b.n) ?? 0)).map(e => {
       const q = pct(e.right, e.n);
-      const fb = e.fb ? Object.entries(e.fb).filter(([, v]) => v > 0).map(([k, v]) => `${{ easy: "zu leicht", ok: "passt", hard: "zu schwer", bad: "Fehler" }[k] || k} ${v}`).join(", ") : "";
+      const fbTxt = o => o ? Object.entries(o).filter(([, v]) => v > 0).map(([k, v]) => `${{ easy: "zu leicht", ok: "passt", hard: "zu schwer", bad: "Fehler" }[k] || k} ${v}`).join(", ") : "";
+      const fb = [fbTxt(e.fb) && `Moderator: ${fbTxt(e.fb)}`, fbTxt(e.pfb) && `Spieler: ${fbTxt(e.pfb)}`].filter(Boolean).join(" · ");
       return `<div class="sq"><div class="sq-q">${esc(e.q || "?")}</div><div class="sq-m">${e.diff ? `<span class="sq-d d${e.diff}">${DIFF[e.diff]}</span>` : ""}${e.cat ? `<span class="muted">${esc(e.cat)}</span>` : ""}<span class="r ${rate(q, e.diff)}">${e.right || 0}/${e.n || 0}</span>${e.unclear ? `<span class="sq-u">❓ ${e.unclear}× unverständlich</span>` : ""}${fb ? `<span class="muted">· ${esc(fb)}</span>` : ""}</div>${detail(e)}</div>`;
     }).join("") : "";
     return `<div class="card stat-pack"><button class="stat-head" data-act="statsOpen" data-arg="${esc(id)}"><span class="pack-txt"><span class="pack-name">${esc(st.names?.[id] || id)}</span><span class="pack-sub">${list.length} Fragen · ${x.n} Antworten${x.unclear ? ` · ❓ ${x.unclear}` : ""}</span></span><span class="r">${p} %</span></button>${rows}</div>`;

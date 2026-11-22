@@ -1,5 +1,5 @@
 // Lobby für Moderator, Spieler und Zuschauer – alles auf einem Bildschirm
-import { esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC, duelRule, isHints } from "../model.js";
+import { isSingle, BET_MAX, BET_WIN, esc, activePlayers, moderatorOf, MAX_PLAYERS, isFree, hostUid, isDuel, PICK_SEC, duelRule, isHints } from "../model.js";
 import { ROOM_ID } from "../firebase.js";
 import { topBar, slots, spectatorLine, ICON } from "./common.js";
 import { playStats, packLine } from "./packs.js";
@@ -8,6 +8,15 @@ const code = () => `Raum <span class="code-badge">${esc(ROOM_ID)}</span>`;
 const playersCard = (room, uid, right = "") => `<div class="card">
     <div class="card-h"><span class="label">Spieler · ${activePlayers(room).length} von ${MAX_PLAYERS}</span>${right}</div>
     ${slots(room, uid, MAX_PLAYERS)}${spectatorLine(room)}</div>`;
+
+// Nur ein Gerät: Spieler werden als Namen angelegt (kein eigenes Handy nötig)
+const localPlayersCard = (room) => {
+  const ps = activePlayers(room);
+  const rows = ps.map(p => `<div class="slot ready"><span class="slot-name">${esc(p.name)}</span>${p.local ? `<button class="btn-x" data-act="removeLocal" data-arg="${esc(p.uid)}" aria-label="${esc(p.name)} entfernen">${ICON.x(16)}</button>` : `<span class="slot-tag">eigenes Handy</span>`}</div>`).join("");
+  const add = ps.length < MAX_PLAYERS ? `<div class="local-add"><input class="inp" id="in-local" data-input="localName" placeholder="Name des Spielers" autocomplete="off" maxlength="24"><button class="btn btn-ghost btn-sm" data-act="addLocal">Hinzufügen</button></div>` : "";
+  return `<div class="card"><div class="card-h"><span class="label">Spieler · ${ps.length} von ${MAX_PLAYERS}</span><span class="muted small">du tippst für alle ein</span></div>
+    <div class="slots">${rows}</div>${add}${spectatorLine(room)}</div>`;
+};
 
 // Moderator-Lobby; ohne Moderator sieht der Host (selbst Spieler) dieselbe Steuerung
 // Lieblingsthema fürs gewählte Pack (normales Spiel); im Duell kommt die Frage auf dem Brett
@@ -22,7 +31,7 @@ function favCard(room, uid) {
 // Spielmodus: Auswahl + immer genau eine kurze Beschreibung (feste Höhe), Optionen stehen getrennt darunter
 const MODES = [
   ["classic", "Klassisch", "Alle beantworten dieselben 15 Fragen gleichzeitig. Jede richtige Antwort bringt 1 Punkt."],
-  ["duel", "Duell", "Zu zweit abwechselnd Felder wählen: 5 Kategorien, 3 Stufen, 1–3 Punkte je Feld."],
+  ["duel", "Duell", "Zu zweit abwechselnd Felder wählen: 5 Kategorien, 3 Stufen, 1–3 Punkte je Feld. Liegt der Wähler falsch, kann der Gegner klauen."],
   ["hints", "Hinweise", "Bis zu 3 Hinweise je Frage. Wer früher richtig tippt, bekommt mehr: 4–3–2–1 Punkte."]
 ];
 function modeCard(room) {
@@ -40,11 +49,10 @@ function optionsCard(room, free) {
   const g = isDuel(room) ? "duel" : isHints(room) ? "hints" : "classic";
   const rows = [];
   if (g === "duel") {
-    const all = duelRule(room) === "all";
-    rows.push(`<div class="opt"><span class="opt-l">Punkte</span><div class="seg3"><button class="${all ? "" : "on"}" data-act="duelRule" data-arg="picker">Wähler hat Vorrang</button><button class="${all ? "on" : ""}" data-act="duelRule" data-arg="all">Jeder Richtige</button></div>
-      <span class="opt-h">${all ? "Jeder Richtige bekommt die Punkte des Feldes." : "Liegt der Wähler falsch, kann der Gegner die Punkte klauen."}</span></div>`);
     rows.push(`<div class="opt"><button class="toggle-row" data-act="pickTimer" aria-pressed="${!!room.settings?.pickTimer}"><span class="opt-l">Wähl-Timer (${PICK_SEC} s)</span><span class="switch${room.settings?.pickTimer ? " on" : ""}"></span></button></div>`);
   }
+  if (g === "classic") rows.push(`<div class="opt"><button class="toggle-row" data-act="bets" aria-pressed="${!!room.settings?.bets}"><span class="opt-l">🎯 Sicher-Einsatz (${BET_MAX}× pro Partie)</span><span class="switch${room.settings?.bets ? " on" : ""}"></span></button>
+      <span class="opt-h">Wer sich sicher ist, setzt vor dem Einloggen: richtig +${BET_WIN}, falsch −${BET_WIN} statt der normalen Punkte. Bei Schätzfragen gibt es +${BET_WIN} nur für einen Volltreffer.</span></div>`);
   if (g !== "hints") rows.push(timerRow(room, free));
   else rows.push(`<div class="opt"><span class="opt-h">Keine weiteren Optionen – das Tempo bestimmst du über die Hinweise.</span></div>`);
   return `<div class="card"><span class="label">Optionen</span>${rows.join("")}</div>`;
@@ -77,9 +85,9 @@ export function modLobbyView(s) {
 
   const invite = `<button class="btn btn-ghost btn-sm" data-act="invite">${ICON.share(16)} Einladen</button>`;
   return `<div class="screen">
-    ${topBar(code(), `Vorbereitung · ${free ? "ohne Moderator, du steuerst" : `${esc(moderatorOf(room)?.name || "Du")} moderiert`}`, { back: "overview", connected: s.connected })}
+    ${topBar(code(), `Vorbereitung · ${free ? "ohne Moderator, du steuerst" : isSingle(room) ? "nur ein Gerät, du tippst ein" : `${esc(moderatorOf(room)?.name || "Du")} moderiert`}`, { back: "overview", connected: s.connected })}
     <div class="body">
-      ${playersCard(room, s.uid, invite)}
+      ${isSingle(room) ? localPlayersCard(room) : playersCard(room, s.uid, invite)}
       ${modeCard(room)}
       <div class="card"><span class="label">Fragenpaket</span>${pack}</div>
       ${favCard(room, s.uid)}
@@ -104,13 +112,13 @@ export function playerLobbyView(s, me) {
       <div class="card"><label class="label" for="in-lobbyname">Dein Name</label>
         <input class="inp" id="in-lobbyname" data-input="name" data-commit="setName" maxlength="20" value="${esc(me.name)}"></div>
       ${playersCard(room, s.uid)}
-      <div class="card"><span class="label">${isHints(room) ? "Hinweis-Modus · 4 – 3 – 2 – 1 Punkte" : isDuel(room) ? `Kategorie-Duell · ${duelRule(room) === "all" ? "jeder Richtige punktet" : "Wähler hat Vorrang"}` : "Fragenpaket"}</span>
+      <div class="card"><span class="label">${isHints(room) ? "Hinweis-Modus · 4 – 3 – 2 – 1 Punkte" : isDuel(room) ? "Kategorie-Duell · Wähler hat Vorrang" : "Fragenpaket"}</span>
         <div class="status-big" style="font-size:16px">${room.settings?.packName ? esc(room.settings.packName) : `<span class="muted" style="font-weight:500">${isFree(room) ? "Der Host" : "Der Moderator"} wählt noch …</span>`}</div></div>
       ${favCard(room, s.uid)}
       <div class="spacer"></div>
     </div>
     <div class="actions">
-      <button class="btn ${me.ready ? "btn-primary" : "btn-ghost"}" data-act="toggleReady">${me.ready ? `${ICON.check(20)} Bereit` : "Ich bin bereit"}</button>
+      <button class="btn ${me.ready ? "btn-primary" : "btn-ghost"}" data-act="toggleReady">${me.ready ? `${ICON.check(20)} Du bist bereit – antippen zum Zurücknehmen` : "Bereit melden"}</button>
       <button class="btn btn-text" data-act="leave">Raum verlassen</button>
     </div>
   </div>`;

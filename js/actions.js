@@ -4,7 +4,7 @@ import { db, ref, roomRef, roomPath, ROOM_ID, set, update, remove, runTransactio
 import { store, rerender } from "./store.js";
 import { DBG } from "./debug.js";
 import { loadPack } from "./packs.js";
-import { autoJudge, jokerOf, isHints, MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf } from "./model.js";
+import { autoJudge, jokerOf, isHints, MAX_PLAYERS, activePlayers, computeResult, qCount, summary, moderatorOf, ranking, isDuel, duelOf, pickOf, isStartQ, opponentOf, playOrder, freeCells, questionKey, statCorrect, isFavFor, answerOf, betsOn, betsLeft, isYearQ } from "./model.js";
 
 // Alle Aktionen hängen an einem Kontext (Identität, Datenbank, Raum). Die App nutzt den Hauptkontext,
 // die Test-Bots je einen eigenen mit eigener Anmeldung – so laufen sie über exakt dieselben Wege.
@@ -16,6 +16,7 @@ export function createActions(ctx) {
   // ── Raum ───────────────────────────────────────────────────────────────────
   // mode "moderated": man wird Moderator; mode "players": man spielt selbst mit und steuert als Host
   async function createRoom(name, mode = "moderated", extraMeta = null) {
+    if (mode === "single") { mode = "moderated"; extraMeta = { ...(extraMeta || {}), single: true }; }
     name = (name || "").trim() || (mode === "players" ? "Spieler 1" : "Moderator");
     rememberName(name);
     const now = serverNow();
@@ -157,6 +158,45 @@ export function createActions(ctx) {
   async function setDuelRule(rule) {
     try { await update(ctx.roomRef("settings"), { duelRule: rule === "all" ? "all" : "picker" }); DBG.log("setDuelRule", rule); } catch (e) { fail("Regel nicht gespeichert", e); }
   }
+  // Nur ein Gerät: Spieler als Namen anlegen/entfernen, Antworten für sie eintragen
+  async function addLocalPlayer(name) {
+    name = (name || "").trim().slice(0, 24);
+    if (!name) return fail("Bitte einen Namen eingeben");
+    const now = serverNow();
+    try {
+      const res = await runTransaction(ctx.roomRef("players"), cur => {
+        cur = cur || {};
+        const list = Object.values(cur);
+        if (list.filter(p => p.role === "player").length >= MAX_PLAYERS) return;
+        if (list.some(p => p.role === "player" && p.name.toLowerCase() === name.toLowerCase())) return;
+        const seat = Math.max(0, ...list.filter(p => p.role !== "spectator").map(p => p.seat || 0)) + 1;
+        cur["l" + now.toString(36) + Math.random().toString(36).slice(2, 6)] = { name, role: "player", seat, ready: true, local: true, favDone: true, joinedAt: now };
+        return cur;
+      });
+      DBG.log("addLocalPlayer", { committed: res.committed });
+      if (!res.committed) return fail(`Name schon vergeben oder Raum voll (max. ${MAX_PLAYERS})`);
+      return true;
+    } catch (e) { return fail("Spieler nicht angelegt", e); }
+  }
+  async function removeLocalPlayer(pid) {
+    if (!ctx.room()?.players?.[pid]?.local) return;
+    try { await set(ctx.roomRef(`players/${pid}`), null); } catch (e) { fail("Spieler nicht entfernt", e); }
+  }
+  async function modAnswer(qi, pid, value, bet = false) {
+    const room = ctx.room(), g = room?.game;
+    if (!g || g.qIndex !== qi || !["answering", "locked"].includes(g.phase)) return fail("Die Frage ist nicht mehr offen");
+    if (!room.players?.[pid]?.local) return;
+    const prev = room.answers?.[qi]?.[pid];
+    const now = serverNow();
+    const a = { value, at: prev?.at || now };   // ohne ms: beim Eintippen gibt es keine Antwortzeit
+    if (g.hint != null) a.h = prev && typeof prev.h === "number" ? prev.h : (g.hint || 0);
+    if (bet && betsOn(room) && (prev?.b || betsLeft(room, pid) > 0)) a.b = true;
+    try { await set(ctx.roomRef(`answers/${qi}/${pid}`), a); DBG.log("modAnswer", { qi, pid }); return true; }
+    catch (e) { return fail("Antwort nicht gespeichert", e); }
+  }
+  async function setBets(on) {
+    try { await update(ctx.roomRef("settings"), { bets: !!on }); DBG.log("setBets", on); } catch (e) { fail("Einstellung nicht gespeichert", e); }
+  }
   async function setPickTimer(on) {
     try { await update(ctx.roomRef("settings"), { pickTimer: !!on }); DBG.log("setPickTimer", on); } catch (e) { fail("Wähl-Timer nicht gespeichert", e); }
   }
@@ -197,7 +237,7 @@ export function createActions(ctx) {
         ? { qIndex: -1, phase: "board", phaseAt: now, duel: { turn: 0 } }   // erst das Brett zeigen, Kategorien vorstellen
         : { qIndex: 0, phase: "answering", phaseAt: now, questionStartAt: now, timer: freshTimer(room, now), ...(hints ? { hint: 0, hintAt: now } : {}) };
       const reset = {};
-      for (const p of activePlayers(room)) Object.assign(reset, { [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: null, [`players/${p.uid}/pick`]: null });
+      for (const p of activePlayers(room)) Object.assign(reset, { [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: p.local ? true : null, [`players/${p.uid}/pick`]: null });
     for (const u of Object.keys(room.players || {})) reset[`players/${u}/unclear`] = null;
       await update(ctx.roomRef(), {
         ...reset,
@@ -260,7 +300,7 @@ export function createActions(ctx) {
   //   n/right/noAns, fav/favRight, nofav/nofavRight, h<k>/h<k>r (Hinweisstand), joker,
   //   pick.a0–a3 (gewählte Antwort bei MC), wrong{Text: Anzahl} (Freitext, max. 25 verschiedene),
   //   modFix (Moderator weicht von der Automatik ab), altCand{Text} (vom Moderator als richtig gewertet),
-  //   err.m3…p3 (Schätzfehler-Bereiche), picked/turnSum (Duell: wann das Feld gewählt wurde)
+  //   err.m3…p3 (Schätzfehler-Bereiche in %), yerr (Jahreszahlen in Jahren), bet/betRight (Sicher-Einsatz), picked/turnSum (Duell: wann das Feld gewählt wurde)
   async function recordStats(room, qi) {
     if (room?.meta?.test) return;   // Testräume verfälschen die Statistik nicht
     const r = statRef(room, qi);
@@ -293,7 +333,12 @@ export function createActions(ctx) {
           if (x.joker) inc(c, "joker");
           if (!x.a) continue;
           if (!q.type || q.type === "mc") inc(c.pick = c.pick || {}, "a" + x.a.value);
-          if (q.type === "estimate") { const b = bucket(Number(x.a.value), Number(q.answer)); if (b) inc(c.err = c.err || {}, b); }
+          if (x.a.b) { inc(c, "bet"); if (x.ok) inc(c, "betRight"); }
+          // Schätzfehler: bei Jahreszahlen in Jahren (yerr: z genau, 1 ≤ 2 J., 2 ≤ 10 J., 3 darüber), sonst in Prozent (err)
+          if (q.type === "estimate" && isYearQ(q)) {
+            const d = Number(x.a.value) - Number(q.answer), ad = Math.abs(d);
+            if (isFinite(d)) inc(c.yerr = c.yerr || {}, d === 0 ? "z" : (d < 0 ? "m" : "p") + (ad <= 2 ? 1 : ad <= 10 ? 2 : 3));
+          } else if (q.type === "estimate") { const b = bucket(Number(x.a.value), Number(q.answer)); if (b) inc(c.err = c.err || {}, b); }
           if (q.type === "open") {
             const auto = autoJudge(q, x.a.value);
             if (x.j != null && x.j !== auto) { inc(c, "modFix"); if (x.j) inc(c.altCand = c.altCand || {}, key(x.a.value)); }
@@ -326,20 +371,22 @@ export function createActions(ctx) {
   }
 
   // Feedback des Moderators: zu leicht / passt / zu schwer / fehlerhaft (umentscheiden möglich)
+  // Moderator: room.feedback/{qi} → Statistik „fb“; Spieler: players/{uid}/fb/q{qi} → Statistik „pfb“
   async function giveFeedback(kind) {
     const room = ctx.room(), qi = room?.game?.qIndex;
-    if (room?.meta?.test) return;
-    const r = statRef(room, qi);
-    if (!r) return;
-    const prev = room.feedback?.[qi] || null;
+    if (!room || qi == null) return;
+    const isMod = room.players?.[uid()]?.role === "moderator";
+    const prev = (isMod ? room.feedback?.[qi] : room.players?.[uid()]?.fb?.["q" + qi]) || null;
     const next = prev === kind ? null : kind;
+    const r = room.meta?.test ? null : statRef(room, qi);
+    const field = isMod ? "fb" : "pfb";
     try {
-      await set(ctx.roomRef(`feedback/${qi}`), next);
-      await runTransaction(r, cur => {
-        const c = cur || {};
-        c.fb = c.fb || {};
-        if (prev) c.fb[prev] = Math.max(0, (c.fb[prev] || 0) - 1);
-        if (next) c.fb[next] = (c.fb[next] || 0) + 1;
+      await set(ctx.roomRef(isMod ? `feedback/${qi}` : `players/${uid()}/fb/q${qi}`), next);
+      if (r) await runTransaction(r, cur => {
+        const c = cur || { q: String(room.questions[qi]?.q || "").slice(0, 90) };
+        c[field] = c[field] || {};
+        if (prev) c[field][prev] = Math.max(0, (c[field][prev] || 0) - 1);
+        if (next) c[field][next] = (c[field][next] || 0) + 1;
         return c;
       });
       DBG.log("Feedback", { qi, kind: next });
@@ -399,7 +446,7 @@ export function createActions(ctx) {
     };
     for (const p of activePlayers(ctx.room())) Object.assign(patch, {
       [`players/${p.uid}/ready`]: p.uid === ctx.room()?.meta?.hostUid && ctx.room()?.meta?.mode === "players",
-      [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: null, [`players/${p.uid}/pick`]: null
+      [`players/${p.uid}/favCats`]: null, [`players/${p.uid}/favDone`]: p.local ? true : null, [`players/${p.uid}/pick`]: null
     });
     for (const u of Object.keys(ctx.room()?.players || {})) patch[`players/${u}/unclear`] = null;
     try { await update(ctx.roomRef(), patch); DBG.log("newRound"); } catch (e) { fail("Neue Runde fehlgeschlagen", e); }
@@ -545,15 +592,18 @@ export function createActions(ctx) {
   }
 
   // ── Antworten (Spieler) ────────────────────────────────────────────────────
-  async function submitAnswer(qi, value) {
+  async function submitAnswer(qi, value, bet = false) {
     const g = ctx.room()?.game;
+    const useBet = bet && betsOn(ctx.room()) && betsLeft(ctx.room(), uid()) > 0;
     if (!g || g.phase !== "answering" || g.qIndex !== qi) return fail("Die Frage ist nicht mehr offen");
     const now = serverNow();
     const ms = Math.max(0, Math.round(now - (g.questionStartAt || now)));
     try {
       const res = await runTransaction(ctx.roomRef(`answers/${qi}/${uid()}`), cur => {
         if (cur) return; // bereits eingeloggt
-        return g.hint != null ? { value, at: now, ms, h: g.hint || 0 } : { value, at: now, ms };
+        const a = g.hint != null ? { value, at: now, ms, h: g.hint || 0 } : { value, at: now, ms };
+        if (useBet) a.b = true;
+        return a;
       });
       DBG.log("submitAnswer", { qi, committed: res.committed, ms });
       return res.committed;
@@ -632,7 +682,7 @@ export function createActions(ctx) {
     }
   }
 
-  return { toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
+  return { addLocalPlayer, removeLocalPlayer, modAnswer, setBets, toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker };
 }
 
 const main = createActions({
@@ -652,4 +702,4 @@ const main = createActions({
     store.local.name = name;
   }
 });
-export const { toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;
+export const { addLocalPlayer, removeLocalPlayer, modAnswer, setBets, toggleUnclear, nextHint, setDuelRule, setVersion, duelPickedDone, createRoom, joinAsPlayer, joinAsSpectator, joinAsModerator, markAbandoned, leaveRoom, setName, setReady, choosePack, setGameMode, setPickTimer, setFav, toggleFavCat, confirmFavs, startGame, reveal, giveFeedback, nextQuestion, newRound, judge, duelDraw, duelDrawDone, pickCell, requestPick, setPackPref, setTimer, grantJoker, setBonus, submitAnswer, autoJudgeAnswer, overrideJudgment, markNext, claimHost, resetRoom, syncIndex, cleanupRooms, lockAnswers, showAnswers, timerExpired, timerStart, timerPause, timerReset, useJoker } = main;

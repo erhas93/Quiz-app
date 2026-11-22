@@ -26,7 +26,7 @@ export { ref, onValue, set, update, get, remove, runTransaction, onDisconnect, s
 // Raum aus der Adresse (?room=CODE); ohne Raum zeigt die App die Übersicht aller offenen Räume
 const params = new URLSearchParams(location.search);
 export const ROOM_ID = (params.get("room") || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 24) || null;
-export const CREATE_MODE = ["moderated", "players", "test"].includes(params.get("create")) ? params.get("create") : null;
+export const CREATE_MODE = ["moderated", "players", "test", "single"].includes(params.get("create")) ? params.get("create") : null;
 
 // Raumcode: 4 Großbuchstaben ohne leicht verwechselbare (I, O)
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ";

@@ -9,7 +9,7 @@ const vals = o => (o ? Object.values(o).filter(v => v != null) : []);
 export function playersOf(room) {
   const pres = room?.presence || {};
   return Object.entries(room?.players || {})
-    .map(([uid, p]) => ({ uid, ...p, online: !!pres[uid]?.online, lastSeen: pres[uid]?.lastSeen || null }))
+    .map(([uid, p]) => ({ uid, ...p, online: !!pres[uid]?.online || !!p?.local, lastSeen: pres[uid]?.lastSeen || null }))
     .sort((a, b) => (a.seat ?? 99) - (b.seat ?? 99) || (a.joinedAt || 0) - (b.joinedAt || 0));
 }
 export const activePlayers = room => playersOf(room).filter(p => p.role === "player");
@@ -120,7 +120,19 @@ export function computeResult(room, qi) {
     for (const u of Object.keys(points)) points[u] = ok[u] ? hintPoints(answerOf(room, qi, u)?.h) : 0;
     return { points, ok, fastestUid };
   }
-  if (!isDuel(room)) return { points, ok, fastestUid };
+  if (!isDuel(room)) {
+    // Sicher-Einsatz: ersetzt die normalen Punkte – richtig +2, falsch −2.
+    // Schätzfragen: genau getroffen +2, sonst richtig (Toleranz bzw. am nächsten dran) normale Punkte, sonst −2
+    const bets = {};
+    if (betsOn(room)) for (const u of Object.keys(points)) {
+      const a = answerOf(room, qi, u), q = room.questions?.[qi];
+      if (!a?.b || !q) continue;
+      bets[u] = true;
+      if (q.type === "estimate") points[u] = Number(a.value) === Number(q.answer) ? BET_WIN : ok[u] ? points[u] : -BET_WIN;
+      else points[u] = ok[u] ? BET_WIN : -BET_WIN;
+    }
+    return Object.keys(bets).length ? { points, ok, fastestUid, bets } : { points, ok, fastestUid };
+  }
   const pts = pointsOf(room.questions?.[qi]);
   const uids = activePlayers(room).map(p => p.uid);
   for (const u of uids) points[u] = 0;
@@ -294,7 +306,7 @@ export function autoJudge(q, value) {
   if (q.type === "estimate") {
     const target = Number(q.answer), v = typeof value === "number" ? value : Number(String(value).replace(",", "."));
     if (!isFinite(target) || !isFinite(v)) return false;
-    const isYear = Number.isInteger(target) && target >= 1000 && target <= 2100;
+    const isYear = isYearQ(q);
     const tol = typeof q.tol === "number" ? q.tol : isYear ? 2 : Math.max(1, Math.abs(target) * 0.1);
     return Math.abs(v - target) <= tol;
   }
@@ -323,7 +335,8 @@ export const HINT_MAX = 3;
 export const hintLevel = room => Math.min(HINT_MAX, room?.game?.hint || 0);
 export const hintPoints = h => Math.max(1, HINT_MAX + 1 - (h || 0));   // 4 – 3 – 2 – 1
 // Punkte-Regel im Duell: "picker" = Wähler hat Vorrang (Gegner klaut nur bei Fehler), "all" = jeder Richtige punktet
-export const duelRule = room => (room?.settings?.duelRule === "all" ? "all" : "picker");
+// „Jeder Richtige“ wurde gestrichen (machte die Kategoriewahl sinnlos) – alte Räume fallen auf „Wähler hat Vorrang“ zurück
+export const duelRule = () => "picker";
 export const DUEL_TURNS = 14;
 export const PICK_SEC = 20;
 export const DRAW_MS = 3600;   // Dauer der Auslos-Animation
@@ -398,3 +411,27 @@ export function statCorrect(room, qi, uid) {
   if (q.type === "estimate") return autoJudge(q, a.value);
   return isCorrect(room, qi, uid);
 }
+
+// Schätzfrage nach einer Jahreszahl? (dann ohne Tausenderpunkt anzeigen, Toleranz ±2)
+export function isYearQ(q) {
+  const t = Number(q?.answer);
+  return q?.type === "estimate" && Number.isInteger(t) && t >= 1000 && t <= 2100;
+}
+
+// Zahl für die Anzeige: Jahreszahlen ohne, andere Zahlen mit Tausenderpunkten
+export function fmtNum(q, v) {
+  return isYearQ(q) ? String(v) : Number(v).toLocaleString("de-DE");
+}
+
+// ── Sicher-Einsatz (nur Classic, in der Vorbereitung zuschaltbar) ──
+export const BET_MAX = 3, BET_WIN = 2;
+export const betsOn = room => !!room?.settings?.bets && !isDuel(room) && !isHints(room);
+export function betsUsed(room, uid) {
+  let n = 0;
+  for (const qa of vals(room?.answers)) if (qa?.[uid]?.b) n++;
+  return n;
+}
+export const betsLeft = (room, uid) => Math.max(0, BET_MAX - betsUsed(room, uid));
+
+// ── Nur ein Gerät: Spieler sind nur Namen (local), der Moderator tippt ihre Antworten ein ──
+export const isSingle = room => !!room?.meta?.single;

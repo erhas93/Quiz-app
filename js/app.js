@@ -6,7 +6,7 @@ import { syncPresence, watchVisibility } from "./presence.js";
 import { DBG } from "./debug.js";
 import * as A from "./actions.js";
 import { loadPackList } from "./packs.js";
-import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS, HOST_AWAY_MS } from "./model.js";
+import { meIn, allAnswered, resultFor, esc, isStale, moderatorAway, timerLeft, isFree, hostUid, hostSuccessor, unjudgedCount, waitingForNext, nextOf, isOpenType, activePlayers, isSoloFree, autoJudge, answerOf, judgmentOf, isDuel, duelOf, freeCells, PICK_SEC, DRAW_MS, PICKED_MS, HOST_AWAY_MS, isYearQ } from "./model.js";
 import { duelBoardView, drawFrame } from "./views/duel.js";
 import { testSetupView } from "./views/overview.js";
 import { statsView } from "./views/stats.js";
@@ -128,6 +128,7 @@ function doOnce(key, fn, delay = 0) {
 }
 function afterRender(s, key) {
   runAnims($("app"));
+  requestAnimationFrame(updateMore);
   if (key !== "loading") hideSplash();
   // eigene App-Version im Raum vermerken
   { const meP = s.room?.players?.[s.uid]; if (ROOM_ID && meP && meP.v !== VERSION) doOnce(`ver:${s.room?.meta?.createdAt}:${meP.joinedAt || 0}`, () => A.setVersion(VERSION)); }
@@ -164,7 +165,7 @@ function afterRender(s, key) {
     const k = `${roundKey(room)}:${g.qIndex}`;
     if (revealVibed !== k && resultFor(room, g.qIndex)) {
       revealVibed = k;
-      vibrate(resultFor(room, g.qIndex)?.points?.[s.uid] ? 80 : [60, 80, 60]);
+      vibrate((resultFor(room, g.qIndex)?.points?.[s.uid] || 0) > 0 ? 80 : [60, 80, 60]);
     }
   }
   const free = isFree(room);
@@ -196,8 +197,8 @@ function afterRender(s, key) {
     const req = d.picker && room.players?.[d.picker]?.pick;
     if (req && req.turn === (d.turn || 0)) doOnce(`pick:${roundKey(room)}:${d.turn || 0}`, () => A.pickCell(req.cell, d.picker));
   }
-  // Host ohne Moderator: Ablauf automatisch weiterschalten
-  if (isHost && room.meta?.status === "running" && g) {
+  // Ohne Moderator zeigt und löst der Host per Knopf auf – nur im Einzelspiel läuft das automatisch
+  if (isHost && room.meta?.status === "running" && g && isSoloFree(room)) {
     const qi = g.qIndex, base = `${roundKey(room)}:${qi}`;
     const q = room.questions?.[qi];
     if (g.phase === "locked") doOnce(`show:${base}`, () => A.showAnswers(qi), 400);
@@ -292,7 +293,24 @@ function duelTick(s, room, g) {
   }
 }
 
+// ── Scroll-Hinweis: farbiger Verlauf + Pfeil am unteren Rand, solange unten noch etwas kommt ──
+function updateMore() {
+  document.querySelectorAll("#app .body").forEach(el => {
+    el.classList.toggle("more", el.scrollHeight - el.scrollTop - el.clientHeight > 14);
+  });
+}
+document.addEventListener("scroll", e => { if (e.target?.classList?.contains("body")) updateMore(); }, true);
+window.addEventListener("resize", () => requestAnimationFrame(updateMore));
+
 // ── Eingaben ───────────────────────────────────────────────────────────────
+// „1234567,5“ → „1.234.567,5“ (nur Ziffern, ein Komma, optional Minus)
+function groupDigits(raw) {
+  let t = String(raw).replace(/[^\d,\-]/g, "");
+  const neg = t.startsWith("-"); t = t.replace(/-/g, "");
+  const [i, ...rest] = t.split(",");
+  const int = i.replace(/^0+(?=\d)/, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return (neg ? "-" : "") + int + (rest.length ? "," + rest.join("").slice(0, 3) : "");
+}
 function parseEstimate(raw) {
   let t = raw.trim().replace(/\s/g, "");
   if (/,/.test(t)) t = t.replace(/\./g, "").replace(",", ".");
@@ -361,15 +379,39 @@ const handlers = {
   commitPick: async (el) => {
     const p = store.local.pending; if (!p) return;
     el.disabled = true;
-    await A.submitAnswer(p.qi, p.value);
+    await A.submitAnswer(p.qi, p.value, store.local.bet?.qi === p.qi);
   },
   commitDraft: async (el) => {
     const d = store.local.draft; if (!d || !String(d.value).trim()) return;
     const q = store.room?.questions?.[d.qi];
     el.disabled = true;
-    await A.submitAnswer(d.qi, q?.type === "estimate" ? parseEstimate(d.value) : String(d.value).trim());
+    await A.submitAnswer(d.qi, q?.type === "estimate" ? parseEstimate(d.value) : String(d.value).trim(), store.local.bet?.qi === d.qi);
   },
   showAnswers: () => A.showAnswers(store.room.game.qIndex),
+  // Nur ein Gerät
+  addLocal: () => { const n = store.local.localName; A.addLocalPlayer(n).then(ok => { if (ok) { store.local.localName = ""; const el = $("in-local"); if (el) el.value = ""; rerender(); } }); },
+  removeLocal: (el) => A.removeLocalPlayer(el.dataset.arg),
+  modPick: (el) => {
+    const qi = store.room.game.qIndex, pid = el.dataset.arg;
+    A.modAnswer(qi, pid, Number(el.dataset.val), !!store.local.modBet?.[qi + ":" + pid] || !!store.room.answers?.[qi]?.[pid]?.b); vibrate(15);
+  },
+  modBet: (el) => {
+    const qi = store.room.game.qIndex, pid = el.dataset.arg, a = store.room.answers?.[qi]?.[pid];
+    if (a) return A.modAnswer(qi, pid, a.value, !a.b);
+    const k = qi + ":" + pid;
+    setLocal({ modBet: { ...(store.local.modBet || {}), [k]: !store.local.modBet?.[k] } });
+  },
+  modAns: (el) => {
+    const qi = store.room.game.qIndex, pid = el.dataset.arg, q = store.room.questions?.[qi];
+    const k = qi + ":" + pid, raw = store.local.modDraft?.[k] ?? $("ent-" + pid)?.value ?? "";
+    if (!String(raw).trim()) return;
+    const bet = !!store.local.modBet?.[k] || !!store.room.answers?.[qi]?.[pid]?.b;
+    A.modAnswer(qi, pid, q?.type === "estimate" ? parseEstimate(String(raw)) : String(raw).trim(), bet).then(ok => {
+      if (ok) { const d = { ...(store.local.modDraft || {}) }; delete d[k]; store.local.modDraft = d; rerender(); }
+    });
+  },
+  bet: () => { const qi = store.room.game.qIndex; setLocal({ bet: store.local.bet?.qi === qi ? null : { qi } }); vibrate(15); },
+  bets: () => C().setBets(!store.room.settings?.bets),
   reveal: () => A.reveal(store.room.game.qIndex),
   next: (el) => { el.disabled = true; A.nextQuestion(store.room.game.qIndex); },
   judge: (el) => A.judge(store.room.game.qIndex, el.dataset.arg, el.dataset.val === "1"),
@@ -464,7 +506,24 @@ document.addEventListener("input", e => {
   if (kind === "name") store.local.name = el.value;
   if (kind === "code") store.local.code = el.value;
   if (kind === "packSearch") setLocal({ picker: { ...store.local.picker, q: el.value } });
+  if (kind === "localName") store.local.localName = el.value;
+  if (kind === "modAns") {
+    const q = store.room?.questions?.[store.room?.game?.qIndex];
+    if (q?.type === "estimate" && !isYearQ(q)) {
+      const f = groupDigits(el.value);
+      if (f !== el.value) { el.value = f; try { el.setSelectionRange(f.length, f.length); } catch {} }
+    }
+    store.local.modDraft = { ...(store.local.modDraft || {}), [store.room?.game?.qIndex + ":" + el.dataset.arg]: el.value };
+    const b = el.parentElement?.querySelector('[data-act="modAns"]');
+    if (b) { b.disabled = !el.value.trim(); b.classList.remove("on"); b.textContent = "OK"; }
+  }
   if (kind === "draft") {
+    // Schätzfragen: Tausenderpunkte schon beim Tippen (außer bei Jahreszahlen)
+    const q = store.room?.questions?.[store.room?.game?.qIndex];
+    if (q?.type === "estimate" && !isYearQ(q)) {
+      const f = groupDigits(el.value);
+      if (f !== el.value) { el.value = f; try { el.setSelectionRange(f.length, f.length); } catch {} }
+    }
     store.local.draft = { qi: store.room?.game?.qIndex, value: el.value };
     const b = document.querySelector('[data-act="commitDraft"]');
     if (b) b.disabled = !el.value.trim();
@@ -476,9 +535,15 @@ document.addEventListener("change", e => {
 });
 document.addEventListener("keydown", e => {
   if (e.key !== "Enter" || e.target.tagName !== "INPUT") return;
-  const map = { draft: "commitDraft", code: "joinCode" };
+  const map = { draft: "commitDraft", code: "joinCode", localName: "addLocal", modAns: "modAns" };
   const act = map[e.target.dataset.input];
-  if (act) document.querySelector(`[data-act="${act}"]`)?.click();
+  if (act === "modAns") {
+    // Eintragen und gleich zum nächsten Spieler springen
+    e.target.parentElement?.querySelector('[data-act="modAns"]')?.click();
+    const all = [...document.querySelectorAll(".ent-in")], i = all.indexOf(e.target);
+    if (all[i + 1]) all[i + 1].focus(); else e.target.blur();
+  }
+  else if (act) document.querySelector(`[data-act="${act}"]`)?.click();
   else e.target.blur();
 });
 

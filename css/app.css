@@ -444,3 +444,41 @@ button{cursor:pointer}
 .ans{position:relative}
 .ans .mkrs{position:absolute;right:10px;top:-9px;max-width:70%;flex-wrap:nowrap}
 .ans .mkr{background:var(--bg);opacity:1;font-size:11.5px;padding:1px 7px;line-height:1.35}
+/* Bewertungszeile unter der Frage (Spieler und Moderator) */
+.qfb{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center;flex-shrink:0;margin-top:-2px}
+.qfb .fb{height:26px;padding:0 7px;font-size:11.5px;background:transparent;color:var(--text3)}
+.qfb{gap:4px}
+.qfb .fb.unc.on{border-color:var(--c4);background:transparent;color:var(--c4)}
+/* Scroll-Hinweis: klebt am unteren Rand des Inhalts, solange weiter unten noch etwas kommt */
+.body.more::after{content:"⌄";position:sticky;bottom:-1px;height:44px;margin-top:calc(-44px - var(--gap));flex-shrink:0;pointer-events:none;
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;font-size:26px;line-height:1;font-weight:900;color:var(--blue);
+  background:linear-gradient(to bottom,rgba(91,156,245,0),rgba(91,156,245,.28));border-radius:0 0 14px 14px;animation:moreBob 1.4s ease-in-out infinite}
+@keyframes moreBob{0%,100%{padding-bottom:2px}50%{padding-bottom:8px}}
+@media (prefers-reduced-motion:reduce){.body.more::after{animation:none}}
+/* Sicher-Einsatz */
+.btn-sq.bet{flex-direction:column;gap:0;width:calc(var(--btn-h) + 8px);font-size:11px;font-weight:800;color:var(--text2)}
+.btn-sq.bet .bet-ico{font-size:19px;line-height:1.1;filter:grayscale(.6);opacity:.8}
+.btn-sq.bet.on{border-color:var(--c3);background:var(--gold-bg);color:var(--c3);animation:pickPop .3s ease-out}
+.btn-sq.bet.on .bet-ico{filter:none;opacity:1}
+.chip-pts.neg{color:var(--c5)}
+.pts-float.neg{color:var(--c5)}
+/* Nur ein Gerät: Spieler anlegen und Antworten eintragen */
+.local-add{display:flex;gap:8px;margin-top:10px}
+.local-add .inp{flex:1;min-width:0}
+.btn-x{margin-left:auto;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--text3);display:flex;align-items:center;justify-content:center}
+.card.ent{gap:8px}
+.ent-row{display:flex;align-items:center;gap:8px;min-height:44px}
+.ent-name{width:72px;flex-shrink:0;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ent-row.done .ent-name{color:var(--c2)}
+.ent-mc{display:flex;gap:6px;flex:1}
+.ent-l{flex:1;height:42px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--text);font-weight:800;font-size:16px}
+.ent-l.on{border-color:var(--blue);background:var(--blue);color:#fff;animation:pickPop .3s ease-out}
+.ent-l.gone{opacity:.15}
+.ent-open{display:flex;gap:6px;flex:1;min-width:0}
+.ent-in{flex:1;min-width:0;height:42px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--text);padding:0 12px;font-size:16px}
+.ent-ok{width:52px;flex-shrink:0;border-radius:12px;border:1.5px solid var(--blue);background:transparent;color:var(--blue);font-weight:800;display:flex;align-items:center;justify-content:center}
+.ent-ok.on{background:var(--c2);border-color:var(--c2);color:#fff}
+.ent-ok:disabled{opacity:.4}
+.ent-bet{width:44px;height:42px;flex-shrink:0;border-radius:12px;border:1.5px solid var(--line);background:transparent;font-size:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;filter:grayscale(.5)}
+.ent-bet small{font-size:10px;font-weight:800;color:var(--text3)}
+.ent-bet.on{border-color:var(--c3);background:var(--gold-bg);filter:none}

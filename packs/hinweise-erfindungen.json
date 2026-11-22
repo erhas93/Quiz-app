@@ -1,0 +1,237 @@
+{
+  "name": "Hinweise: Erfindungen",
+  "emoji": "💡",
+  "mode": "hints",
+  "questions": [
+    {
+      "q": "Welche Küchen-Erfindung verdanken wir einem Zufall bei der Radarforschung in den 1940er-Jahren?",
+      "a": [
+        "Antihaft-Pfanne",
+        "Mikrowellenherd",
+        "Tiefkühlkost",
+        "Induktionsherd"
+      ],
+      "r": 1,
+      "hints": [
+        "Der Erfinder Percy Spencer hatte nie eine Universität besucht.",
+        "Auslöser war ein Schokoriegel, der in seiner Hosentasche geschmolzen war.",
+        "Das erste Gerät war fast zwei Meter hoch und hieß „Radarange“."
+      ],
+      "fact": "Percy Spencer arbeitete 1945 bei der US-Firma Raytheon an Magnetrons für Radargeräte. Der Mikrowellenherd (Microwave Oven) kam 1947 auf den Markt, wog über 300 Kilogramm und war für Großküchen gedacht. Auch die Antihaft-Beschichtung Teflon entstand übrigens durch einen Zufall – 1938 bei der Suche nach einem Kühlmittel."
+    },
+    {
+      "q": "Wer meldete 1876 in den USA das Patent auf das Telefon an?",
+      "a": [
+        "Thomas Edison",
+        "Elisha Gray",
+        "Philipp Reis",
+        "Alexander Graham Bell"
+      ],
+      "r": 3,
+      "hints": [
+        "Ein Konkurrent reichte am selben Tag beim Patentamt Unterlagen ein.",
+        "Hauptberuflich unterrichtete er gehörlose Menschen.",
+        "Sein erster Satz durch den Apparat galt seinem Assistenten Thomas Watson."
+      ],
+      "fact": "Ob Alexander Graham Bell oder Elisha Gray zuerst am Patentamt war, ist bis heute umstritten. Der Deutsche Philipp Reis hatte schon 1861 Töne elektrisch übertragen, und der Italiener Antonio Meucci wurde 2002 vom US-Repräsentantenhaus für seine frühen Arbeiten gewürdigt. Wer als Erfinder gilt, hängt oft weniger von der Idee ab als vom Patent."
+    },
+    {
+      "q": "In welchem Jahr stellte Johannes Gutenberg in Mainz seine gedruckte Bibel fertig?",
+      "type": "estimate",
+      "answer": 1454,
+      "tol": 2,
+      "hints": [
+        "Es war vor der Entdeckung Amerikas durch Kolumbus.",
+        "Kurz zuvor war Konstantinopel von den Osmanen erobert worden.",
+        "Gesucht ist ein Jahr in der Mitte der 1450er-Jahre."
+      ],
+      "fact": "Die Gutenberg-Bibel entstand um 1452–1454 in rund 180 Exemplaren, 49 davon sind erhalten. Der Druck mit beweglichen Metalllettern machte Bücher deutlich billiger und half, Wissen und Ideen – etwa der Reformation – schnell zu verbreiten. Gezählt wird hier 1454 (±2 Jahre)."
+    },
+    {
+      "q": "Welche Technik entwickelte die Hollywood-Schauspielerin Hedy Lamarr im Zweiten Weltkrieg mit?",
+      "a": [
+        "Frequenzsprungverfahren",
+        "Radartechnik",
+        "Echolot",
+        "Verschlüsselungsmaschine"
+      ],
+      "r": 0,
+      "hints": [
+        "Ihr Partner bei der Erfindung war ein Komponist.",
+        "Die Idee sollte verhindern, dass ferngelenkte Torpedos gestört werden.",
+        "Das Prinzip steckt heute in WLAN und Bluetooth."
+      ],
+      "fact": "Hedy Lamarr und der Komponist George Antheil erhielten 1942 ein Patent auf das Frequenzsprungverfahren (Frequency Hopping) – inspiriert von Lochstreifen für selbstspielende Klaviere. Die US-Marine nutzte die Idee damals nicht. Erst 1997 wurde Lamarr für ihre Erfindung ausgezeichnet; lange galt sie nur als Filmstar."
+    },
+    {
+      "q": "Welchen Alltagsgegenstand ließ der ungarische Journalist László Bíró 1938 patentieren?",
+      "a": [
+        "Füllfederhalter",
+        "Druckbleistift",
+        "Kugelschreiber",
+        "Filzstift"
+      ],
+      "r": 2,
+      "hints": [
+        "Ihn ärgerte, dass seine Notizen ständig verschmierten.",
+        "Er nutzte eine dickflüssige, schnell trocknende Farbe wie beim Zeitungsdruck.",
+        "Eine winzige Kugel an der Spitze verteilt die Tinte."
+      ],
+      "fact": "Bíró floh vor der Verfolgung der Juden nach Argentinien und entwickelte den Kugelschreiber (Ballpoint Pen) dort weiter. Die britische Luftwaffe kaufte ihn früh, weil er auch in großer Höhe nicht auslief. Im Englischen heißt der Kugelschreiber bis heute oft einfach „biro“."
+    },
+    {
+      "q": "Welcher Chemiker stiftete mit dem Vermögen aus seinen Sprengstoff-Erfindungen einen berühmten Preis?",
+      "type": "open",
+      "answer": "Alfred Nobel",
+      "alt": [
+        "Nobel"
+      ],
+      "hints": [
+        "Eine Zeitung hielt ihn irrtümlich für tot und nannte ihn einen „Händler des Todes“.",
+        "Er stammte aus Schweden und starb 1896 im italienischen Sanremo.",
+        "Seine bekannteste Erfindung ist das Dynamit."
+      ],
+      "fact": "Alfred Nobel hielt über 350 Patente. Als 1888 sein Bruder starb, druckte eine französische Zeitung versehentlich einen Nachruf auf ihn selbst – das soll ihn bewogen haben, sein Vermögen für Preise zum Wohl der Menschheit zu stiften. Dass ausgerechnet ein Sprengstoff-Fabrikant den Friedensnobelpreis begründete, wird bis heute als Widerspruch diskutiert."
+    },
+    {
+      "q": "Welche Erfindung brachte der Ingenieur Willis Carrier 1902 für eine Druckerei in New York auf den Weg?",
+      "a": [
+        "Kühlschrank",
+        "Klimaanlage",
+        "Ventilator",
+        "Heizkörper"
+      ],
+      "r": 1,
+      "hints": [
+        "Das eigentliche Problem war, dass sich das Papier bei schwülem Wetter verzog.",
+        "Später lockte die Erfindung im Sommer Massen in die Kinos.",
+        "Sie regelt Temperatur und Luftfeuchtigkeit in Räumen."
+      ],
+      "fact": "Willis Carrier wollte eigentlich nur die Luftfeuchtigkeit senken, damit Farben beim Drucken passgenau landeten. Die Klimaanlage (Air Conditioning) veränderte später Architektur und sogar Wanderungsbewegungen – heiße Regionen wurden bewohnbarer. Heute verbraucht die Kühlung von Gebäuden rund ein Zehntel des weltweiten Stroms, was neue Fragen zum Klimaschutz aufwirft."
+    },
+    {
+      "q": "Wie viele US-Patente meldete Thomas Edison in seinem Leben an?",
+      "type": "estimate",
+      "answer": 1093,
+      "tol": 100,
+      "hints": [
+        "Er nannte sein Labor in Menlo Park eine „Erfindungsfabrik“.",
+        "Zu seinen Patenten gehören der Phonograph und eine langlebige Glühbirne.",
+        "Es sind etwas mehr als tausend."
+      ],
+      "fact": "Thomas Edison hielt 1.093 US-Patente – viele davon entstanden aber im Team seiner Mitarbeiter. Die Glühbirne erfand er nicht als Erster, machte sie aber alltagstauglich. Sein Satz „Genie ist 1 % Inspiration und 99 % Transpiration“ steht für die Idee, dass Erfinden vor allem harte Arbeit ist."
+    },
+    {
+      "q": "Wer entwickelte 1989 am Forschungszentrum CERN in Genf das World Wide Web?",
+      "a": [
+        "Tim Berners-Lee",
+        "Vint Cerf",
+        "Robert Cailliau",
+        "Marc Andreessen"
+      ],
+      "r": 0,
+      "hints": [
+        "Er verzichtete bewusst darauf, seine Erfindung patentieren zu lassen.",
+        "Sein Vorgesetzter notierte auf dem Vorschlag: „vage, aber spannend“.",
+        "Der Brite wurde 2004 von Königin Elisabeth II. zum Ritter geschlagen."
+      ],
+      "fact": "Tim Berners-Lee verband Hypertext mit dem Internet und schrieb den ersten Webbrowser. Der Belgier Robert Cailliau half ihm, das Projekt am CERN voranzubringen. Weil das Web lizenzfrei blieb, konnte es so schnell wachsen – heute setzt sich Berners-Lee dafür ein, dass Nutzer wieder mehr Kontrolle über ihre Daten bekommen."
+    },
+    {
+      "q": "Für welche Erfindung erhielt Fritz Haber den Chemie-Nobelpreis für das Jahr 1918?",
+      "a": [
+        "Kunststoffherstellung",
+        "Erdölraffination",
+        "Meerwasserentsalzung",
+        "Ammoniaksynthese"
+      ],
+      "r": 3,
+      "hints": [
+        "Die Ehrung war umstritten, weil er im Ersten Weltkrieg den Einsatz von Giftgas vorangetrieben hatte.",
+        "Das Verfahren gewinnt einen Grundstoff direkt aus der Luft.",
+        "Es liefert die Basis für Kunstdünger – mit Carl Bosch wurde es industriell."
+      ],
+      "fact": "Mit dem Haber-Bosch-Verfahren lässt sich Stickstoff aus der Luft in Ammoniak umwandeln. Ohne den daraus hergestellten Dünger könnte nach Schätzungen nur etwa die Hälfte der heutigen Menschheit ernährt werden. Fritz Haber gilt zugleich als „Vater des Gaskriegs“ – kaum ein Forscher zeigt so deutlich, wie nah Nutzen und Schaden einer Erfindung beieinanderliegen können."
+    },
+    {
+      "q": "Welches Autozubehör ließ sich die Amerikanerin Mary Anderson 1903 patentieren?",
+      "a": [
+        "Blinker",
+        "Rückspiegel",
+        "Scheibenwischer",
+        "Hupe"
+      ],
+      "r": 2,
+      "hints": [
+        "Die Idee kam ihr im Winter bei einer Fahrt mit der Straßenbahn in New York.",
+        "Bedient wurde ihre Erfindung zunächst mit einem Hebel im Inneren.",
+        "Sie sorgt für freie Sicht bei Regen und Schnee."
+      ],
+      "fact": "Autohersteller hielten Mary Andersons Scheibenwischer (Windshield Wiper) anfangs für eine gefährliche Ablenkung – ihr Patent lief ab, bevor sie daran verdienen konnte. Erst Jahre später gehörte er zur Serienausstattung. 2011 wurde sie in die National Inventors Hall of Fame aufgenommen."
+    },
+    {
+      "q": "Welche Spielzeugmarke gründete der dänische Tischler Ole Kirk Christiansen 1932?",
+      "type": "open",
+      "answer": "Lego",
+      "alt": [
+        "LEGO",
+        "Lego-Steine",
+        "Legosteine"
+      ],
+      "hints": [
+        "Die Firma stellte anfangs Holzspielzeug wie Enten und Jo-Jos her.",
+        "Der Name setzt sich aus zwei dänischen Wörtern für „spiel gut“ zusammen.",
+        "Die Steine mit Noppen passen seit 1958 alle zusammen."
+      ],
+      "fact": "Der Name Lego kommt von „leg godt“ (spiel gut). Ein Stein von 1958 passt noch heute auf jeden neuen. Weil die Steine fast nie kaputtgehen, sucht die Firma seit Jahren nach einem Kunststoff, der nicht aus Erdöl hergestellt wird."
+    },
+    {
+      "q": "Welche Erfindung von Karl Drais aus dem Jahr 1817 gilt als Vorläufer des Fahrrads?",
+      "a": [
+        "Laufmaschine",
+        "Hochrad",
+        "Dreirad",
+        "Tretkurbel"
+      ],
+      "r": 0,
+      "hints": [
+        "Den Anstoß gab vermutlich ein Vulkanausbruch, nach dem viele Pferde verhungerten.",
+        "Man bewegte sich fort, indem man sich mit den Füßen vom Boden abstieß.",
+        "Sie wurde nach ihrem Erfinder auch „Draisine“ genannt."
+      ],
+      "fact": "Der Ausbruch des Vulkans Tambora 1815 führte in Europa zum „Jahr ohne Sommer“ mit Missernten – Pferdefutter wurde knapp. Die Laufmaschine von Karl Drais hatte noch keine Pedale. Erst Jahrzehnte später kamen Tretkurbeln und schließlich das Hochrad dazu."
+    },
+    {
+      "q": "Was entwickelte ein 15-jähriger Schüler in Paris um das Jahr 1824?",
+      "a": [
+        "Kurzschrift",
+        "Morsealphabet",
+        "Zeichensprache",
+        "Punktschrift"
+      ],
+      "r": 3,
+      "hints": [
+        "Als Vorlage diente ihm eine „Nachtschrift“, mit der Soldaten im Dunkeln Befehle lesen sollten.",
+        "Der Schüler hatte als kleines Kind durch einen Unfall sein Augenlicht verloren.",
+        "Sechs erhabene Punkte bilden jeweils ein Zeichen."
+      ],
+      "fact": "Louis Braille vereinfachte das militärische System von Charles Barbier so, dass ein Buchstabe unter eine Fingerkuppe passt. Seine Schule übernahm die Punktschrift (Braille) erst nach seinem Tod offiziell. Heute steht sie auf Medikamentenpackungen, Geldautomaten und in Aufzügen weltweit."
+    },
+    {
+      "q": "Welche Funktion bedauerte ihr Erfinder Aza Raskin später öffentlich, weil sie Menschen viel Zeit kostet?",
+      "a": [
+        "Emoji",
+        "Endloses Scrollen",
+        "Hashtag",
+        "Captcha"
+      ],
+      "r": 1,
+      "hints": [
+        "Die Idee entstand 2006, um Webseiten bequemer zu machen.",
+        "Nutzer müssen nie mehr auf „nächste Seite“ klicken.",
+        "Neue Inhalte laden automatisch nach, sobald man unten ankommt."
+      ],
+      "fact": "Aza Raskin sagte später, er habe nicht bedacht, wie sehr endloses Scrollen (Infinite Scroll) zum Weitermachen verleitet, weil ein natürlicher Haltepunkt fehlt. Heute engagiert er sich im Center for Humane Technology für Technik, die Aufmerksamkeit nicht ausbeutet. Die Frage, wie viel Verantwortung Entwickler für die Folgen ihrer Erfindungen tragen, stellt sich damit neu."
+    }
+  ]
+}
